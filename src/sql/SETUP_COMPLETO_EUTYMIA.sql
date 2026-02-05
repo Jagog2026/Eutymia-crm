@@ -20,6 +20,21 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================================
+-- LIMPIAR BASE DE DATOS (Eliminar tablas existentes si las hay)
+-- ============================================================================
+-- NOTA: Esto elimina TODAS las tablas y sus datos
+-- Solo ejecutar en base de datos nueva o para reiniciar completamente
+
+DROP TABLE IF EXISTS public.workshop_registrations CASCADE;
+DROP TABLE IF EXISTS public.expenses CASCADE;
+DROP TABLE IF EXISTS public.workshops CASCADE;
+DROP TABLE IF EXISTS public.appointments CASCADE;
+DROP TABLE IF EXISTS public.lead_tasks CASCADE;
+DROP TABLE IF EXISTS public.leads CASCADE;
+DROP TABLE IF EXISTS public.users CASCADE;
+DROP TABLE IF EXISTS public.therapists CASCADE;
+
+-- ============================================================================
 -- PARTE 1: CREACIÓN DE TABLAS
 -- ============================================================================
 
@@ -199,50 +214,6 @@ ALTER TABLE public.appointments DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.workshops DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.workshop_registrations DISABLE ROW LEVEL SECURITY;
 ALTER TABLE public.expenses DISABLE ROW LEVEL SECURITY;
-
--- ============================================================================
--- PARTE 2: MIGRACIONES Y AJUSTES (Para bases de datos existentes)
--- ============================================================================
-
--- Hacer que 'name' sea opcional en leads (legacy)
-ALTER TABLE public.leads 
-ALTER COLUMN name DROP NOT NULL;
-
--- Migrar datos: asegurar que full_name tenga valores
-UPDATE public.leads 
-SET full_name = COALESCE(full_name, name, 'Sin nombre')
-WHERE full_name IS NULL OR full_name = '';
-
--- Hacer que 'full_name' sea obligatorio
-ALTER TABLE public.leads 
-ALTER COLUMN full_name SET NOT NULL;
-
--- Agregar columnas adicionales si no existen (para importación Excel)
-ALTER TABLE public.leads 
-ADD COLUMN IF NOT EXISTS dni TEXT,
-ADD COLUMN IF NOT EXISTS client_number TEXT,
-ADD COLUMN IF NOT EXISTS secondary_phone TEXT,
-ADD COLUMN IF NOT EXISTS address TEXT,
-ADD COLUMN IF NOT EXISTS comuna TEXT,
-ADD COLUMN IF NOT EXISTS city TEXT,
-ADD COLUMN IF NOT EXISTS age INTEGER,
-ADD COLUMN IF NOT EXISTS gender TEXT,
-ADD COLUMN IF NOT EXISTS birth_date DATE,
-ADD COLUMN IF NOT EXISTS whatsapp_line TEXT,
-ADD COLUMN IF NOT EXISTS facebook_account TEXT;
-
--- Agregar columna password a users si no existe
-ALTER TABLE public.users 
-ADD COLUMN IF NOT EXISTS password TEXT;
-
--- Actualizar usuarios existentes con contraseña temporal
-UPDATE public.users 
-SET password = 'temporal123' 
-WHERE password IS NULL;
-
--- Hacer password obligatorio
-ALTER TABLE public.users 
-ALTER COLUMN password SET NOT NULL;
 
 -- ============================================================================
 -- PARTE 3: ÍNDICES PARA OPTIMIZACIÓN
