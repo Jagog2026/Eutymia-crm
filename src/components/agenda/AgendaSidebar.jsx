@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 export default function AgendaSidebar({ 
   currentDate, 
@@ -9,6 +9,7 @@ export default function AgendaSidebar({
   onToggleTherapist,
   canViewAllTherapists = true
 }) {
+  const [showTherapists, setShowTherapists] = useState(true);
   // Mini Calendar Logic
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
@@ -86,27 +87,35 @@ export default function AgendaSidebar({
 
       <div className="p-4 flex-1 overflow-y-auto">
         {canViewAllTherapists && (
-          <>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-              Profesionales ({selectedTherapists.length})
-            </h3>
-            <div className="space-y-2">
-              {therapists.map(therapist => (
-                <label key={therapist.id} className="flex items-center gap-3 cursor-pointer group">
-                  <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedTherapists.includes(therapist.id) ? 'bg-teal-600 border-teal-600' : 'border-gray-300 bg-white'}`}>
-                    {selectedTherapists.includes(therapist.id) && <div className="w-2 h-2 bg-white rounded-full" />}
-                  </div>
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900">{therapist.name}</span>
-                  <input 
-                    type="checkbox" 
-                    className="hidden"
-                    checked={selectedTherapists.includes(therapist.id)}
-                    onChange={() => onToggleTherapist(therapist.id)}
-                  />
-                </label>
-              ))}
-            </div>
-          </>
+          <div className="border border-gray-200 rounded-lg bg-white shadow-sm">
+            <button
+              type="button"
+              className="w-full flex items-center justify-between px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 rounded-t-lg"
+              onClick={() => setShowTherapists(prev => !prev)}
+            >
+              <span className="text-xs uppercase tracking-wider">Profesionales ({selectedTherapists.length})</span>
+              <ChevronDown size={16} className={`transition-transform ${showTherapists ? 'rotate-180' : ''}`} />
+            </button>
+
+            {showTherapists && (
+              <div className="divide-y divide-gray-100 max-h-72 overflow-y-auto">
+                {therapists.map(therapist => (
+                  <label key={therapist.id} className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-gray-50">
+                    <div className={`w-4 h-4 border rounded flex items-center justify-center transition-colors ${selectedTherapists.includes(therapist.id) ? 'bg-teal-600 border-teal-600' : 'border-gray-300 bg-white'}`}>
+                      {selectedTherapists.includes(therapist.id) && <div className="w-2 h-2 bg-white rounded-full" />}
+                    </div>
+                    <span className="text-sm text-gray-700">{therapist.name}</span>
+                    <input 
+                      type="checkbox" 
+                      className="hidden"
+                      checked={selectedTherapists.includes(therapist.id)}
+                      onChange={() => onToggleTherapist(therapist.id)}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -12,6 +12,17 @@ export default function AgendaGrid({
   onDrop 
 }) {
   const hours = Array.from({ length: 15 }, (_, i) => i + 8); // 08:00 to 22:00
+  const hourHeight = 80;
+  const columnMinWidth = 220;
+  const statusConfig = {
+    blocked: { label: 'Bloqueado', classes: 'bg-slate-100 text-slate-700 border border-slate-200', badge: 'bg-slate-200 text-slate-700 border-slate-300' },
+    confirmada: { label: 'Confirmada', classes: 'bg-amber-50 text-amber-900 border border-amber-200', badge: 'bg-amber-100 text-amber-800 border-amber-200' },
+    asiste: { label: 'Asiste', classes: 'bg-pink-50 text-pink-900 border border-pink-200', badge: 'bg-pink-100 text-pink-800 border-pink-200' },
+    no_asistio: { label: 'No asistió', classes: 'bg-orange-50 text-orange-900 border border-orange-200', badge: 'bg-orange-100 text-orange-800 border-orange-200' },
+    cancelado: { label: 'Cancelado', classes: 'bg-red-50 text-red-900 border border-red-200', badge: 'bg-red-100 text-red-800 border-red-200' },
+    pagado: { label: 'Pagado', classes: 'bg-emerald-50 text-emerald-900 border border-emerald-200', badge: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+    default: { label: 'Pendiente', classes: 'bg-blue-50 text-blue-900 border border-blue-200', badge: 'bg-blue-100 text-blue-800 border-blue-200' },
+  };
   
   // Filter therapists based on selection
   const activeTherapists = therapists.filter(t => selectedTherapists.includes(t.id));
@@ -34,24 +45,94 @@ export default function AgendaGrid({
            d.getFullYear() === today.getFullYear();
   };
 
-  // Helper to get status styles
-  const getAppointmentStyle = (status) => {
-    switch (status) {
-      case 'blocked':
-        return 'bg-gray-200 text-gray-600 border-l-4 border-gray-400';
-      case 'confirmada':
-        return 'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-400';
-      case 'asiste':
-        return 'bg-[#FFB6F0] text-pink-900 border-l-4 border-pink-500'; // Pink from image
-      case 'no_asistio':
-        return 'bg-orange-100 text-orange-800 border-l-4 border-orange-400';
-      case 'cancelado':
-        return 'bg-red-100 text-red-800 border-l-4 border-red-400';
-      case 'pagado':
-        return 'bg-green-100 text-green-800 border-l-4 border-green-400';
-      default:
-        return 'bg-blue-100 text-blue-800 border-l-4 border-blue-400';
-    }
+  const renderAppointmentCard = (app, { compact = false, hour, style } = {}) => {
+    const config = statusConfig[app.status] || statusConfig.default;
+    const accent = app?.therapists?.color || '#0ea5e9';
+    const showPaid = app.payment_status === 'paid' || app.payment_status === 'pagado';
+    const isBlocked = app.status === 'blocked';
+
+    return (
+      <div
+        key={app.id}
+        draggable={!isBlocked}
+        onDragStart={(e) => e.dataTransfer.setData('appointmentId', app.id)}
+        onClick={(e) => onAppointmentClick(e, app)}
+        className={`absolute left-1 right-1 rounded-lg px-3 py-2 text-xs shadow-sm cursor-pointer overflow-hidden hover:shadow transition-all z-10 ${config.classes}`}
+        style={{ borderLeftColor: accent, borderLeftWidth: '5px', minHeight: '34px', ...style }}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className={`font-semibold truncate ${isBlocked ? 'text-slate-800' : 'text-slate-900'}`}>
+            {isBlocked ? 'Profesional no disponible' : app.patient_name}
+          </span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold whitespace-nowrap ${config.badge}`}>
+            {config.label}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 text-[11px] text-slate-600 mt-1">
+          <span className="font-mono text-xs text-slate-700">{app.time}</span>
+          {!compact && <span className="truncate">{app.service || 'Consulta'}</span>}
+          {showPaid && (
+            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
+              <DollarSign size={12} />
+              <span className="text-[11px] font-semibold">Pago</span>
+            </span>
+          )}
+        </div>
+
+        {!compact && app?.therapists?.name && (
+          <div className="text-[11px] text-slate-500 mt-1 truncate flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: accent }}></span>
+            {app.therapists.name}
+          </div>
+        )}
+
+        {app.start_time && app.end_time && (
+          <div className="text-[11px] text-slate-500 mt-1 font-mono">
+            {app.start_time.substring(11, 16)} - {app.end_time.substring(11, 16)}
+          </div>
+        )}
+
+        {compact && hour && (
+          <div className="text-[10px] text-slate-500 mt-1">{hour}</div>
+        )}
+      </div>
+    );
+  };
+
+  const renderWeekCard = (app) => {
+    const config = statusConfig[app.status] || statusConfig.default;
+    const accent = app?.therapists?.color || '#0ea5e9';
+    const showPaid = app.payment_status === 'paid' || app.payment_status === 'pagado';
+    const isBlocked = app.status === 'blocked';
+
+    return (
+      <div
+        key={app.id}
+        onClick={(e) => onAppointmentClick(e, app)}
+        className={`mb-2 rounded-lg px-3 py-2 text-xs shadow-sm cursor-pointer hover:shadow transition-all border-l-4 ${config.classes}`}
+        style={{ borderLeftColor: accent, borderLeftWidth: '5px' }}
+      >
+        <div className="flex items-center justify-between gap-2">
+          <span className={`font-semibold truncate ${isBlocked ? 'text-slate-800' : 'text-slate-900'}`}>
+            {isBlocked ? 'Bloqueado' : app.patient_name}
+          </span>
+          <span className={`text-[10px] px-2 py-0.5 rounded-full border font-semibold whitespace-nowrap ${config.badge}`}>
+            {config.label}
+          </span>
+        </div>
+        <div className="flex items-center gap-2 text-[11px] text-slate-600 mt-1">
+          <span className="font-mono text-xs text-slate-700">{app.time}</span>
+          <span className="truncate">{app.service || 'Consulta'}</span>
+          {showPaid && (
+            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-full">
+              <DollarSign size={12} />
+              <span className="text-[11px] font-semibold">Pago</span>
+            </span>
+          )}
+        </div>
+      </div>
+    );
   };
 
   // Render Day View (Resource View)
@@ -60,59 +141,56 @@ export default function AgendaGrid({
       return <div className="flex items-center justify-center h-full text-gray-500">Selecciona al menos un profesional para ver su agenda.</div>;
     }
 
-    // Ref to sync scroll between header and body
-    const headerScrollRef = React.useRef(null);
-    const bodyScrollRef = React.useRef(null);
-
-    const handleBodyScroll = (e) => {
-      if (headerScrollRef.current) {
-        headerScrollRef.current.scrollLeft = e.target.scrollLeft;
-      }
+    // Single scroll container to keep header/body perfectly aligned on resize
+    const scrollContainerRef = React.useRef(null);
+    const minGridWidth = activeTherapists.length * columnMinWidth + 64; // 64 = time column width
+    const gridColumns = {
+      gridTemplateColumns: `64px repeat(${activeTherapists.length}, minmax(${columnMinWidth}px, 1fr))`,
     };
+    const gridTemplate = {
+      gridTemplateColumns: `repeat(${activeTherapists.length}, minmax(${columnMinWidth}px, 1fr))`,
+    };
+    const now = new Date();
+    const isCurrentDay = isToday(date);
+    const currentLineOffset = ((now.getHours() + now.getMinutes() / 60) - hours[0]) * hourHeight;
 
     return (
       <div className="flex flex-col h-full overflow-hidden bg-white">
-        {/* Header Row */}
-        <div className="flex border-b sticky top-0 bg-white z-20 shadow-sm">
-          <div className="w-16 flex-shrink-0 border-r bg-white"></div> {/* Time column header */}
-          <div
-            ref={headerScrollRef}
-            className="flex flex-grow overflow-x-hidden"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            <div className="flex">
-              {activeTherapists.map(therapist => (
-                <div key={therapist.id} className="flex-1 min-w-[200px] p-3 border-r flex flex-col items-center justify-center bg-gray-50">
-                  <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-sm mb-1 shadow-sm">
-                    {getInitials(therapist.name)}
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700 truncate w-full text-center">{therapist.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Grid Body */}
         <div
-          ref={bodyScrollRef}
-          className="flex-1 overflow-y-auto overflow-x-auto"
-          onScroll={handleBodyScroll}
+          ref={scrollContainerRef}
+          className="flex-1 overflow-auto relative"
         >
+          {/* Header Row */}
+          <div className="grid border-b sticky top-0 bg-white z-20 shadow-sm" style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}>
+            <div className="h-full border-r bg-white sticky left-0 z-20"></div>
+            {activeTherapists.map(therapist => (
+              <div key={therapist.id} className="p-3 border-r flex flex-col items-center justify-center bg-gray-50 min-h-[72px]">
+                <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-sm mb-1 shadow-sm">
+                  {getInitials(therapist.name)}
+                </div>
+                <span className="text-sm font-semibold text-gray-700 truncate w-full text-center">{therapist.name}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Grid Body */}
+          {isCurrentDay && currentLineOffset >= 0 && currentLineOffset <= hours.length * hourHeight && (
+            <div className="absolute left-0 right-0 pointer-events-none" style={{ top: currentLineOffset }}>
+              <div className="absolute left-16 right-0 h-px bg-rose-400"></div>
+              <div className="absolute left-10 -ml-1 w-3 h-3 rounded-full bg-rose-400 shadow"></div>
+            </div>
+          )}
+
           {hours.map(hour => (
-            <div key={hour} className="flex min-h-[80px]">
-              {/* Time Column - Fixed */}
-              <div className="w-16 flex-shrink-0 border-r border-b bg-white flex items-start justify-center pt-2 sticky left-0 z-10">
+            <div key={hour} className="grid min-h-[80px] border-b" style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}>
+              <div className="border-r bg-white flex items-start justify-center pt-2 sticky left-0 z-10">
                 <span className="text-xs font-medium text-gray-500">{String(hour).padStart(2, '0')}:00</span>
               </div>
 
-              {/* Therapist Columns */}
               {activeTherapists.map(therapist => {
-                // Filter appointments for this cell
                 const cellApps = appointments.filter(a => {
                   if (!a.date || !a.time) return false;
-                  const appDate = new Date(a.date + 'T00:00:00'); // Fix timezone issue by appending time
-                  // Compare dates (ignoring time)
+                  const appDate = new Date(a.date + 'T00:00:00');
                   const isSameDate = appDate.getDate() === date.getDate() &&
                                    appDate.getMonth() === date.getMonth() &&
                                    appDate.getFullYear() === date.getFullYear();
@@ -124,7 +202,7 @@ export default function AgendaGrid({
                 return (
                   <div
                     key={`${therapist.id}-${hour}`}
-                    className="flex-1 min-w-[200px] border-r border-b relative hover:bg-gray-50 transition-colors"
+                    className="border-r relative hover:bg-gray-50 transition-colors"
                     onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, therapist.id, date)}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {
@@ -137,11 +215,9 @@ export default function AgendaGrid({
                       }
                     }}
                   >
-                    {/* Grid Lines for half hours (optional visual aid) */}
                     <div className="absolute top-1/2 left-0 right-0 border-t border-gray-100 border-dashed pointer-events-none"></div>
 
                     {cellApps.map(app => {
-                      // Calculate position and height
                       let top = 0;
                       let height = '100%';
 
@@ -154,33 +230,7 @@ export default function AgendaGrid({
                         height = `${(durationMin / 60) * 100}%`;
                       }
 
-                      const isBlocked = app.status === 'blocked';
-
-                      return (
-                        <div
-                          key={app.id}
-                          draggable={!isBlocked}
-                          onDragStart={(e) => e.dataTransfer.setData('appointmentId', app.id)}
-                          onClick={(e) => onAppointmentClick(e, app)}
-                          className={`absolute left-1 right-1 rounded px-2 py-1 text-xs shadow-sm cursor-pointer overflow-hidden hover:opacity-90 z-10 ${getAppointmentStyle(app.status)}`}
-                          style={{ top, height, minHeight: '30px' }}
-                        >
-                          {isBlocked ? (
-                            <div className="flex flex-col justify-center h-full">
-                              <span className="font-medium">Profesional no disponible</span>
-                              <span className="opacity-75">{app.time} - {app.end_time ? app.end_time.substring(0, 5) : ''}</span>
-                            </div>
-                          ) : (
-                            <div className="flex flex-col h-full">
-                              <span className="font-bold text-gray-900 truncate">{app.patient_name}</span>
-                              <span className="truncate opacity-90">{app.service || 'Consulta General'}</span>
-                              {(app.payment_status === 'paid' || app.payment_status === 'pagado') && (
-                                <DollarSign size={12} className="absolute top-1 right-1 text-green-700" />
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      );
+                      return renderAppointmentCard(app, { compact: false, hour: `${String(hour).padStart(2, '0')}:00`, style: { top, height } });
                     })}
                   </div>
                 );
@@ -188,18 +238,6 @@ export default function AgendaGrid({
             </div>
           ))}
         </div>
-
-        {/* CSS to hide scrollbar in header and improve sticky behavior */}
-        <style>{`
-          .overflow-x-hidden::-webkit-scrollbar {
-            display: none;
-          }
-
-          /* Ensure sticky time column has proper background */
-          .sticky.left-0 {
-            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
-          }
-        `}</style>
       </div>
     );
   }
@@ -260,22 +298,10 @@ export default function AgendaGrid({
                 return (
                   <div 
                     key={`${d.toISOString()}-${hour}`} 
-                    className="flex-1 min-w-[120px] border-r border-b relative hover:bg-gray-50 transition-colors"
+                    className={`flex-1 min-w-[120px] border-r border-b relative hover:bg-gray-50 transition-colors ${isToday(d) ? 'bg-teal-50/60' : 'bg-white'}`}
                     onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, selectedTherapists[0], d)} // Default to first therapist
                   >
-                    {cellApps.map(app => {
-                      // Simplified rendering for week view to avoid overlap chaos
-                      const isBlocked = app.status === 'blocked';
-                      return (
-                        <div
-                          key={app.id}
-                          onClick={(e) => onAppointmentClick(e, app)}
-                          className={`text-xs p-1 mb-1 rounded truncate cursor-pointer ${getAppointmentStyle(app.status)}`}
-                        >
-                          {isBlocked ? 'Bloqueado' : app.patient_name}
-                        </div>
-                      );
-                    })}
+                    {cellApps.map(app => renderWeekCard(app))}
                   </div>
                 );
               })}

@@ -254,7 +254,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   }, [selectedTherapists, therapists]);
 
   return (
-    <div className="flex h-full bg-gray-100 rounded-lg overflow-hidden shadow-lg" onClick={() => { setShowMenu(null); setAppointmentMenu(null); }}>
+    <div className="flex h-full bg-gradient-to-br from-slate-50 via-white to-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-xl" onClick={() => { setShowMenu(null); setAppointmentMenu(null); }}>
       {/* Sidebar */}
       <AgendaSidebar 
         currentDate={currentDate}
