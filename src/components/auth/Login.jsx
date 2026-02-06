@@ -78,7 +78,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
+      <div className="relative max-w-md w-full space-y-8 rounded-xl bg-white p-8 shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {isForgotPassword ? 'Recuperar contraseña' : 'Iniciar sesión'}
@@ -99,7 +99,7 @@ export default function Login() {
               <input
                 type="email"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 bg-white placeholder-gray-500 text-gray-900 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                 placeholder="Correo electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -114,7 +114,7 @@ export default function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  className="appearance-none rounded-lg relative block w-full pl-10 pr-10 px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-lg relative block w-full pl-10 pr-10 px-3 py-2 border border-gray-300 bg-white placeholder-gray-500 text-gray-900 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -135,14 +135,14 @@ export default function Login() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-600">
               <AlertCircle className="h-5 w-5" />
               <span>{error}</span>
             </div>
           )}
 
           {message && (
-            <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 p-3 rounded-lg">
+            <div className="flex items-center gap-2 rounded-lg bg-green-50 p-3 text-sm text-green-700">
               <AlertCircle className="h-5 w-5" />
               <span>{message}</span>
             </div>
@@ -152,7 +152,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
             >
               {loading ? (
                 <Loader className="h-5 w-5 animate-spin" />
@@ -191,21 +191,10 @@ export default function Login() {
                 >
                   ¿Olvidaste tu contraseña?
                 </button>
-
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-xs font-semibold text-blue-900 mb-2">
-                    Credenciales de prueba:
-                  </p>
-                  <div className="text-xs text-blue-800 space-y-1">
-                    <p><strong>Admin:</strong> admin@admin.com / adminpass</p>
-                    <p><strong>Recepción:</strong> recepcion@eutymia.com / recepcion123</p>
-                    <p><strong>Terapeuta:</strong> terapeuta@eutymia.com / terapeuta123</p>
-                  </div>
-                </div>
               </>
             )}
-            <p className="text-xs text-gray-500 mt-2">
-              Los usuarios son creados por el administrador
+            <p className="mt-2 text-xs text-gray-500">
+              Los usuarios son creados por el administrador.
             </p>
           </div>
         </form>
