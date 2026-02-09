@@ -13,6 +13,7 @@ export default function AgendaGrid({
 }) {
   const hours = Array.from({ length: 15 }, (_, i) => i + 8); // 08:00 to 22:00
   const hourHeight = 80;
+  const timeColumnWidth = 72;
   const columnMinWidth = 220;
   const statusConfig = {
     blocked: { label: 'Bloqueado', classes: 'bg-slate-100 text-slate-700 border border-slate-200', badge: 'bg-slate-200 text-slate-700 border-slate-300' },
@@ -57,7 +58,7 @@ export default function AgendaGrid({
         draggable={!isBlocked}
         onDragStart={(e) => e.dataTransfer.setData('appointmentId', app.id)}
         onClick={(e) => onAppointmentClick(e, app)}
-        className={`absolute left-1 right-1 rounded-lg px-3 py-2 text-xs shadow-sm cursor-pointer overflow-hidden hover:shadow transition-all z-10 ${config.classes}`}
+        className={`absolute inset-x-2 rounded-lg px-3 py-2 text-xs shadow-sm cursor-pointer overflow-hidden hover:shadow transition-all z-[1] ${config.classes}`}
         style={{ borderLeftColor: accent, borderLeftWidth: '5px', minHeight: '34px', ...style }}
       >
         <div className="flex items-center justify-between gap-2">
@@ -143,9 +144,9 @@ export default function AgendaGrid({
 
     // Single scroll container to keep header/body perfectly aligned on resize
     const scrollContainerRef = React.useRef(null);
-    const minGridWidth = activeTherapists.length * columnMinWidth + 64; // 64 = time column width
+    const minGridWidth = activeTherapists.length * columnMinWidth + timeColumnWidth;
     const gridColumns = {
-      gridTemplateColumns: `64px repeat(${activeTherapists.length}, minmax(${columnMinWidth}px, 1fr))`,
+      gridTemplateColumns: `${timeColumnWidth}px repeat(${activeTherapists.length}, minmax(${columnMinWidth}px, 1fr))`,
     };
     const gridTemplate = {
       gridTemplateColumns: `repeat(${activeTherapists.length}, minmax(${columnMinWidth}px, 1fr))`,
@@ -161,8 +162,8 @@ export default function AgendaGrid({
           className="flex-1 overflow-auto relative"
         >
           {/* Header Row */}
-          <div className="grid border-b sticky top-0 bg-white z-20 shadow-sm" style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}>
-            <div className="h-full border-r bg-white sticky left-0 z-20"></div>
+          <div className="grid border-b sticky top-0 bg-white z-30 shadow-sm" style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}>
+            <div className="h-full border-r bg-white sticky left-0 z-30"></div>
             {activeTherapists.map(therapist => (
               <div key={therapist.id} className="p-3 border-r flex flex-col items-center justify-center bg-gray-50 min-h-[72px]">
                 <div className="w-10 h-10 rounded-full bg-gray-400 text-white flex items-center justify-center font-bold text-sm mb-1 shadow-sm">
@@ -175,15 +176,15 @@ export default function AgendaGrid({
 
           {/* Grid Body */}
           {isCurrentDay && currentLineOffset >= 0 && currentLineOffset <= hours.length * hourHeight && (
-            <div className="absolute left-0 right-0 pointer-events-none" style={{ top: currentLineOffset }}>
-              <div className="absolute left-16 right-0 h-px bg-rose-400"></div>
-              <div className="absolute left-10 -ml-1 w-3 h-3 rounded-full bg-rose-400 shadow"></div>
+            <div className="absolute pointer-events-none" style={{ top: currentLineOffset, left: timeColumnWidth, right: 0 }}>
+              <div className="absolute left-0 right-0 h-px bg-rose-400"></div>
+              <div className="absolute -left-3 w-3 h-3 rounded-full bg-rose-400 shadow"></div>
             </div>
           )}
 
           {hours.map(hour => (
             <div key={hour} className="grid min-h-[80px] border-b" style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}>
-              <div className="border-r bg-white flex items-start justify-center pt-2 sticky left-0 z-10">
+              <div className="border-r bg-white flex items-start justify-center pt-2 sticky left-0 z-30">
                 <span className="text-xs font-medium text-gray-500">{String(hour).padStart(2, '0')}:00</span>
               </div>
 
@@ -202,7 +203,7 @@ export default function AgendaGrid({
                 return (
                   <div
                     key={`${therapist.id}-${hour}`}
-                    className="border-r relative hover:bg-gray-50 transition-colors"
+                    className="border-r relative hover:bg-gray-50 transition-colors overflow-hidden"
                     onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, therapist.id, date)}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={(e) => {

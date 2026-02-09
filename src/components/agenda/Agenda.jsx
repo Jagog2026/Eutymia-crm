@@ -75,7 +75,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
     }
   };
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (baseDate = currentDate) => {
     if (selectedTherapists.length === 0) {
       setAppointments([]);
       return;
@@ -88,8 +88,8 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
         .in('therapist_id', selectedTherapists);
 
       // Date Range Calculation
-      const start = new Date(currentDate);
-      const end = new Date(currentDate);
+      const start = new Date(baseDate);
+      const end = new Date(baseDate);
 
       if (view === 'week') {
         const day = start.getDay();
@@ -134,7 +134,10 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   };
 
   const handleToday = () => {
-    setCurrentDate(new Date());
+    const today = new Date();
+    setCurrentDate(today);
+    if (view !== 'day') setView('day');
+    fetchAppointments(today);
   };
 
   // Interactions
