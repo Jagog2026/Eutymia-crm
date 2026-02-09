@@ -12,6 +12,7 @@ import {
   LogOut,
   User,
   Shield,
+  MessageCircle,
 } from 'lucide-react';
 
 import SettingsModal from './SettingsModal';
@@ -36,6 +37,7 @@ export default function Layout({ children, userRole, userEmail }) {
     { path: '/therapists', icon: Users, label: 'Terapeutas', roles: ['admin'] },
     { path: '/workshops', icon: BookOpen, label: 'Talleres', roles: ['admin'] },
     { path: '/reports', icon: BarChart2, label: 'Reportes', roles: ['admin'] },
+    { path: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', roles: ['admin'] },
     { path: '/admin', icon: Shield, label: 'Administración', roles: ['admin'] },
   ];
 

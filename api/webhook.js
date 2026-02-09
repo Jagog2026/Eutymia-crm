@@ -6,72 +6,160 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// 🗺️ MAPA DE NEGOCIOS: Asocia el ID del teléfono con el Portafolio
-// Estos IDs los sacarás de Meta en el siguiente paso.
+// Mapa de negocios: Phone Number ID de Meta → portafolio
 const PORTFOLIO_MAP = {
-  'ID_DEL_TELEFONO_DE_EUTYMIA': 'eutymia',           
-  'ID_DEL_TELEFONO_DE_ESPACIO': 'espacio_equilibrio' 
+  [process.env.WHATSAPP_PHONE_NUMBER_ID]: 'eutymia',
 };
 
 export default async function handler(req, res) {
-  // 1. Verificación (Solo para conectar con Meta la primera vez)
+  // ─── GET: Verificación del webhook con Meta ───
   if (req.method === 'GET') {
-    if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === process.env.META_VERIFY_TOKEN) {
-      return res.status(200).send(req.query['hub.challenge']);
+    const mode = req.query['hub.mode'];
+    const token = req.query['hub.verify_token'];
+    const challenge = req.query['hub.challenge'];
+
+    if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
+      console.log('[Webhook] Verificación exitosa');
+      return res.status(200).send(challenge);
     }
-    return res.status(403).send('Token error');
+    return res.status(403).send('Token de verificación incorrecto');
   }
 
-  // 2. Recepción de Mensajes
+  // ─── POST: Recepción de eventos de WhatsApp ───
   if (req.method === 'POST') {
     const body = req.body;
-    
-    if (body.object === 'whatsapp_business_account') {
-      try {
-        const value = body.entry?.[0]?.changes?.[0]?.value;
-        const message = value?.messages?.[0];
-        
-        // 🕵️ DETECTIVE: ¿A qué número le escribieron?
-        const targetPhoneId = value?.metadata?.phone_number_id; 
-        const portfolio = PORTFOLIO_MAP[targetPhoneId] || 'general';
 
-        if (message) {
-          const from = message.from; 
-          
-          // A. Buscar lead existente
-          let { data: lead } = await supabase
-            .from('leads')
-            .select('id')
-            .eq('phone', from)
-            .single();
+    if (body.object !== 'whatsapp_business_account') {
+      return res.status(404).send('Not a WhatsApp event');
+    }
 
-          // B. Si es nuevo, crearlo ETIQUETADO con el portafolio correcto
-          if (!lead) {
-            const { data: newLead } = await supabase
-              .from('leads')
-              .insert([{ 
-                full_name: 'WhatsApp Lead', 
-                phone: from,
-                source: 'whatsapp',
-                business_portfolio: portfolio, // <--- Aquí separamos los negocios
-                status: 'new'
-              }])
-              .select()
-              .single();
-            lead = newLead;
+    try {
+      for (const entry of body.entry || []) {
+        for (const change of entry.changes || []) {
+          const value = change.value;
+
+          // ─── Status updates (delivered, read, etc.) ───
+          if (value?.statuses) {
+            for (const status of value.statuses) {
+              await supabase
+                .from('messages')
+                .update({ status: status.status, updated_at: new Date().toISOString() })
+                .eq('whatsapp_id', status.id);
+            }
           }
 
-          // C. Guardar mensaje
-          await supabase.from('messages').insert({
-            lead_id: lead.id,
-            whatsapp_id: message.id,
-            content: message.text?.body,
-            direction: 'inbound',
-            status: 'received'
-          });
+          // ─── Incoming messages ───
+          if (value?.messages) {
+            const phoneNumberId = value.metadata?.phone_number_id;
+            const portfolio = PORTFOLIO_MAP[phoneNumberId] || 'general';
+            const contactInfo = value.contacts?.[0];
+
+            for (const message of value.messages) {
+              const from = message.from;
+              const contactName = contactInfo?.profile?.name || 'WhatsApp Lead';
+
+              // 1. Buscar o crear lead
+              let { data: lead } = await supabase
+                .from('leads')
+                .select('id')
+                .eq('phone', from)
+                .single();
+
+              if (!lead) {
+                const { data: newLead } = await supabase
+                  .from('leads')
+                  .insert([{
+                    full_name: contactName,
+                    phone: from,
+                    source: 'whatsapp',
+                    business_portfolio: portfolio,
+                    status: 'new',
+                  }])
+                  .select()
+                  .single();
+                lead = newLead;
+              }
+
+              if (!lead) {
+                console.error('[Webhook] No se pudo crear/encontrar lead para:', from);
+                continue;
+              }
+
+              // 2. Determinar tipo y contenido
+              let content = '';
+              let mediaUrl = null;
+              let mediaType = null;
+              let messageType = message.type || 'text';
+
+              switch (message.type) {
+                case 'text':
+                  content = message.text?.body || '';
+                  break;
+                case 'image':
+                  content = message.image?.caption || '[Imagen]';
+                  mediaType = 'image';
+                  mediaUrl = message.image?.id;
+                  break;
+                case 'audio':
+                  content = '[Audio]';
+                  mediaType = 'audio';
+                  mediaUrl = message.audio?.id;
+                  break;
+                case 'video':
+                  content = message.video?.caption || '[Video]';
+                  mediaType = 'video';
+                  mediaUrl = message.video?.id;
+                  break;
+                case 'document':
+                  content = message.document?.caption || `[Documento: ${message.document?.filename || ''}]`;
+                  mediaType = 'document';
+                  mediaUrl = message.document?.id;
+                  break;
+                case 'sticker':
+                  content = '[Sticker]';
+                  messageType = 'sticker';
+                  break;
+                case 'location':
+                  content = `[Ubicación: ${message.location?.latitude}, ${message.location?.longitude}]`;
+                  messageType = 'location';
+                  break;
+                case 'contacts':
+                  content = '[Contacto compartido]';
+                  messageType = 'contacts';
+                  break;
+                case 'reaction':
+                  continue; // No guardar reacciones como mensaje
+                default:
+                  content = `[${message.type || 'Desconocido'}]`;
+              }
+
+              // 3. Guardar mensaje
+              await supabase.from('messages').insert({
+                lead_id: lead.id,
+                whatsapp_id: message.id,
+                content,
+                media_url: mediaUrl,
+                media_type: mediaType,
+                message_type: messageType,
+                direction: 'inbound',
+                status: 'received',
+                metadata: {
+                  from,
+                  timestamp: message.timestamp,
+                  phone_number_id: phoneNumberId,
+                  contact_name: contactName,
+                },
+              });
+            }
+          }
         }
-      } catch (e) { console.error(e); }
+      }
+    } catch (error) {
+      console.error('[Webhook] Error procesando evento:', error);
     }
+
     return res.status(200).send('EVENT_RECEIVED');
   }
+
+  return res.status(405).send('Method not allowed');
 }

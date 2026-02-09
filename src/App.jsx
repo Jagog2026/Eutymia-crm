@@ -11,6 +11,7 @@ import Workshops from './components/workshops/Workshops';
 import Reports from './components/reports/Reports';
 import Expenses from './components/expenses/Expenses';
 import AdminPanel from './components/admin/AdminPanel';
+import WhatsAppInbox from './components/whatsapp/WhatsAppInbox';
 import Login from './components/auth/Login';
 import AuthCallback from './components/auth/AuthCallback';
 
@@ -176,6 +177,14 @@ export default function App() {
                     element={
                       <ProtectedRoute allowedRoles={['admin']}>
                         <AdminPanel />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/whatsapp"
+                    element={
+                      <ProtectedRoute allowedRoles={['admin']}>
+                        <WhatsAppInbox />
                       </ProtectedRoute>
                     }
                   />
