@@ -1,39 +1,32 @@
 // api/webhook.js
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://kpsoolwetgrdyglyxmhc.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
+const SUPABASE_URL = 'https://kpsoolwetgrdyglyxmhc.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Mapa de negocios: Phone Number ID de Meta → portafolio
-const PORTFOLIO_MAP = {
-  [process.env.WHATSAPP_PHONE_NUMBER_ID]: 'eutymia',
-};
-
 export default async function handler(req, res) {
-  // ─── GET: Verificación del webhook con Meta ───
+  // ─── GET: Verificación del webhook ───
   if (req.method === 'GET') {
     const mode = req.query['hub.mode'];
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
-    console.log('[Webhook] GET recibido - mode:', mode, 'token:', token ? '***' : 'VACÍO');
-
     if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
       console.log('[Webhook] Verificación exitosa');
       return res.status(200).send(challenge);
     }
-    console.log('[Webhook] Token incorrecto. Esperado:', process.env.META_VERIFY_TOKEN ? '***' : 'NO CONFIGURADO');
-    return res.status(403).send('Token de verificación incorrecto');
+    return res.status(403).send('Token incorrecto');
   }
 
-  // ─── POST: Recepción de eventos de WhatsApp ───
+  // ─── POST: Eventos de WhatsApp ───
   if (req.method === 'POST') {
     const body = req.body;
+    console.log('[Webhook] POST recibido:', JSON.stringify(body).slice(0, 500));
 
     if (body.object !== 'whatsapp_business_account') {
-      return res.status(404).send('Not a WhatsApp event');
+      return res.status(200).send('OK');
     }
 
     try {
@@ -41,91 +34,82 @@ export default async function handler(req, res) {
         for (const change of entry.changes || []) {
           const value = change.value;
 
-          // ─── Status updates (delivered, read, etc.) ───
+          // ─── Status updates ───
           if (value?.statuses) {
             for (const status of value.statuses) {
-              await supabase
+              const { error } = await supabase
                 .from('messages')
                 .update({ status: status.status, updated_at: new Date().toISOString() })
                 .eq('whatsapp_id', status.id);
+              if (error) console.error('[Webhook] Error actualizando status:', error.message);
             }
           }
 
-          // ─── Incoming messages ───
+          // ─── Mensajes entrantes ───
           if (value?.messages) {
-            const phoneNumberId = value.metadata?.phone_number_id;
-            const portfolio = PORTFOLIO_MAP[phoneNumberId] || 'general';
             const contactInfo = value.contacts?.[0];
 
             for (const message of value.messages) {
-              const from = message.from; // ej: 5214428317718
+              const from = message.from;
               const contactName = contactInfo?.profile?.name || 'WhatsApp Lead';
+              const last10 = from.slice(-10);
 
-              // 1. Buscar lead con múltiples formatos del teléfono
-              const phoneVariants = [
-                from,                    // 5214428317718
-                `+${from}`,              // +5214428317718
-                from.replace(/^521/, ''),  // 4428317718 (sin código MX)
-                from.replace(/^52/, ''),   // 14428317718 (sin 52)
-                from.replace(/^1/, ''),    // sin 1
-              ];
-              
-              console.log('[Webhook] Buscando lead con variantes:', phoneVariants);
+              console.log('[Webhook] Mensaje de:', from, '- Nombre:', contactName, '- Últimos 10:', last10);
+
+              // ── PASO 1: Buscar lead existente ──
+              // Primero buscar todos los leads con teléfono para comparar
+              const { data: allLeads, error: searchError } = await supabase
+                .from('leads')
+                .select('id, phone, full_name')
+                .not('phone', 'is', null);
+
+              if (searchError) {
+                console.error('[Webhook] Error buscando leads:', searchError.message);
+              }
 
               let lead = null;
-              
-              // Buscar con LIKE para encontrar coincidencia parcial
-              const { data: leads } = await supabase
-                .from('leads')
-                .select('id, phone')
-                .or(phoneVariants.map(p => `phone.eq.${p}`).join(','));
 
-              if (leads && leads.length > 0) {
-                lead = leads[0];
-                console.log('[Webhook] Lead encontrado:', lead.id, 'con teléfono:', lead.phone);
-              }
-
-              // Si no se encuentra, buscar con los últimos 10 dígitos
-              if (!lead) {
-                const last10 = from.slice(-10);
-                const { data: fuzzyLeads } = await supabase
-                  .from('leads')
-                  .select('id, phone')
-                  .like('phone', `%${last10}`);
+              if (allLeads && allLeads.length > 0) {
+                console.log('[Webhook] Total leads con teléfono:', allLeads.length);
                 
-                if (fuzzyLeads && fuzzyLeads.length > 0) {
-                  lead = fuzzyLeads[0];
-                  console.log('[Webhook] Lead encontrado por últimos 10 dígitos:', lead.id);
+                // Buscar coincidencia por últimos 10 dígitos
+                lead = allLeads.find(l => {
+                  if (!l.phone) return false;
+                  const cleanPhone = l.phone.replace(/[^0-9]/g, '');
+                  const cleanFrom = from.replace(/[^0-9]/g, '');
+                  return cleanPhone.slice(-10) === cleanFrom.slice(-10);
+                });
+
+                if (lead) {
+                  console.log('[Webhook] Lead encontrado:', lead.id, '- Tel DB:', lead.phone, '- Tel WA:', from);
+                } else {
+                  console.log('[Webhook] No se encontró match. Teléfonos en DB:', allLeads.map(l => l.phone).join(', '));
                 }
               }
 
-              // Si aún no existe, crear nuevo lead
+              // ── PASO 2: Crear lead si no existe ──
               if (!lead) {
-                console.log('[Webhook] Creando nuevo lead para:', from);
-                const { data: newLead, error: insertError } = await supabase
+                console.log('[Webhook] Creando lead nuevo...');
+                const { data: newLead, error: createError } = await supabase
                   .from('leads')
-                  .insert([{
-                    full_name: contactName,
+                  .insert({
+                    full_name: contactName || 'WhatsApp Lead',
                     phone: from,
                     source: 'whatsapp',
-                    business_portfolio: portfolio,
                     status: 'new',
-                  }])
-                  .select()
+                  })
+                  .select('id, phone')
                   .single();
-                
-                if (insertError) {
-                  console.error('[Webhook] Error creando lead:', insertError.message);
+
+                if (createError) {
+                  console.error('[Webhook] ERROR creando lead:', JSON.stringify(createError));
+                  continue;
                 }
                 lead = newLead;
+                console.log('[Webhook] Lead creado:', lead.id);
               }
 
-              if (!lead) {
-                console.error('[Webhook] No se pudo crear/encontrar lead para:', from);
-                continue;
-              }
-
-              // 2. Determinar tipo y contenido
+              // ── PASO 3: Determinar contenido ──
               let content = '';
               let mediaUrl = null;
               let mediaType = null;
@@ -143,37 +127,31 @@ export default async function handler(req, res) {
                 case 'audio':
                   content = '[Audio]';
                   mediaType = 'audio';
-                  mediaUrl = message.audio?.id;
                   break;
                 case 'video':
                   content = message.video?.caption || '[Video]';
                   mediaType = 'video';
-                  mediaUrl = message.video?.id;
                   break;
                 case 'document':
-                  content = message.document?.caption || `[Documento: ${message.document?.filename || ''}]`;
+                  content = message.document?.caption || '[Documento]';
                   mediaType = 'document';
-                  mediaUrl = message.document?.id;
                   break;
                 case 'sticker':
                   content = '[Sticker]';
-                  messageType = 'sticker';
                   break;
                 case 'location':
                   content = `[Ubicación: ${message.location?.latitude}, ${message.location?.longitude}]`;
-                  messageType = 'location';
                   break;
                 case 'contacts':
                   content = '[Contacto compartido]';
-                  messageType = 'contacts';
                   break;
                 case 'reaction':
-                  continue; // No guardar reacciones como mensaje
+                  continue;
                 default:
-                  content = `[${message.type || 'Desconocido'}]`;
+                  content = `[${message.type || 'Mensaje'}]`;
               }
 
-              // 3. Guardar mensaje
+              // ── PASO 4: Guardar mensaje ──
               const { error: msgError } = await supabase.from('messages').insert({
                 lead_id: lead.id,
                 whatsapp_id: message.id,
@@ -183,28 +161,22 @@ export default async function handler(req, res) {
                 message_type: messageType,
                 direction: 'inbound',
                 status: 'received',
-                metadata: {
-                  from,
-                  timestamp: message.timestamp,
-                  phone_number_id: phoneNumberId,
-                  contact_name: contactName,
-                },
+                metadata: { from, contact_name: contactName },
               });
 
               if (msgError) {
-                console.error('[Webhook] Error guardando mensaje:', msgError.message, msgError.details, msgError.hint);
+                console.error('[Webhook] ERROR guardando mensaje:', JSON.stringify(msgError));
               } else {
-                console.log('[Webhook] Mensaje guardado exitosamente para lead:', lead.id);
+                console.log('[Webhook] ✅ Mensaje guardado para lead:', lead.id, '- Contenido:', content.slice(0, 50));
               }
             }
           }
         }
       }
     } catch (error) {
-      console.error('[Webhook] Error procesando evento:', error.message || error);
+      console.error('[Webhook] Error general:', error.message, error.stack);
     }
 
-    // Siempre responder 200 para que Meta no reintente
     return res.status(200).send('EVENT_RECEIVED');
   }
 
