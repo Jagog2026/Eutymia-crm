@@ -1,10 +1,10 @@
 // api/webhook.js
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://kpsoolwetgrdyglyxmhc.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Mapa de negocios: Phone Number ID de Meta → portafolio
 const PORTFOLIO_MAP = {
@@ -18,10 +18,13 @@ export default async function handler(req, res) {
     const token = req.query['hub.verify_token'];
     const challenge = req.query['hub.challenge'];
 
+    console.log('[Webhook] GET recibido - mode:', mode, 'token:', token ? '***' : 'VACÍO');
+
     if (mode === 'subscribe' && token === process.env.META_VERIFY_TOKEN) {
       console.log('[Webhook] Verificación exitosa');
       return res.status(200).send(challenge);
     }
+    console.log('[Webhook] Token incorrecto. Esperado:', process.env.META_VERIFY_TOKEN ? '***' : 'NO CONFIGURADO');
     return res.status(403).send('Token de verificación incorrecto');
   }
 
@@ -155,9 +158,10 @@ export default async function handler(req, res) {
         }
       }
     } catch (error) {
-      console.error('[Webhook] Error procesando evento:', error);
+      console.error('[Webhook] Error procesando evento:', error.message || error);
     }
 
+    // Siempre responder 200 para que Meta no reintente
     return res.status(200).send('EVENT_RECEIVED');
   }
 

@@ -2,10 +2,10 @@
 // Endpoint para enviar mensajes vía WhatsApp Business API
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://kpsoolwetgrdyglyxmhc.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const WHATSAPP_API_URL = 'https://graph.facebook.com/v21.0';
 const PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -30,6 +30,11 @@ export default async function handler(req, res) {
 
     if (!to || !message) {
       return res.status(400).json({ error: 'Se requiere "to" y "message"' });
+    }
+
+    if (!PHONE_NUMBER_ID || !ACCESS_TOKEN) {
+      console.error('[WhatsApp Send] Faltan variables: PHONE_NUMBER_ID=', !!PHONE_NUMBER_ID, 'ACCESS_TOKEN=', !!ACCESS_TOKEN);
+      return res.status(500).json({ error: 'WhatsApp API no configurada. Verifica las variables de entorno.' });
     }
 
     // Formatear número (quitar + si existe, asegurar código de país)
