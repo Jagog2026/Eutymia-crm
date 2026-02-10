@@ -174,7 +174,7 @@ export default async function handler(req, res) {
               }
 
               // 3. Guardar mensaje
-              await supabase.from('messages').insert({
+              const { error: msgError } = await supabase.from('messages').insert({
                 lead_id: lead.id,
                 whatsapp_id: message.id,
                 content,
@@ -190,6 +190,12 @@ export default async function handler(req, res) {
                   contact_name: contactName,
                 },
               });
+
+              if (msgError) {
+                console.error('[Webhook] Error guardando mensaje:', msgError.message, msgError.details, msgError.hint);
+              } else {
+                console.log('[Webhook] Mensaje guardado exitosamente para lead:', lead.id);
+              }
             }
           }
         }

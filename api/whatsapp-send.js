@@ -90,7 +90,7 @@ export default async function handler(req, res) {
 
     // Guardar mensaje en BD
     if (leadId) {
-      await supabase.from('messages').insert({
+      const { error: dbError } = await supabase.from('messages').insert({
         lead_id: leadId,
         whatsapp_id: whatsappMessageId,
         content: type === 'template' ? `[Template: ${message}]` : message,
@@ -102,6 +102,12 @@ export default async function handler(req, res) {
           whatsapp_response: data,
         },
       });
+
+      if (dbError) {
+        console.error('[WhatsApp Send] Error guardando en BD:', dbError.message, dbError.details, dbError.hint);
+      } else {
+        console.log('[WhatsApp Send] Mensaje guardado en BD para lead:', leadId);
+      }
     }
 
     return res.status(200).json({

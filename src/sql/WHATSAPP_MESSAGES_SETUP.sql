@@ -88,5 +88,14 @@ ALTER PUBLICATION supabase_realtime ADD TABLE public.messages;
 -- RLS (Row Level Security)
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow all for authenticated" ON public.messages
-    FOR ALL USING (true) WITH CHECK (true);
+-- Eliminar policies anteriores si existen
+DROP POLICY IF EXISTS "Allow all for authenticated" ON public.messages;
+DROP POLICY IF EXISTS "Allow all for anon" ON public.messages;
+DROP POLICY IF EXISTS "Allow all access to messages" ON public.messages;
+
+-- Política que permite acceso total (anon + authenticated)
+CREATE POLICY "Allow all access to messages" ON public.messages
+    FOR ALL
+    TO anon, authenticated
+    USING (true)
+    WITH CHECK (true);

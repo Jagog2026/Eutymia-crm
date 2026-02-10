@@ -39,13 +39,27 @@ export default function WhatsAppInbox() {
   // ─── Cargar conversaciones ───
   const loadConversations = useCallback(async () => {
     try {
-      const { data, error } = await supabase
+      // Primero intentar con las columnas de WhatsApp
+      let { data, error } = await supabase
         .from('leads')
         .select('id, full_name, phone, source, last_message_at, unread_count')
         .not('phone', 'is', null)
         .order('last_message_at', { ascending: false, nullsFirst: true });
 
-      if (error) throw error;
+      // Si falla (columnas no existen), intentar sin ellas
+      if (error) {
+        console.warn('Columnas WhatsApp no encontradas, usando query básico:', error.message);
+        const { data: fallbackData, error: fallbackError } = await supabase
+          .from('leads')
+          .select('id, full_name, phone, source')
+          .not('phone', 'is', null);
+        
+        if (fallbackError) throw fallbackError;
+        // Agregar campos por defecto
+        data = (fallbackData || []).map(l => ({ ...l, last_message_at: null, unread_count: 0 }));
+        setStatusMsg({ type: 'error', text: 'Ejecuta el SQL de WhatsApp en Supabase para habilitar todas las funciones.' });
+      }
+
       setConversations(data || []);
     } catch (err) {
       console.error('Error cargando conversaciones:', err);
@@ -64,7 +78,13 @@ export default function WhatsAppInbox() {
         .eq('lead_id', leadId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error en query messages:', error);
+        setStatusMsg({ type: 'error', text: 'Error cargando mensajes: ' + error.message + (error.hint ? ' | Hint: ' + error.hint : '') });
+        return;
+      }
+      
+      console.log('Mensajes cargados:', data?.length || 0);
       setMessages(data || []);
 
       // Marcar como leídos
