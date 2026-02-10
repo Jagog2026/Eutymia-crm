@@ -15,6 +15,7 @@ import {
   Paperclip,
   X,
   RefreshCw,
+  Plus,
 } from 'lucide-react';
 
 export default function WhatsAppInbox() {
@@ -27,6 +28,10 @@ export default function WhatsAppInbox() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [showNewChat, setShowNewChat] = useState(false);
+  const [newChatPhone, setNewChatPhone] = useState('');
+  const [newChatName, setNewChatName] = useState('');
+  const [statusMsg, setStatusMsg] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -38,17 +43,13 @@ export default function WhatsAppInbox() {
         .from('leads')
         .select('id, full_name, phone, source, last_message_at, unread_count')
         .not('phone', 'is', null)
-        .order('last_message_at', { ascending: false, nullsFirst: false });
+        .order('last_message_at', { ascending: false, nullsFirst: true });
 
       if (error) throw error;
-
-      // Solo leads que tienen mensajes o vienen de whatsapp
-      const filtered = (data || []).filter(
-        (l) => l.last_message_at || l.source === 'whatsapp'
-      );
-      setConversations(filtered);
+      setConversations(data || []);
     } catch (err) {
       console.error('Error cargando conversaciones:', err);
+      setStatusMsg({ type: 'error', text: 'Error cargando conversaciones: ' + err.message });
     } finally {
       setLoading(false);
     }
@@ -88,6 +89,7 @@ export default function WhatsAppInbox() {
     const messageText = newMessage.trim();
     setNewMessage('');
     setSending(true);
+    setStatusMsg(null);
 
     try {
       const res = await fetch('/api/whatsapp-send', {
@@ -103,20 +105,66 @@ export default function WhatsAppInbox() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || 'Error enviando mensaje');
+        throw new Error(data.error || data.details || 'Error enviando mensaje');
       }
+
+      setStatusMsg({ type: 'success', text: 'Mensaje enviado ✓' });
+      setTimeout(() => setStatusMsg(null), 3000);
 
       // Recargar mensajes
       await loadMessages(selectedLead.id);
       await loadConversations();
     } catch (err) {
       console.error('Error enviando:', err);
-      // Reinsertar el mensaje en el input si falla
       setNewMessage(messageText);
-      alert('Error al enviar: ' + err.message);
+      setStatusMsg({ type: 'error', text: 'Error: ' + err.message });
     } finally {
       setSending(false);
     }
+  };
+
+  // ─── Iniciar nueva conversación ───
+  const startNewChat = async () => {
+    if (!newChatPhone.trim()) return;
+
+    const phone = newChatPhone.replace(/[^0-9]/g, '');
+    if (phone.length < 10) {
+      setStatusMsg({ type: 'error', text: 'Número inválido. Incluye código de país (ej: 521XXXXXXXXXX)' });
+      return;
+    }
+
+    // Buscar si ya existe un lead con ese teléfono
+    let { data: existingLead } = await supabase
+      .from('leads')
+      .select('id, full_name, phone')
+      .or(`phone.eq.${phone},phone.eq.+${phone}`)
+      .single();
+
+    if (!existingLead) {
+      // Crear nuevo lead
+      const { data: newLead, error } = await supabase
+        .from('leads')
+        .insert([{
+          full_name: newChatName.trim() || 'Contacto WhatsApp',
+          phone: phone,
+          source: 'whatsapp',
+          status: 'new',
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        setStatusMsg({ type: 'error', text: 'Error creando contacto: ' + error.message });
+        return;
+      }
+      existingLead = newLead;
+    }
+
+    setShowNewChat(false);
+    setNewChatPhone('');
+    setNewChatName('');
+    await loadConversations();
+    selectConversation(existingLead);
   };
 
   // ─── Seleccionar conversación ───
@@ -263,13 +311,22 @@ export default function WhatsAppInbox() {
               <MessageCircle size={22} className="text-green-600" />
               WhatsApp
             </h2>
-            <button
-              onClick={loadConversations}
-              className="p-2 rounded-full hover:bg-slate-200 text-slate-600"
-              title="Actualizar"
-            >
-              <RefreshCw size={18} />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowNewChat(true)}
+                className="p-2 rounded-full hover:bg-green-100 text-green-600"
+                title="Nuevo mensaje"
+              >
+                <Plus size={18} />
+              </button>
+              <button
+                onClick={loadConversations}
+                className="p-2 rounded-full hover:bg-slate-200 text-slate-600"
+                title="Actualizar"
+              >
+                <RefreshCw size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Búsqueda */}
@@ -283,6 +340,39 @@ export default function WhatsAppInbox() {
               className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
             />
           </div>
+
+          {/* Modal nuevo chat */}
+          {showNewChat && (
+            <div className="mt-3 p-3 bg-white rounded-xl border border-green-200 shadow-lg">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-slate-700">Nuevo mensaje</span>
+                <button onClick={() => setShowNewChat(false)} className="p-1 hover:bg-gray-100 rounded-full">
+                  <X size={14} />
+                </button>
+              </div>
+              <input
+                type="text"
+                placeholder="Nombre (opcional)"
+                value={newChatName}
+                onChange={(e) => setNewChatName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <input
+                type="text"
+                placeholder="Teléfono (ej: 521XXXXXXXXXX)"
+                value={newChatPhone}
+                onChange={(e) => setNewChatPhone(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && startNewChat()}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              />
+              <button
+                onClick={startNewChat}
+                className="w-full py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors"
+              >
+                Iniciar conversación
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Lista */}
@@ -425,6 +515,14 @@ export default function WhatsAppInbox() {
 
             {/* Input */}
             <div className="px-4 py-3 bg-slate-50 border-t">
+              {/* Status message */}
+              {statusMsg && (
+                <div className={`mb-2 px-3 py-1.5 rounded-lg text-xs font-medium ${
+                  statusMsg.type === 'error' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+                }`}>
+                  {statusMsg.text}
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <button className="p-2 rounded-full hover:bg-gray-200 text-slate-500" title="Emoji">
                   <Smile size={22} />
