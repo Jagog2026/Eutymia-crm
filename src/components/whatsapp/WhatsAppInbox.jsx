@@ -111,7 +111,38 @@ export default function WhatsAppInbox() {
     setSending(true);
     setStatusMsg(null);
 
+    // Agregar mensaje visualmente de inmediato (optimistic update)
+    const tempMsg = {
+      id: 'temp-' + Date.now(),
+      lead_id: selectedLead.id,
+      content: messageText,
+      direction: 'outbound',
+      status: 'sending',
+      message_type: 'text',
+      created_at: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, tempMsg]);
+
     try {
+      // 1. Guardar directamente en Supabase desde el frontend
+      const { data: savedMsg, error: dbError } = await supabase
+        .from('messages')
+        .insert({
+          lead_id: selectedLead.id,
+          content: messageText,
+          direction: 'outbound',
+          status: 'sent',
+          message_type: 'text',
+          metadata: { to: selectedLead.phone },
+        })
+        .select()
+        .single();
+
+      if (dbError) {
+        console.error('Error guardando mensaje en DB:', dbError);
+      }
+
+      // 2. Enviar por WhatsApp API
       const res = await fetch('/api/whatsapp-send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -128,15 +159,28 @@ export default function WhatsAppInbox() {
         throw new Error(data.error || data.details || 'Error enviando mensaje');
       }
 
+      // 3. Actualizar whatsapp_id si se guardó en DB
+      if (savedMsg && data.messageId) {
+        await supabase
+          .from('messages')
+          .update({ whatsapp_id: data.messageId, status: 'sent' })
+          .eq('id', savedMsg.id);
+      }
+
       setStatusMsg({ type: 'success', text: 'Mensaje enviado ✓' });
       setTimeout(() => setStatusMsg(null), 3000);
 
-      // Recargar mensajes
+      // 4. Recargar mensajes reales
       await loadMessages(selectedLead.id);
       await loadConversations();
     } catch (err) {
       console.error('Error enviando:', err);
-      setNewMessage(messageText);
+      // Marcar el mensaje temporal como fallido
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === tempMsg.id ? { ...m, status: 'failed' } : m
+        )
+      );
       setStatusMsg({ type: 'error', text: 'Error: ' + err.message });
     } finally {
       setSending(false);

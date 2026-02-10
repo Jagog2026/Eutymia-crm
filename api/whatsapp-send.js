@@ -1,9 +1,8 @@
 // api/whatsapp-send.js
-// Endpoint para enviar mensajes vía WhatsApp Business API
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://kpsoolwetgrdyglyxmhc.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
+const SUPABASE_URL = 'https://kpsoolwetgrdyglyxmhc.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtwc29vbHdldGdyZHlnbHl4bWhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3ODQ1MzksImV4cCI6MjA4MzM2MDUzOX0.ia8Dnw6r3lZ7-ProijkkzJUrTyEjSGgNJtUOWpUpalM';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -88,27 +87,8 @@ export default async function handler(req, res) {
 
     const whatsappMessageId = data.messages?.[0]?.id;
 
-    // Guardar mensaje en BD
-    if (leadId) {
-      const { error: dbError } = await supabase.from('messages').insert({
-        lead_id: leadId,
-        whatsapp_id: whatsappMessageId,
-        content: type === 'template' ? `[Template: ${message}]` : message,
-        direction: 'outbound',
-        status: 'sent',
-        message_type: type,
-        metadata: {
-          to: formattedPhone,
-          whatsapp_response: data,
-        },
-      });
-
-      if (dbError) {
-        console.error('[WhatsApp Send] Error guardando en BD:', dbError.message, dbError.details, dbError.hint);
-      } else {
-        console.log('[WhatsApp Send] Mensaje guardado en BD para lead:', leadId);
-      }
-    }
+    // No guardar en BD aquí — el frontend ya lo guarda directamente
+    console.log('[WhatsApp Send] Mensaje enviado exitosamente. WA ID:', whatsappMessageId);
 
     return res.status(200).json({
       success: true,
