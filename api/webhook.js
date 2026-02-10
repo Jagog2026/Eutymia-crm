@@ -58,18 +58,51 @@ export default async function handler(req, res) {
             const contactInfo = value.contacts?.[0];
 
             for (const message of value.messages) {
-              const from = message.from;
+              const from = message.from; // ej: 5214428317718
               const contactName = contactInfo?.profile?.name || 'WhatsApp Lead';
 
-              // 1. Buscar o crear lead
-              let { data: lead } = await supabase
-                .from('leads')
-                .select('id')
-                .eq('phone', from)
-                .single();
+              // 1. Buscar lead con múltiples formatos del teléfono
+              const phoneVariants = [
+                from,                    // 5214428317718
+                `+${from}`,              // +5214428317718
+                from.replace(/^521/, ''),  // 4428317718 (sin código MX)
+                from.replace(/^52/, ''),   // 14428317718 (sin 52)
+                from.replace(/^1/, ''),    // sin 1
+              ];
+              
+              console.log('[Webhook] Buscando lead con variantes:', phoneVariants);
 
+              let lead = null;
+              
+              // Buscar con LIKE para encontrar coincidencia parcial
+              const { data: leads } = await supabase
+                .from('leads')
+                .select('id, phone')
+                .or(phoneVariants.map(p => `phone.eq.${p}`).join(','));
+
+              if (leads && leads.length > 0) {
+                lead = leads[0];
+                console.log('[Webhook] Lead encontrado:', lead.id, 'con teléfono:', lead.phone);
+              }
+
+              // Si no se encuentra, buscar con los últimos 10 dígitos
               if (!lead) {
-                const { data: newLead } = await supabase
+                const last10 = from.slice(-10);
+                const { data: fuzzyLeads } = await supabase
+                  .from('leads')
+                  .select('id, phone')
+                  .like('phone', `%${last10}`);
+                
+                if (fuzzyLeads && fuzzyLeads.length > 0) {
+                  lead = fuzzyLeads[0];
+                  console.log('[Webhook] Lead encontrado por últimos 10 dígitos:', lead.id);
+                }
+              }
+
+              // Si aún no existe, crear nuevo lead
+              if (!lead) {
+                console.log('[Webhook] Creando nuevo lead para:', from);
+                const { data: newLead, error: insertError } = await supabase
                   .from('leads')
                   .insert([{
                     full_name: contactName,
@@ -80,6 +113,10 @@ export default async function handler(req, res) {
                   }])
                   .select()
                   .single();
+                
+                if (insertError) {
+                  console.error('[Webhook] Error creando lead:', insertError.message);
+                }
                 lead = newLead;
               }
 
