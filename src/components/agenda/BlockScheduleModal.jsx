@@ -61,16 +61,15 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
       const end = new Date(endDate);
 
       const appointmentData = {
-        therapist_id: initialDetails?.therapistId || null, // If null, it might block for all or need handling
+        therapist_id: initialDetails?.therapistId || null,
         patient_name: 'BLOQUEO',
         service: 'Bloqueo de Agenda',
         date: start.toISOString().split('T')[0],
         time: start.toTimeString().split(' ')[0].substring(0, 5),
-        start_time: start.toISOString(),
-        end_date: end.toISOString().split('T')[0],
-        end_time: end.toISOString(),
+        end_time: end.toTimeString().split(' ')[0].substring(0, 5),
         status: 'blocked',
         notes: reason,
+        block_reason: reason,
         payment_status: 'na'
       };
 
