@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-import { X, Save, Loader, Eye, EyeOff } from 'lucide-react';
+import { X, Save, Loader, Eye, EyeOff, UserPlus, Users, AlertCircle } from 'lucide-react';
 
 export default function UserModal({ user, onClose, onSave }) {
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
-    role: 'user',
+    role: 'reception',
     password: '',
     therapist_id: '',
     active: true
@@ -15,6 +15,13 @@ export default function UserModal({ user, onClose, onSave }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [therapists, setTherapists] = useState([]);
+  const [therapistMode, setTherapistMode] = useState('existing');
+  const [newTherapist, setNewTherapist] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    specialty: ''
+  });
 
   useEffect(() => {
     fetchTherapists();
@@ -56,12 +63,33 @@ export default function UserModal({ user, onClose, onSave }) {
     try {
       if (user) {
         // Update existing user
+        let therapistId = formData.therapist_id;
+        if (formData.role === 'therapist' && therapistMode === 'new') {
+          if (!newTherapist.name.trim()) {
+            throw new Error('El nombre del terapeuta es obligatorio');
+          }
+          const { data: newT, error: therapistError } = await supabase
+            .from('therapists')
+            .insert([{
+              name: newTherapist.name.trim(),
+              email: newTherapist.email.trim() || user.email,
+              phone: newTherapist.phone.trim() || null,
+              specialty: newTherapist.specialty.trim() || null,
+              role: 'therapist',
+              active: true
+            }])
+            .select('id')
+            .single();
+          if (therapistError) throw new Error('Error al crear el terapeuta: ' + therapistError.message);
+          therapistId = newT.id;
+        }
+
         const { error: updateError } = await supabase
           .from('users')
           .update({
             full_name: formData.full_name,
             role: formData.role,
-            therapist_id: formData.role === 'therapist' ? formData.therapist_id : null,
+            therapist_id: formData.role === 'therapist' ? therapistId : null,
             active: formData.active
           })
           .eq('id', user.id);
@@ -73,9 +101,34 @@ export default function UserModal({ user, onClose, onSave }) {
           throw new Error('La contraseña es obligatoria para nuevos usuarios');
         }
 
-        // Validar que si es terapeuta, tenga therapist_id
-        if (formData.role === 'therapist' && !formData.therapist_id) {
-          throw new Error('Debes seleccionar un terapeuta para asociar');
+        // Validar que si es terapeuta, tenga therapist_id o datos para crear
+        let therapistId = formData.therapist_id;
+
+        if (formData.role === 'therapist') {
+          if (therapistMode === 'new') {
+            if (!newTherapist.name.trim()) {
+              throw new Error('El nombre del terapeuta es obligatorio');
+            }
+            const { data: newT, error: therapistError } = await supabase
+              .from('therapists')
+              .insert([{
+                name: newTherapist.name.trim(),
+                email: newTherapist.email.trim() || formData.email,
+                phone: newTherapist.phone.trim() || null,
+                specialty: newTherapist.specialty.trim() || null,
+                role: 'therapist',
+                active: true
+              }])
+              .select('id')
+              .single();
+
+            if (therapistError) {
+              throw new Error('Error al crear el terapeuta: ' + therapistError.message);
+            }
+            therapistId = newT.id;
+          } else if (!therapistId) {
+            throw new Error('Debes seleccionar un terapeuta o crear uno nuevo');
+          }
         }
 
         // Generar un UUID simple para el nuevo usuario
@@ -89,7 +142,7 @@ export default function UserModal({ user, onClose, onSave }) {
             password: formData.password,
             full_name: formData.full_name,
             role: formData.role,
-            therapist_id: formData.role === 'therapist' ? formData.therapist_id : null,
+            therapist_id: formData.role === 'therapist' ? therapistId : null,
             active: true
           });
 
@@ -205,7 +258,6 @@ export default function UserModal({ user, onClose, onSave }) {
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             >
-              <option value="user">Usuario Estándar</option>
               <option value="admin">Administrador</option>
               <option value="therapist">Terapeuta</option>
               <option value="reception">Recepción</option>
@@ -213,25 +265,113 @@ export default function UserModal({ user, onClose, onSave }) {
           </div>
 
           {formData.role === 'therapist' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Asociar con Terapeuta
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
+              <label className="block text-sm font-medium text-blue-900">
+                Asociar con Terapeuta *
               </label>
-              <select
-                required={formData.role === 'therapist'}
-                value={formData.therapist_id}
-                onChange={(e) => setFormData({ ...formData, therapist_id: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-              >
-                <option value="">Seleccionar terapeuta...</option>
-                {therapists.map((therapist) => (
-                  <option key={therapist.id} value={therapist.id}>
-                    {therapist.name} ({therapist.email})
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                El usuario solo verá la agenda de este terapeuta
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setTherapistMode('existing'); setFormData({ ...formData, therapist_id: '' }); }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    therapistMode === 'existing'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                  }`}
+                >
+                  <Users size={16} /> Existente
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setTherapistMode('new'); setFormData({ ...formData, therapist_id: '' }); }}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    therapistMode === 'new'
+                      ? 'bg-blue-600 text-white shadow-sm'
+                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                  }`}
+                >
+                  <UserPlus size={16} /> Crear Nuevo
+                </button>
+              </div>
+
+              {therapistMode === 'existing' ? (
+                <>
+                  <select
+                    required={therapistMode === 'existing'}
+                    value={formData.therapist_id}
+                    onChange={(e) => setFormData({ ...formData, therapist_id: e.target.value })}
+                    className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Seleccionar terapeuta...</option>
+                    {therapists.map((therapist) => (
+                      <option key={therapist.id} value={therapist.id}>
+                        {therapist.name} ({therapist.email})
+                      </option>
+                    ))}
+                  </select>
+                  {therapists.length === 0 && (
+                    <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded flex items-start gap-1">
+                      <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                      <span>No hay terapeutas registrados. Usa "Crear Nuevo" para registrar uno.</span>
+                    </p>
+                  )}
+                </>
+              ) : (
+                <div className="space-y-3 bg-white rounded-lg p-3 border border-blue-200">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Nombre del Terapeuta *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newTherapist.name}
+                      onChange={(e) => setNewTherapist({ ...newTherapist, name: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Ej: Dra. María López"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                      <input
+                        type="email"
+                        value={newTherapist.email}
+                        onChange={(e) => setNewTherapist({ ...newTherapist, email: e.target.value })}
+                        className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Mismo del usuario si se deja vacío"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">Teléfono</label>
+                      <input
+                        type="tel"
+                        value={newTherapist.phone}
+                        onChange={(e) => setNewTherapist({ ...newTherapist, phone: e.target.value })}
+                        className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Opcional"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">Especialidad / Puesto</label>
+                    <input
+                      type="text"
+                      value={newTherapist.specialty}
+                      onChange={(e) => setNewTherapist({ ...newTherapist, specialty: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Ej: Tanatóloga, Psicóloga clínica"
+                    />
+                  </div>
+                  <p className="text-xs text-blue-600 flex items-start gap-1">
+                    <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                    <span>Se creará el terapeuta automáticamente al guardar.</span>
+                  </p>
+                </div>
+              )}
+
+              <p className="text-xs text-blue-700 flex items-start gap-1">
+                <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
+                <span>El usuario solo verá la agenda de este terapeuta</span>
               </p>
             </div>
           )}

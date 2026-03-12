@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   Calendar,
   Clock,
   FileText,
@@ -44,7 +45,11 @@ export default function NewAppointmentModal({
     'Sesión a domicilio',
   ];
 
-  const BRANCHES = ['Roma Norte', 'Qro Centro', 'Qro. Hospital', 'En linea'];
+  const BRANCHES = ['Roma Norte', 'Qro Centro', 'En linea'];
+
+  const isOnlineService = (service) => {
+    return service.toLowerCase().includes('en línea') || service.toLowerCase().includes('en linea');
+  };
 
   const [sessionCount, setSessionCount] = useState(0);
   const [searchResults, setSearchResults] = useState([]);
@@ -239,11 +244,21 @@ export default function NewAppointmentModal({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setAppointment((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setAppointment((prev) => {
+      const updated = { ...prev, [name]: value };
+      // Si el servicio es en línea, forzar sucursal a "En linea"
+      if (name === 'service' && isOnlineService(value)) {
+        updated.branch = 'En linea';
+      }
+      // Si cambia a servicio presencial y tenía "En linea", limpiar
+      if (name === 'service' && !isOnlineService(value) && prev.branch === 'En linea') {
+        updated.branch = '';
+      }
+      return updated;
+    });
   };
+
+  const [conflictWarning, setConflictWarning] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -258,6 +273,70 @@ export default function NewAppointmentModal({
     }
 
     try {
+      // Verificar conflictos de espacio físico (solo para citas presenciales)
+      const selectedBranch = appointment.branch || (isOnlineService(appointment.service) ? 'En linea' : '');
+      if (selectedBranch && selectedBranch !== 'En linea') {
+        const [h, m] = appointment.time.split(':');
+        const startMin = parseInt(h) * 60 + parseInt(m);
+        const endMin = startMin + 60;
+        const startTime = `${String(Math.floor(startMin / 60)).padStart(2, '0')}:${String(startMin % 60).padStart(2, '0')}`;
+        const endTime = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
+
+        // Buscar citas en la misma sucursal, misma fecha, que se empalmen en horario
+        const { data: conflicts, error: conflictError } = await supabase
+          .from('appointments')
+          .select('id, time, end_time, therapist_id, patient_name, branch')
+          .eq('date', appointment.date)
+          .eq('branch', selectedBranch)
+          .neq('status', 'cancelado')
+          .lt('time', endTime)
+          .gt('end_time', startTime);
+
+        if (!conflictError && conflicts && conflicts.length > 0) {
+          // Filtrar conflictos que no sean del mismo terapeuta (diferente terapeuta = conflicto de espacio)
+          const spaceConflicts = conflicts.filter(c => c.therapist_id !== appointment.therapist_id);
+          if (spaceConflicts.length > 0) {
+            const conflictNames = spaceConflicts.map(c => {
+              const t = therapists.find(th => th.id === c.therapist_id);
+              return t ? t.name : 'Otro terapeuta';
+            });
+            throw new Error(
+              `Conflicto de espacio: La sucursal "${selectedBranch}" ya tiene cita(s) en ese horario con: ${conflictNames.join(', ')}. Elige otro horario o sucursal.`
+            );
+          }
+
+          // Verificar si el mismo terapeuta ya tiene cita en ese horario
+          const selfConflicts = conflicts.filter(c => c.therapist_id === appointment.therapist_id);
+          if (selfConflicts.length > 0) {
+            throw new Error(
+              `El terapeuta ya tiene una cita programada en ese horario (${selfConflicts[0].time} - Paciente: ${selfConflicts[0].patient_name}).`
+            );
+          }
+        }
+      } else if (selectedBranch === 'En linea') {
+        // Para citas en línea, solo verificar que el terapeuta no tenga otra cita
+        const [h, m] = appointment.time.split(':');
+        const startMin = parseInt(h) * 60 + parseInt(m);
+        const endMin = startMin + 60;
+        const startTime = `${String(Math.floor(startMin / 60)).padStart(2, '0')}:${String(startMin % 60).padStart(2, '0')}`;
+        const endTime = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
+
+        const { data: selfConflicts } = await supabase
+          .from('appointments')
+          .select('id, time, patient_name')
+          .eq('date', appointment.date)
+          .eq('therapist_id', appointment.therapist_id)
+          .neq('status', 'cancelado')
+          .lt('time', endTime)
+          .gt('end_time', startTime);
+
+        if (selfConflicts && selfConflicts.length > 0) {
+          throw new Error(
+            `El terapeuta ya tiene una cita en ese horario (${selfConflicts[0].time} - Paciente: ${selfConflicts[0].patient_name}).`
+          );
+        }
+      }
+
       // If it's a new patient, set the full name
       if (isNewPatient) {
         if (!newPatientDetails.firstName || !newPatientDetails.lastName) {
@@ -301,6 +380,7 @@ export default function NewAppointmentModal({
 
       const appointmentData = {
         ...appointment,
+        branch: isOnlineService(appointment.service) ? 'En linea' : appointment.branch,
         end_time: endTime,
         status: appointment.status || 'pendiente',
       };
@@ -660,9 +740,10 @@ export default function NewAppointmentModal({
               <select
                 name="branch"
                 id="branch"
-                value={appointment.branch}
+                value={isOnlineService(appointment.service) ? 'En linea' : appointment.branch}
                 onChange={handleChange}
-                className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                disabled={isOnlineService(appointment.service)}
+                className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
                 required
               >
                 <option value="">Selecciona una sucursal</option>
@@ -673,6 +754,9 @@ export default function NewAppointmentModal({
                 ))}
               </select>
             </div>
+            {isOnlineService(appointment.service) && (
+              <p className="mt-1 text-xs text-blue-600">Sesión en línea — no requiere sucursal física</p>
+            )}
           </div>
 
           <div>
@@ -698,7 +782,12 @@ export default function NewAppointmentModal({
             </div>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start gap-2">
+              <AlertTriangle className="text-red-500 flex-shrink-0 mt-0.5" size={16} />
+              <p className="text-red-700 text-sm">{error}</p>
+            </div>
+          )}
 
           <div className="flex justify-end gap-3">
             <button

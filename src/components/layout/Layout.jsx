@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import {
   Calendar,
   Users,
@@ -29,15 +30,15 @@ export default function Layout({ children, userRole, userEmail }) {
 
   // Definir menú según rol
   const allMenuItems = [
-    { path: '/', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin'] },
-    { path: '/agenda', icon: Calendar, label: 'Agenda', roles: ['admin', 'therapist', 'user'] },
-    { path: '/leads', icon: Users, label: 'Leads (CRM)', roles: ['admin'] },
-    { path: '/database', icon: Database, label: 'Base de Datos', roles: ['admin'] },
+    { path: '/', icon: LayoutDashboard, label: 'Dashboard', roles: ['admin', 'reception'] },
+    { path: '/agenda', icon: Calendar, label: 'Agenda', roles: ['admin', 'therapist', 'reception'] },
+    { path: '/leads', icon: Users, label: 'Leads (CRM)', roles: ['admin', 'reception'] },
+    { path: '/database', icon: Database, label: 'Base de Datos', roles: ['admin', 'reception'] },
     { path: '/expenses', icon: Receipt, label: 'Gastos', roles: ['admin'] },
-    { path: '/therapists', icon: Users, label: 'Terapeutas', roles: ['admin'] },
-    { path: '/workshops', icon: BookOpen, label: 'Talleres', roles: ['admin'] },
+    { path: '/therapists', icon: Users, label: 'Terapeutas', roles: ['admin', 'reception'] },
+    { path: '/workshops', icon: BookOpen, label: 'Talleres', roles: ['admin', 'reception'] },
     { path: '/reports', icon: BarChart2, label: 'Reportes', roles: ['admin'] },
-    { path: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', roles: ['admin'] },
+    { path: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', roles: ['admin', 'reception'] },
     { path: '/admin', icon: Shield, label: 'Administración', roles: ['admin'] },
   ];
 
@@ -46,16 +47,41 @@ export default function Layout({ children, userRole, userEmail }) {
     item.roles.includes(userRole)
   );
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     try {
-      // Limpiar sesión de localStorage
-      localStorage.removeItem('user_session');
+      console.log('[LOGOUT] Cerrando sesión...');
+      
+      // Verificar si es sesión legacy
+      const legacySession = localStorage.getItem('user_session');
+      if (legacySession) {
+        try {
+          const userData = JSON.parse(legacySession);
+          if (userData.legacy_auth) {
+            console.log('[LOGOUT] Cerrando sesión legacy');
+            localStorage.removeItem('user_session');
+            navigate('/login');
+            return;
+          }
+        } catch (e) {
+          console.error('[LOGOUT] Error al verificar sesión legacy:', e);
+        }
+      }
+      
+      // Cerrar sesión en Supabase Auth
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('[LOGOUT] Error al cerrar sesión:', error);
+      }
+      
+      console.log('[LOGOUT] Sesión cerrada exitosamente');
+      
       // Redirigir al login
       navigate('/login');
-      // Recargar para limpiar el estado
-      window.location.reload();
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('[LOGOUT] Error logging out:', error);
+      // Forzar redirección al login de todas formas
+      navigate('/login');
     }
   };
 
@@ -99,7 +125,7 @@ export default function Layout({ children, userRole, userEmail }) {
               <div className="hidden md:block flex-1 min-w-0">
                 <p className="text-xs font-medium text-gray-900 truncate">{userEmail}</p>
                 <p className="text-xs text-gray-500 capitalize">
-                  {userRole === 'admin' ? 'Administrador' : userRole === 'therapist' ? 'Terapeuta' : 'Usuario'}
+                  {userRole === 'admin' ? 'Administrador' : userRole === 'therapist' ? 'Terapeuta' : userRole === 'reception' ? 'Recepción' : 'Usuario'}
                 </p>
               </div>
             </div>

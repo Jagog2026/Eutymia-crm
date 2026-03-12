@@ -261,7 +261,6 @@ export default function AdminPanel() {
               <option value="admin">Administrador</option>
               <option value="therapist">Terapeuta</option>
               <option value="reception">Recepción</option>
-              <option value="user">Usuario</option>
             </select>
 
             <select

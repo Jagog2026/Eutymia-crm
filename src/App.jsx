@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { supabase } from './lib/supabase';
 
 import Layout from './components/layout/Layout';
 import Dashboard from './components/dashboard/Dashboard';
@@ -25,39 +26,126 @@ export default function App() {
 
   useEffect(() => {
     checkSession();
+
+    // Escuchar cambios en el estado de autenticación
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('[AUTH] Estado de autenticación cambió:', event, session?.user?.email);
+      
+      if (event === 'SIGNED_IN' && session) {
+        await loadUserData(session.user);
+      } else if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUserRole(null);
+        setUserEmail(null);
+        setTherapistId(null);
+      }
+    });
+
+    // Cleanup
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, []);
 
-  function checkSession() {
+  async function checkSession() {
     try {
-      // Verificar sesión en localStorage
-      const sessionData = localStorage.getItem('user_session');
+      console.log('[APP] Verificando sesión...');
       
-      if (sessionData) {
-        const userData = JSON.parse(sessionData);
-        
-        // Verificar que la sesión no sea muy antigua (24 horas)
-        const sessionAge = Date.now() - userData.timestamp;
-        const maxAge = 24 * 60 * 60 * 1000; // 24 horas
-        
-        if (sessionAge > maxAge) {
-          // Sesión expirada
+      // Primero verificar si hay sesión legacy en localStorage
+      const legacySession = localStorage.getItem('user_session');
+      if (legacySession) {
+        try {
+          const userData = JSON.parse(legacySession);
+          
+          // Verificar si es sesión legacy
+          if (userData.legacy_auth) {
+            console.log('[APP] ✅ Sesión legacy encontrada:', userData.email);
+            
+            // Verificar que no sea muy antigua (24 horas)
+            const sessionAge = Date.now() - userData.timestamp;
+            const maxAge = 24 * 60 * 60 * 1000; // 24 horas
+            
+            if (sessionAge > maxAge) {
+              console.log('[APP] ⚠️ Sesión legacy expirada');
+              localStorage.removeItem('user_session');
+            } else {
+              // Sesión legacy válida
+              setSession(userData);
+              setUserRole(userData.role);
+              setUserEmail(userData.email);
+              setTherapistId(userData.therapist_id || null);
+              setLoading(false);
+              return; // Salir aquí para sesiones legacy
+            }
+          }
+        } catch (err) {
+          console.error('[APP] Error al parsear sesión legacy:', err);
           localStorage.removeItem('user_session');
-          setSession(null);
-          setUserRole(null);
-          setUserEmail(null);
-        } else {
-          // Sesión válida
-          setSession(userData);
-          setUserRole(userData.role);
-          setUserEmail(userData.email);
-          setTherapistId(userData.therapist_id || null);
         }
       }
+      
+      // Si no hay sesión legacy, verificar Supabase Auth
+      console.log('[APP] Verificando sesión de Supabase Auth...');
+      const { data: { session: authSession }, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('[APP] Error al obtener sesión:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (authSession?.user) {
+        console.log('[APP] ✅ Sesión de Supabase Auth encontrada:', authSession.user.email);
+        await loadUserData(authSession.user);
+      } else {
+        console.log('[APP] ℹ️ No hay sesión activa');
+      }
     } catch (error) {
-      console.error('Error checking session:', error);
-      localStorage.removeItem('user_session');
+      console.error('[APP] Error checking session:', error);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadUserData(authUser) {
+    try {
+      // Obtener información adicional del usuario desde la tabla users
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', authUser.email)
+        .eq('active', true)
+        .single();
+
+      if (userError || !userData) {
+        console.error('[APP] Error al obtener datos del usuario:', userError);
+        // Si el usuario no existe en la tabla users o no está activo, cerrar sesión
+        await supabase.auth.signOut();
+        setSession(null);
+        setUserRole(null);
+        setUserEmail(null);
+        setTherapistId(null);
+        return;
+      }
+
+      console.log('[APP] Datos del usuario cargados:', userData);
+
+      setSession({
+        id: userData.id,
+        email: userData.email,
+        full_name: userData.full_name,
+        auth_id: authUser.id
+      });
+      setUserRole(userData.role);
+      setUserEmail(userData.email);
+      setTherapistId(userData.therapist_id || null);
+    } catch (error) {
+      console.error('[APP] Error al cargar datos del usuario:', error);
+      await supabase.auth.signOut();
+      setSession(null);
+      setUserRole(null);
+      setUserEmail(null);
+      setTherapistId(null);
     }
   }
 
@@ -115,7 +203,7 @@ export default function App() {
                   <Route
                     path="/"
                     element={
-                      userRole === 'admin'
+                      userRole === 'admin' || userRole === 'reception'
                         ? <Dashboard reportsRefreshKey={reportsRefreshKey} />
                         : <Navigate to="/agenda" replace />
                     }
@@ -127,7 +215,7 @@ export default function App() {
                   <Route
                     path="/leads"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
                         <Leads />
                       </ProtectedRoute>
                     }
@@ -135,7 +223,7 @@ export default function App() {
                   <Route
                     path="/database"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
                         <Database />
                       </ProtectedRoute>
                     }
@@ -151,7 +239,7 @@ export default function App() {
                   <Route
                     path="/therapists"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
                         <Therapists />
                       </ProtectedRoute>
                     }
@@ -159,7 +247,7 @@ export default function App() {
                   <Route
                     path="/workshops"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
                         <Workshops />
                       </ProtectedRoute>
                     }
@@ -183,7 +271,7 @@ export default function App() {
                   <Route
                     path="/whatsapp"
                     element={
-                      <ProtectedRoute allowedRoles={['admin']}>
+                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
                         <WhatsAppInbox />
                       </ProtectedRoute>
                     }

@@ -19,52 +19,96 @@ export default function Login() {
 
     try {
       if (isForgotPassword) {
-        setMessage('Contacta al administrador para restablecer tu contraseña.');
+        // Enviar email de recuperación de contraseña
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+
+        if (resetError) {
+          setMessage('Contacta al administrador para restablecer tu contraseña.');
+        } else {
+          setMessage('Se ha enviado un enlace de recuperación a tu correo electrónico.');
+        }
       } else {
         console.log('[LOGIN] Intentando iniciar sesión con email:', email);
 
-        // Validar usuario contra la tabla users
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .eq('password', password)
-          .eq('active', true)
-          .single();
+        // MÉTODO HÍBRIDO: Intentar primero con Supabase Auth, luego con tabla users
+        let authSuccess = false;
+        let userData = null;
 
-        console.log('[LOGIN] Respuesta de Supabase:', { userData, userError });
+        // Intento 1: Supabase Auth (usuarios nuevos con auth.users)
+        try {
+          console.log('[LOGIN] Intento 1: Autenticación con Supabase Auth...');
+          const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password,
+          });
 
-        if (userError) {
-          console.error('[LOGIN] Error de autenticación:', userError);
+          if (!authError && authData?.user) {
+            console.log('[LOGIN] ✅ Autenticado con Supabase Auth:', authData.user.email);
+            
+            // Obtener información adicional del usuario desde la tabla users
+            const { data: userDataFromTable, error: userError } = await supabase
+              .from('users')
+              .select('*')
+              .eq('email', authData.user.email)
+              .eq('active', true)
+              .single();
 
-          // Detectar error de conexión
-          if (userError.message.includes('Failed to fetch') || userError.message.includes('fetch')) {
-            throw new Error('Error de conexión con la base de datos. Por favor, verifica que RLS esté deshabilitado en la tabla users.');
+            if (!userError && userDataFromTable) {
+              userData = userDataFromTable;
+              authSuccess = true;
+              console.log('[LOGIN] ✅ Usuario válido y activo');
+            } else {
+              // Usuario autenticado pero no está en tabla users o no está activo
+              await supabase.auth.signOut();
+              console.warn('[LOGIN] Usuario autenticado pero no encontrado en tabla users o inactivo');
+            }
+          } else {
+            console.log('[LOGIN] ⚠️ Supabase Auth falló, intentando método legacy...');
           }
+        } catch (authErr) {
+          console.log('[LOGIN] ⚠️ Error en Supabase Auth:', authErr.message);
+        }
 
-          // Otros errores
+        // Intento 2: Método Legacy (tabla users directamente)
+        if (!authSuccess) {
+          console.log('[LOGIN] Intento 2: Autenticación legacy (tabla users)...');
+          const { data: legacyUserData, error: legacyError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .eq('password', password)
+            .eq('active', true)
+            .single();
+
+          if (!legacyError && legacyUserData) {
+            console.log('[LOGIN] ✅ Autenticado con método legacy:', legacyUserData.email);
+            userData = legacyUserData;
+            authSuccess = true;
+
+            // Guardar sesión manual en localStorage para método legacy
+            localStorage.setItem('user_session', JSON.stringify({
+              id: legacyUserData.id,
+              email: legacyUserData.email,
+              full_name: legacyUserData.full_name,
+              role: legacyUserData.role,
+              therapist_id: legacyUserData.therapist_id,
+              timestamp: Date.now(),
+              legacy_auth: true
+            }));
+          } else {
+            console.error('[LOGIN] ❌ Método legacy falló también');
+          }
+        }
+
+        // Verificar resultado final
+        if (!authSuccess || !userData) {
           throw new Error('Email o contraseña incorrectos');
         }
 
-        if (!userData) {
-          console.error('[LOGIN] Usuario no encontrado o credenciales incorrectas');
-          throw new Error('Email o contraseña incorrectos');
-        }
-
-        console.log('[LOGIN] Usuario autenticado exitosamente:', userData.email);
-
-        // Guardar sesión en localStorage
-        localStorage.setItem('user_session', JSON.stringify({
-          id: userData.id,
-          email: userData.email,
-          full_name: userData.full_name,
-          role: userData.role,
-          therapist_id: userData.therapist_id,
-          timestamp: Date.now()
-        }));
-
-        console.log('[LOGIN] Sesión guardada en localStorage');
-
+        console.log('[LOGIN] ✅ Login exitoso, redirigiendo...');
+        
         // Recargar la página para que App.jsx detecte la sesión
         window.location.href = '/';
       }
