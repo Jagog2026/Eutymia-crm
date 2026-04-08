@@ -110,8 +110,18 @@ export default function Layout({ children, userRole, userEmail }) {
         </button>
 
         <div className={`p-5 flex items-center ${isExpanded ? 'justify-start gap-3' : 'justify-center'} h-20`}>
-          <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-700 shadow-teal-500/20 shadow-lg rounded-xl flex items-center justify-center text-white text-lg font-bold shrink-0">
-            {companySettings.name.charAt(0)}
+          <div className="w-10 h-10 flex flex-col items-center justify-center shrink-0 rounded-xl overflow-hidden shadow-teal-500/20 shadow-lg">
+            <img 
+              src="/logo.png" 
+              alt={companySettings.name} 
+              className="w-full h-full object-cover" 
+              onError={(e) => {
+                // Fallback si la imagen no se encuentra
+                e.target.onerror = null;
+                e.target.parentNode.className = "w-10 h-10 flex flex-col items-center justify-center shrink-0 rounded-xl overflow-hidden shadow-teal-500/20 shadow-lg bg-gradient-to-br from-teal-500 to-teal-700 text-white font-bold";
+                e.target.outerHTML = companySettings.name.charAt(0);
+              }}
+            />
           </div>
           {isExpanded && (
             <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-700 dark:from-teal-400 to-teal-900 dark:to-teal-600 tracking-tight whitespace-nowrap overflow-hidden">
@@ -193,7 +203,8 @@ export default function Layout({ children, userRole, userEmail }) {
             )}
           </div>
 
-          {/* Configuración (solo admin) */}
+          {/* Configuración deshabilitada temporalmente */}
+          {/*
           {userRole === 'admin' && (
             <button
               onClick={() => setIsSettingsOpen(true)}
@@ -204,6 +215,7 @@ export default function Layout({ children, userRole, userEmail }) {
               {isExpanded && <span className="ml-3">Configuración</span>}
             </button>
           )}
+          */}
 
           {/* Cerrar sesión */}
           <button

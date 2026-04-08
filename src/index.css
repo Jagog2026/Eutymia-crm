@@ -4,7 +4,21 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased dark:bg-slate-950 dark:text-slate-200;
+  }
+  
+  /* Fix text readability for inputs in dark mode globally */
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    @apply bg-slate-800 text-slate-100 border-slate-700 placeholder-slate-400;
+    color-scheme: dark;
+  }
+  
+  .dark input:disabled,
+  .dark textarea:disabled,
+  .dark select:disabled {
+    @apply bg-slate-900/50 text-slate-500 border-slate-800;
   }
 }
 

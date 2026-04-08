@@ -329,6 +329,9 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
           {appointmentMenu.appointment.status !== 'blocked' && (
             <>
               <div className="border-t my-1"></div>
+              <button onClick={() => updateStatus('reservado')} className="w-full text-left px-4 py-2 text-sm hover:bg-blue-50 text-blue-800 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div> Reservar
+              </button>
               <button onClick={() => updateStatus('confirmada')} className="w-full text-left px-4 py-2 text-sm hover:bg-yellow-50 text-yellow-800 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-yellow-400"></div> Confirmar
               </button>
@@ -337,6 +340,9 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
               </button>
               <button onClick={() => updateStatus('cancelado')} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-800 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-red-400"></div> Cancelar
+              </button>
+              <button onClick={() => updateStatus('pendiente')} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-slate-800 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-slate-400"></div> Pendiente
               </button>
               <div className="border-t my-1"></div>
               <button onClick={() => updatePayment('paid')} className="w-full text-left px-4 py-2 text-sm hover:bg-green-50 text-green-800 flex items-center gap-2">

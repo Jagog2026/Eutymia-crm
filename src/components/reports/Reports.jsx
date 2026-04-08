@@ -22,11 +22,12 @@ export default function Reports({ reportsRefreshKey }) {
   const [showPeriodSelector, setShowPeriodSelector] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedPeriod, setSelectedPeriod] = useState('full');
 
   useEffect(() => {
     console.log('[Reports] Refreshing data - refreshKey:', reportsRefreshKey, 'activeTab:', activeTab);
     fetchData();
-  }, [reportsRefreshKey, activeTab, selectedMonth, selectedYear]);
+  }, [reportsRefreshKey, activeTab, selectedMonth, selectedYear, selectedPeriod]);
 
   // Auto-refresh when month changes
   useEffect(() => {
@@ -34,33 +35,46 @@ export default function Reports({ reportsRefreshKey }) {
       const now = new Date();
       const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      const newMonth = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+      const newMonthBase = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+      const periodSuffix = selectedPeriod === 'first_half' ? ' (1ra Quincena)' : selectedPeriod === 'second_half' ? ' (2da Quincena)' : '';
+      const newMonth = `${newMonthBase}${periodSuffix}`;
 
       if (currentMonth && currentMonth !== newMonth) {
-        console.log('[Reports] Month changed detected:', currentMonth, '->', newMonth);
-        console.log('[Reports] Auto-refreshing data for new month');
+        console.log('[Reports] Month/Period changed detected:', currentMonth, '->', newMonth);
+        console.log('[Reports] Auto-refreshing data for new period');
         fetchData();
       }
     }, 60000); // Check every minute
 
     return () => clearInterval(checkMonthChange);
-  }, [currentMonth]);
+  }, [currentMonth, selectedPeriod]);
 
   const fetchData = async () => {
     console.log('[Reports] Starting fetchData - showing selected period');
     setLoading(true);
     try {
-      // 1. Determine Date Range - Use selected month/year or current
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      // 1. Determine Date Range - Use selected month/year/period
+      let startDate, endDate;
+      
+      if (selectedPeriod === 'first_half') {
+        startDate = new Date(selectedYear, selectedMonth, 1);
+        endDate = new Date(selectedYear, selectedMonth, 15);
+      } else if (selectedPeriod === 'second_half') {
+        startDate = new Date(selectedYear, selectedMonth, 16);
+        endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      } else {
+        startDate = new Date(selectedYear, selectedMonth, 1);
+        endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      }
 
       const startStr = startDate.toISOString().split('T')[0];
       const endStr = endDate.toISOString().split('T')[0];
 
-      // Set current month display name (e.g., "Enero 2026")
+      // Set current month display name
       const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      setCurrentMonth(`${monthNames[selectedMonth]} ${selectedYear}`);
+      const periodSuffix = selectedPeriod === 'first_half' ? ' (1ra Quincena)' : selectedPeriod === 'second_half' ? ' (2da Quincena)' : '';
+      setCurrentMonth(`${monthNames[selectedMonth]} ${selectedYear}${periodSuffix}`);
 
       console.log('[Reports] Date range:', startStr, 'to', endStr);
       console.log('[Reports] Displaying data for:', `${monthNames[selectedMonth]} ${selectedYear}`);
@@ -356,7 +370,13 @@ export default function Reports({ reportsRefreshKey }) {
       </div>
 
       {activeTab === 'payments' ? (
-        <PaymentControl key={reportsRefreshKey} onPaymentChanged={fetchData} />
+        <PaymentControl
+          key={reportsRefreshKey}
+          onPaymentChanged={fetchData}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          selectedPeriod={selectedPeriod}
+        />
       ) : (
         <>
           <div className="flex justify-between items-center print:hidden">
@@ -412,6 +432,19 @@ export default function Reports({ reportsRefreshKey }) {
                             const year = new Date().getFullYear() - 2 + i;
                             return <option key={year} value={year}>{year}</option>;
                           })}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-slate-300 mb-1">Período</label>
+                        <select
+                          value={selectedPeriod}
+                          onChange={(e) => setSelectedPeriod(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white dark:bg-slate-900"
+                        >
+                          <option value="full">Mes Completo</option>
+                          <option value="first_half">1ra Quincena (1-15)</option>
+                          <option value="second_half">2da Quincena (16-fin)</option>
                         </select>
                       </div>
 

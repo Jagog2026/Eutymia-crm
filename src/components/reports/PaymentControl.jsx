@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Search, CheckCircle, AlertCircle, FileText, Calendar } from 'lucide-react';
 
-export default function PaymentControl({ onPaymentChanged }) {
+export default function PaymentControl({ onPaymentChanged, selectedMonth, selectedYear, selectedPeriod }) {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,47 +11,62 @@ export default function PaymentControl({ onPaymentChanged }) {
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+  }, [selectedMonth, selectedYear, selectedPeriod]);
 
-  // Auto-refresh when month changes
+  // Auto-refresh when month/period changes
   useEffect(() => {
     const checkMonthChange = setInterval(() => {
       const now = new Date();
       const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      const newMonth = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+      const newMonthBase = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+      const periodSuffix = selectedPeriod === 'first_half' ? ' (1ra Quincena)' : selectedPeriod === 'second_half' ? ' (2da Quincena)' : '';
+      const newMonth = `${newMonthBase}${periodSuffix}`;
 
       if (currentMonth && currentMonth !== newMonth) {
-        console.log('[PaymentControl] Month changed detected:', currentMonth, '->', newMonth);
-        console.log('[PaymentControl] Auto-refreshing data for new month');
+        console.log('[PaymentControl] Period changed detected:', currentMonth, '->', newMonth);
+        console.log('[PaymentControl] Auto-refreshing data for new period');
         fetchAppointments();
       }
     }, 60000); // Check every minute
 
     return () => clearInterval(checkMonthChange);
-  }, [currentMonth]);
+  }, [currentMonth, selectedPeriod]);
 
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      console.log('[PaymentControl] Fetching appointments for current month only');
+      console.log('[PaymentControl] Fetching appointments for selected period');
 
-      // Calculate current month date range
-      const now = new Date();
-      const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      // Calculate date range
+      const applyMonth = selectedMonth !== undefined ? selectedMonth : new Date().getMonth();
+      const applyYear = selectedYear !== undefined ? selectedYear : new Date().getFullYear();
+      
+      let startDate, endDate;
+      
+      if (selectedPeriod === 'first_half') {
+        startDate = new Date(applyYear, applyMonth, 1);
+        endDate = new Date(applyYear, applyMonth, 15);
+      } else if (selectedPeriod === 'second_half') {
+        startDate = new Date(applyYear, applyMonth, 16);
+        endDate = new Date(applyYear, applyMonth + 1, 0);
+      } else {
+        startDate = new Date(applyYear, applyMonth, 1);
+        endDate = new Date(applyYear, applyMonth + 1, 0);
+      }
 
       const startStr = startDate.toISOString().split('T')[0];
       const endStr = endDate.toISOString().split('T')[0];
 
-      // Set current month display name
+      // Set display name
       const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-      setCurrentMonth(`${monthNames[now.getMonth()]} ${now.getFullYear()}`);
+      const periodSuffix = selectedPeriod === 'first_half' ? ' (1ra Quincena)' : selectedPeriod === 'second_half' ? ' (2da Quincena)' : '';
+      setCurrentMonth(`${monthNames[applyMonth]} ${applyYear}${periodSuffix}`);
 
-      console.log('[PaymentControl] Date range (Current Month):', startStr, 'to', endStr);
+      console.log('[PaymentControl] Date range:', startStr, 'to', endStr);
 
-      // Fetch only appointments in current month
+      // Fetch appointments in range
       const { data, error } = await supabase
         .from('appointments')
         .select('*, therapists(name)')

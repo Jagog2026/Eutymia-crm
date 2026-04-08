@@ -55,7 +55,8 @@ export default function NewAppointmentModal({
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [isNewPatient, setIsNewPatient] = useState(false);
+  // Modificado: Ahora isNewPatient empieza activo por defecto para mostrar el formulario de paciente nuevo.
+  const [isNewPatient, setIsNewPatient] = useState(true);
   const [newPatientDetails, setNewPatientDetails] = useState({
     firstName: '',
     lastName: '',
@@ -238,6 +239,9 @@ export default function NewAppointmentModal({
         branch: '',
         notes: '',
       });
+      // Asegurarnos de que el panel regrese a "Paciente Nuevo" por default al abrir el modal.
+      setIsNewPatient(true);
+      setNewPatientDetails({ firstName: '', lastName: '' });
     }
     setError(null);
   }, [isOpen, initialDetails, therapists, userRole, therapistId]);
