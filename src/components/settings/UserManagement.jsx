@@ -82,7 +82,7 @@ export default function UserManagement() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium text-gray-900">Gestión de Usuarios</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-slate-50">Gestión de Usuarios</h3>
         <div className="flex gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -114,17 +114,17 @@ export default function UserManagement() {
         </div>
       )}
 
-      <div className="bg-white border rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border rounded-lg overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-slate-800/50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Usuario</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Rol</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200">
             {filteredUsers.map((user) => (
               <tr key={user.id}>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -133,19 +133,21 @@ export default function UserManagement() {
                       {user.full_name ? user.full_name.charAt(0).toUpperCase() : '?'}
                     </div>
                     <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">{user.full_name || 'Sin nombre'}</div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-slate-50">{user.full_name || 'Sin nombre'}</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-500">{user.email}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                    user.role === 'therapist' ? 'bg-teal-100 text-teal-800' :
-                    user.role === 'reception' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${
+                    user.role === 'admin' && user.therapist_id ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' :
+                    user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border-purple-200 dark:border-purple-800' :
+                    user.role === 'therapist' ? 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 border-teal-200 dark:border-teal-800' :
+                    user.role === 'reception' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border-blue-200 dark:border-blue-800' :
+                    'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-300 border-gray-200 dark:border-slate-700'
                   }`}>
-                    {user.role === 'admin' ? 'Administrador' :
+                    {user.role === 'admin' && user.therapist_id ? 'Admin (Terapeuta)' :
+                     user.role === 'admin' ? 'Administrador' :
                      user.role === 'therapist' ? 'Terapeuta' :
                      user.role === 'reception' ? 'Recepción' :
                      'Usuario'}
@@ -172,7 +174,7 @@ export default function UserManagement() {
                     </button>
                     <button
                       onClick={() => toggleUserStatus(user.id, user.active !== false)}
-                      className={`p-1 rounded hover:bg-gray-100 ${
+                      className={`p-1 rounded hover:bg-gray-100 dark:bg-slate-800 ${
                         user.active !== false ? 'text-orange-600' : 'text-green-600'
                       }`}
                       title={user.active !== false ? "Suspender usuario" : "Activar usuario"}
@@ -193,7 +195,7 @@ export default function UserManagement() {
           </tbody>
         </table>
         {filteredUsers.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-gray-500 dark:text-slate-500">
             No se encontraron usuarios.
           </div>
         )}

@@ -78,19 +78,19 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-800">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div className="px-6 py-4 border-b flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-200">
             {expense ? 'Editar Gasto' : 'Nuevo Gasto'}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Descripción</label>
             <div className="relative">
               <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -106,7 +106,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Monto</label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -121,7 +121,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Fecha</label>
               <div className="relative">
                 <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <input
@@ -136,7 +136,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Gasto</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Tipo de Gasto</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
@@ -144,7 +144,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
                 className={`py-2 px-4 rounded-lg border text-sm font-medium transition-colors ${
                   formData.type === 'fixed'
                     ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:bg-slate-800/50'
                 }`}
               >
                 Gasto Fijo
@@ -155,7 +155,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
                 className={`py-2 px-4 rounded-lg border text-sm font-medium transition-colors ${
                   formData.type === 'variable'
                     ? 'bg-purple-50 border-purple-200 text-purple-700'
-                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                    : 'bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:bg-slate-800/50'
                 }`}
               >
                 Gasto Variable
@@ -164,7 +164,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Categoría (Opcional)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Categoría (Opcional)</label>
             <div className="relative">
               <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -181,7 +181,7 @@ export default function ExpenseModal({ isOpen, onClose, onSave, expense = null }
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium"
+              className="px-4 py-2 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:bg-slate-800 rounded-lg font-medium"
             >
               Cancelar
             </button>

@@ -121,13 +121,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="relative max-w-md w-full space-y-8 rounded-xl bg-white p-8 shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-800/50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-md w-full space-y-8 rounded-xl bg-white dark:bg-slate-900 p-8 shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-slate-50">
             {isForgotPassword ? 'Recuperar contraseña' : 'Iniciar sesión'}
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-gray-600 dark:text-slate-400">
             {isForgotPassword
               ? 'Ingresa tu correo para recibir un enlace de recuperación'
               : 'Ingresa tus credenciales para acceder al sistema'}
@@ -143,7 +143,7 @@ export default function Login() {
               <input
                 type="email"
                 required
-                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 bg-white placeholder-gray-500 text-gray-900 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 placeholder-gray-500 text-gray-900 dark:text-slate-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                 placeholder="Correo electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -158,7 +158,7 @@ export default function Login() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  className="appearance-none rounded-lg relative block w-full pl-10 pr-10 px-3 py-2 border border-gray-300 bg-white placeholder-gray-500 text-gray-900 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  className="appearance-none rounded-lg relative block w-full pl-10 pr-10 px-3 py-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-900 placeholder-gray-500 text-gray-900 dark:text-slate-50 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                   placeholder="Contraseña"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -169,9 +169,9 @@ export default function Login() {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-slate-400" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-slate-400" />
                   )}
                 </button>
               </div>
@@ -212,7 +212,7 @@ export default function Login() {
             {isForgotPassword ? (
               <button
                 type="button"
-                className="flex items-center justify-center gap-2 text-sm text-gray-600 hover:text-gray-900"
+                className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:text-slate-50"
                 onClick={() => {
                   setIsForgotPassword(false);
                   setMessage(null);
@@ -237,7 +237,7 @@ export default function Login() {
                 </button>
               </>
             )}
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-500 dark:text-slate-500">
               Los usuarios son creados por el administrador.
             </p>
           </div>

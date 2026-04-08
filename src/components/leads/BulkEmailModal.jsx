@@ -96,10 +96,10 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-2xl flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Enviar Correo Masivo</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-200">Enviar Correo Masivo</h2>
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={24} />
           </button>
         </div>
@@ -112,9 +112,9 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
           )}
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Destinatarios</label>
-            <div className="p-3 bg-gray-50 rounded-lg border text-sm text-gray-600">
-              Se enviará a <span className="font-bold text-gray-900">{recipientCount}</span> leads seleccionados.
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Destinatarios</label>
+            <div className="p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg border text-sm text-gray-600 dark:text-slate-400">
+              Se enviará a <span className="font-bold text-gray-900 dark:text-slate-50">{recipientCount}</span> leads seleccionados.
               {recipientCount < selectedLeads.length && (
                 <span className="text-amber-600 ml-2 text-xs">
                   ({selectedLeads.length - recipientCount} leads seleccionados no tienen email)
@@ -124,7 +124,7 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Asunto</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Asunto</label>
             <input
               type="text"
               value={subject}
@@ -135,7 +135,7 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Mensaje</label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -145,7 +145,7 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Imagen (Opcional)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Imagen (Opcional)</label>
             
             {!imageUrl ? (
               <div>
@@ -159,14 +159,14 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors w-full justify-center border-dashed"
+                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:bg-slate-800/50 transition-colors w-full justify-center border-dashed"
                 >
                   {uploading ? <Loader className="animate-spin" size={18} /> : <Upload size={18} />}
                   {uploading ? 'Subiendo...' : 'Seleccionar imagen desde mi computadora'}
                 </button>
               </div>
             ) : (
-              <div className="relative mt-2 inline-block border rounded-lg overflow-hidden bg-gray-50">
+              <div className="relative mt-2 inline-block border rounded-lg overflow-hidden bg-gray-50 dark:bg-slate-800/50">
                 <img src={imageUrl} alt="Vista previa" className="max-h-40 object-contain" />
                 <button
                   onClick={() => setImageUrl('')}
@@ -180,10 +180,10 @@ export default function BulkEmailModal({ isOpen, onClose, selectedLeads, leads }
           </div>
         </div>
 
-        <div className="p-6 border-t bg-gray-50 rounded-b-lg flex justify-end gap-3">
+        <div className="p-6 border-t bg-gray-50 dark:bg-slate-800/50 rounded-b-lg flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:bg-slate-700 rounded-lg transition-colors"
             disabled={sending}
           >
             Cancelar

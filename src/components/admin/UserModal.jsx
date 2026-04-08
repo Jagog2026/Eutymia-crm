@@ -29,10 +29,16 @@ export default function UserModal({ user, onClose, onSave }) {
 
   useEffect(() => {
     if (user) {
+      let uiRole = user.role || 'user';
+      // Mapear rol si es admin y tiene terapeuta asignado a su variante virtual "therapist_admin"
+      if (user.role === 'admin' && user.therapist_id) {
+        uiRole = 'therapist_admin';
+      }
+
       setFormData({
         email: user.email || '',
         full_name: user.full_name || '',
-        role: user.role || 'user',
+        role: uiRole,
         therapist_id: user.therapist_id || '',
         active: user.active !== false,
         password: ''
@@ -69,12 +75,17 @@ export default function UserModal({ user, onClose, onSave }) {
     console.log('[UserModal] Submitting form:', { ...formData, password: '***' });
 
     try {
+      // Determinar si necesita y tiene un terapeuta
+      const isTherapistRole = formData.role === 'therapist' || formData.role === 'therapist_admin';
+      // Deserializar para base de datos el "therapist_admin" como "admin" normal
+      const dbRole = formData.role === 'therapist_admin' ? 'admin' : formData.role;
+
       if (user) {
         // Update existing user
         console.log('[UserModal] Updating user:', user.id);
 
         let therapistId = formData.therapist_id;
-        if (formData.role === 'therapist' && therapistMode === 'new') {
+        if (isTherapistRole && therapistMode === 'new') {
           if (!newTherapist.name.trim()) {
             throw new Error('El nombre del terapeuta es obligatorio');
           }
@@ -92,14 +103,16 @@ export default function UserModal({ user, onClose, onSave }) {
             .single();
           if (therapistError) throw new Error('Error al crear el terapeuta: ' + therapistError.message);
           therapistId = newT.id;
+        } else if (isTherapistRole && !therapistId) {
+          throw new Error('Debes seleccionar un terapeuta o crear uno nuevo');
         }
 
         const { error: updateError } = await supabase
           .from('users')
           .update({
             full_name: formData.full_name,
-            role: formData.role,
-            therapist_id: formData.role === 'therapist' ? therapistId : null,
+            role: dbRole,
+            therapist_id: isTherapistRole ? therapistId : null,
             active: formData.active
           })
           .eq('id', user.id);
@@ -118,7 +131,7 @@ export default function UserModal({ user, onClose, onSave }) {
 
         let therapistId = formData.therapist_id;
 
-        if (formData.role === 'therapist') {
+        if (isTherapistRole) {
           if (therapistMode === 'new') {
             if (!newTherapist.name.trim()) {
               throw new Error('El nombre del terapeuta es obligatorio');
@@ -158,9 +171,9 @@ export default function UserModal({ user, onClose, onSave }) {
             email: formData.email,
             password: formData.password,
             full_name: formData.full_name,
-            role: formData.role,
-            therapist_id: formData.role === 'therapist' ? therapistId : null,
-            active: true
+            role: dbRole,
+            therapist_id: isTherapistRole ? therapistId : null,
+            active: formData.active
           });
 
         if (insertError) {
@@ -185,14 +198,14 @@ export default function UserModal({ user, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white">
-          <h3 className="text-xl font-semibold text-gray-900">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white dark:bg-slate-900">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-50">
             {user ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500 p-1 rounded-lg hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-500 dark:text-slate-500 p-1 rounded-lg hover:bg-gray-100 dark:bg-slate-800"
           >
             <X size={24} />
           </button>
@@ -210,7 +223,7 @@ export default function UserModal({ user, onClose, onSave }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Nombre Completo *
             </label>
             <input
@@ -224,7 +237,7 @@ export default function UserModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Correo Electrónico *
             </label>
             <input
@@ -233,17 +246,17 @@ export default function UserModal({ user, onClose, onSave }) {
               disabled={!!user}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 dark:bg-slate-800 disabled:text-gray-500 dark:text-slate-500 disabled:cursor-not-allowed"
               placeholder="usuario@ejemplo.com"
             />
             {user && (
-              <p className="text-xs text-gray-500 mt-1">El email no se puede modificar después de crear el usuario</p>
+              <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">El email no se puede modificar después de crear el usuario</p>
             )}
           </div>
 
           {!user && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Contraseña Inicial *
               </label>
               <div className="relative">
@@ -259,40 +272,45 @@ export default function UserModal({ user, onClose, onSave }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400"
                 >
                   {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                 El usuario podrá cambiar su contraseña después de iniciar sesión
               </p>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Rol de Acceso *
             </label>
             <select
               value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value, therapist_id: '' })}
+              onChange={(e) => {
+                const val = e.target.value;
+                setFormData({ ...formData, role: val, therapist_id: '' });
+              }}
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             >
-              <option value="admin">Administrador</option>
+              <option value="admin">Administrador (Sólo Gestión)</option>
+              <option value="therapist_admin">Terapeuta con acceso Administrador</option>
               <option value="therapist">Terapeuta</option>
               <option value="reception">Recepción</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
-              {formData.role === 'admin' && 'Acceso completo al sistema'}
-              {formData.role === 'therapist' && 'Solo puede ver su propia agenda'}
+            <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
+              {formData.role === 'admin' && 'Acceso completo al sistema. No recibe citas en la agenda.'}
+              {formData.role === 'therapist_admin' && 'Acceso completo al sistema + Perfil en la agenda para recibir citas.'}
+              {formData.role === 'therapist' && 'Solo puede ver su propia agenda y pacientes.'}
               {formData.role === 'reception' && 'Acceso a funciones operativas (sin reportes, gastos ni administración)'}
             </p>
           </div>
 
-          {formData.role === 'therapist' && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-3">
-              <label className="block text-sm font-medium text-blue-900">
+          {(formData.role === 'therapist' || formData.role === 'therapist_admin') && (
+            <div className="bg-blue-50 dark:bg-slate-800/50 border border-blue-200 dark:border-slate-700 rounded-lg p-4 space-y-3">
+              <label className="block text-sm font-medium text-blue-900 dark:text-slate-300">
                 Asociar con Terapeuta *
               </label>
 
@@ -303,7 +321,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     therapistMode === 'existing'
                       ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                      : 'bg-white dark:bg-slate-900 text-blue-700 border border-blue-300 hover:bg-blue-100'
                   }`}
                 >
                   <Users size={16} /> Existente
@@ -314,7 +332,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     therapistMode === 'new'
                       ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                      : 'bg-white dark:bg-slate-900 text-blue-700 border border-blue-300 hover:bg-blue-100'
                   }`}
                 >
                   <UserPlus size={16} /> Crear Nuevo
@@ -344,9 +362,9 @@ export default function UserModal({ user, onClose, onSave }) {
                   )}
                 </>
               ) : (
-                <div className="space-y-3 bg-white rounded-lg p-3 border border-blue-200">
+                <div className="space-y-3 bg-white dark:bg-slate-900 rounded-lg p-3 border border-blue-200">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Nombre del Terapeuta *</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Nombre del Terapeuta *</label>
                     <input
                       type="text"
                       required
@@ -358,7 +376,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Email</label>
                       <input
                         type="email"
                         value={newTherapist.email}
@@ -368,7 +386,7 @@ export default function UserModal({ user, onClose, onSave }) {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Teléfono</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Teléfono</label>
                       <input
                         type="tel"
                         value={newTherapist.phone}
@@ -379,7 +397,7 @@ export default function UserModal({ user, onClose, onSave }) {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Especialidad / Puesto</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Especialidad / Puesto</label>
                     <input
                       type="text"
                       value={newTherapist.specialty}
@@ -403,15 +421,15 @@ export default function UserModal({ user, onClose, onSave }) {
           )}
 
           {user && (
-            <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
               <input
                 type="checkbox"
                 id="active"
                 checked={formData.active}
                 onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                className="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                className="h-5 w-5 text-teal-600 focus:ring-teal-500 border-gray-300 dark:border-slate-600 rounded"
               />
-              <label htmlFor="active" className="text-sm font-medium text-gray-900">
+              <label htmlFor="active" className="text-sm font-medium text-gray-900 dark:text-slate-50">
                 Usuario Activo
               </label>
             </div>
@@ -421,7 +439,7 @@ export default function UserModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:bg-slate-800/50 transition-colors"
             >
               Cancelar
             </button>

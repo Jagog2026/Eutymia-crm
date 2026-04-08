@@ -17,13 +17,13 @@ export default function AgendaGrid({
   const columnMinWidth = 200;
 
   const statusConfig = {
-    blocked:    { label: 'Bloqueado',  dot: 'bg-slate-400',   card: 'bg-slate-50  border-slate-200 ring-slate-200/50',  badge: 'bg-slate-100  text-slate-600  border-slate-200' },
-    confirmada: { label: 'Confirmada', dot: 'bg-amber-400',   card: 'bg-amber-50  border-amber-200 ring-amber-200/50',  badge: 'bg-amber-100  text-amber-700  border-amber-200' },
-    asiste:     { label: 'Asiste',     dot: 'bg-pink-400',    card: 'bg-pink-50   border-pink-200  ring-pink-200/50',   badge: 'bg-pink-100   text-pink-700   border-pink-200' },
-    no_asistio: { label: 'No asistió', dot: 'bg-orange-400',  card: 'bg-orange-50 border-orange-200 ring-orange-200/50', badge: 'bg-orange-100 text-orange-700 border-orange-200' },
-    cancelado:  { label: 'Cancelado',  dot: 'bg-red-400',     card: 'bg-red-50    border-red-200   ring-red-200/50',    badge: 'bg-red-100    text-red-700    border-red-200' },
-    pagado:     { label: 'Pagado',     dot: 'bg-emerald-400', card: 'bg-emerald-50 border-emerald-200 ring-emerald-200/50', badge: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-    default:    { label: 'Pendiente',  dot: 'bg-blue-400',    card: 'bg-blue-50   border-blue-200  ring-blue-200/50',   badge: 'bg-blue-100   text-blue-700   border-blue-200' },
+    blocked:    { label: 'Bloqueado',  dot: 'bg-slate-400',   card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 ring-slate-200/50 dark:ring-slate-700/50',  badge: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600' },
+    confirmada: { label: 'Confirmada', dot: 'bg-amber-400',   card: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 ring-amber-200/50 dark:ring-amber-900/50',  badge: 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800' },
+    asiste:     { label: 'Asiste',     dot: 'bg-pink-400',    card: 'bg-pink-50 dark:bg-pink-900/30 border-pink-200 dark:border-pink-800 ring-pink-200/50 dark:ring-pink-900/50',   badge: 'bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800' },
+    no_asistio: { label: 'No asistió', dot: 'bg-orange-400',  card: 'bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800 ring-orange-200/50 dark:ring-orange-900/50', badge: 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800' },
+    cancelado:  { label: 'Cancelado',  dot: 'bg-red-400',     card: 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 ring-red-200/50 dark:ring-red-900/50',    badge: 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800' },
+    pagado:     { label: 'Pagado',     dot: 'bg-emerald-400', card: 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 ring-emerald-200/50 dark:ring-emerald-900/50', badge: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' },
+    default:    { label: 'Pendiente',  dot: 'bg-blue-400',    card: 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800 ring-blue-200/50 dark:ring-blue-900/50',   badge: 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' },
   };
 
   const activeTherapists = therapists.filter(t => selectedTherapists.includes(t.id));
@@ -80,7 +80,7 @@ export default function AgendaGrid({
         <div className="px-2.5 py-1.5 h-full flex flex-col justify-center gap-0.5">
           {/* Row 1: name + badge */}
           <div className="flex items-center justify-between gap-1.5 min-w-0">
-            <span className="text-[12px] font-semibold leading-tight truncate text-slate-800">
+            <span className="text-[12px] font-semibold leading-tight truncate text-slate-800 dark:text-slate-200">
               {isBlocked ? 'No disponible' : app.patient_name}
             </span>
             <span className={`shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border font-semibold ${config.badge}`}>
@@ -90,8 +90,8 @@ export default function AgendaGrid({
 
           {/* Row 2: time + service + paid */}
           <div className="flex items-center gap-1.5 min-w-0">
-            <span className="shrink-0 text-[11px] font-medium text-slate-500 tabular-nums">{app.time}</span>
-            {!compact && <span className="text-[11px] text-slate-400 truncate">{app.service || 'Consulta'}</span>}
+            <span className="shrink-0 text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">{app.time}</span>
+            {!compact && <span className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{app.service || 'Consulta'}</span>}
             {showPaid && (
               <span className="shrink-0 inline-flex items-center gap-0.5 text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-px rounded-full">
                 <DollarSign size={10} />
@@ -104,7 +104,7 @@ export default function AgendaGrid({
           {!compact && app?.therapists?.name && (
             <div className="flex items-center gap-1.5 min-w-0 mt-px">
               <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: accent }} />
-              <span className="text-[10px] text-slate-400 truncate">{app.therapists.name}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{app.therapists.name}</span>
             </div>
           )}
         </div>
@@ -129,14 +129,14 @@ export default function AgendaGrid({
       >
         <div className="px-2 py-1.5">
           <div className="flex items-center justify-between gap-1 min-w-0">
-            <span className="text-[11px] font-semibold truncate text-slate-800">
+            <span className="text-[11px] font-semibold truncate text-slate-800 dark:text-slate-200">
               {isBlocked ? 'Bloqueado' : app.patient_name}
             </span>
             <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${config.dot}`} title={config.label} />
           </div>
           <div className="flex items-center gap-1.5 min-w-0 mt-0.5">
-            <Clock size={10} className="shrink-0 text-slate-400" />
-            <span className="text-[10px] text-slate-500 tabular-nums">{app.time}</span>
+            <Clock size={10} className="shrink-0 text-slate-400 dark:text-slate-500" />
+            <span className="text-[10px] text-slate-500 dark:text-slate-400 tabular-nums">{app.time}</span>
             {showPaid && <DollarSign size={10} className="shrink-0 text-emerald-500" />}
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function AgendaGrid({
   if (view === 'day') {
     if (activeTherapists.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-400">
+        <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-400 dark:text-slate-500">
           <User size={40} strokeWidth={1.5} />
           <span className="text-sm">Selecciona al menos un profesional para ver su agenda.</span>
         </div>
@@ -163,21 +163,21 @@ export default function AgendaGrid({
     };
 
     return (
-      <div className="flex flex-col h-full overflow-hidden bg-gradient-to-b from-slate-50/80 to-white">
+      <div className="flex flex-col h-full overflow-hidden bg-gradient-to-b from-slate-50/80 dark:from-slate-900 to-white dark:to-slate-900">
         <div ref={scrollContainerRef} className="flex-1 overflow-auto relative">
 
           {/* ── Therapist Header ── */}
           <div
-            className="grid border-b sticky top-0 z-30 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80"
+            className="grid border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 bg-white dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-slate-900/80"
             style={{ minWidth: `${minGridWidth}px`, ...gridColumns }}
           >
             {/* Time-column corner */}
-            <div className="border-r border-slate-100 bg-white sticky left-0 z-30" />
+            <div className="border-r border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 sticky left-0 z-30" />
 
             {activeTherapists.map(therapist => {
               const color = therapist.color || '#6366f1';
               return (
-                <div key={therapist.id} className="border-r border-slate-100 flex items-center gap-3 px-4 py-3">
+                <div key={therapist.id} className="border-r border-slate-100 dark:border-slate-800 flex items-center gap-3 px-4 py-3">
                   <div
                     className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0"
                     style={{ backgroundColor: color }}
@@ -185,8 +185,8 @@ export default function AgendaGrid({
                     {getInitials(therapist.name)}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-[13px] font-semibold text-slate-800 truncate leading-tight">{therapist.name}</p>
-                    <p className="text-[11px] text-slate-400 leading-tight mt-0.5">{therapist.specialty || 'Terapeuta'}</p>
+                    <p className="text-[13px] font-semibold text-slate-800 dark:text-slate-200 truncate leading-tight">{therapist.name}</p>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-tight mt-0.5">{therapist.specialty || 'Terapeuta'}</p>
                   </div>
                 </div>
               );
@@ -232,10 +232,10 @@ export default function AgendaGrid({
                   style={{ minHeight: `${hourHeight}px`, ...gridColumns }}
                 >
                   {/* Time gutter */}
-                  <div className={`border-r border-slate-100 flex flex-col items-center pt-1 sticky left-0 z-10
-                    ${isEven ? 'bg-white' : 'bg-slate-50/60'}`}>
-                    <span className="text-[13px] font-semibold text-slate-700 leading-none tabular-nums">{display}</span>
-                    <span className="text-[9px] text-slate-400 font-medium leading-none mt-0.5">{suffix}</span>
+                  <div className={`border-r border-slate-100 dark:border-slate-800 flex flex-col items-center pt-1 sticky left-0 z-10
+                    ${isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-800/40'}`}>
+                    <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 leading-none tabular-nums">{display}</span>
+                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-none mt-0.5">{suffix}</span>
                   </div>
 
                   {/* Therapist columns */}
@@ -253,8 +253,8 @@ export default function AgendaGrid({
                     return (
                       <div
                         key={`${therapist.id}-${hour}`}
-                        className={`border-r border-slate-100 relative group/cell transition-colors
-                          ${isEven ? 'bg-white' : 'bg-slate-50/40'}
+                        className={`border-r border-slate-100 dark:border-slate-800 relative group/cell transition-colors
+                          ${isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/40 dark:bg-slate-800/20'}
                           hover:bg-indigo-50/40`}
                         onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, therapist.id, date)}
                         onDragOver={(e) => e.preventDefault()}
@@ -269,9 +269,9 @@ export default function AgendaGrid({
                         }}
                       >
                         {/* Half-hour line */}
-                        <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 pointer-events-none" />
+                        <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 dark:border-slate-800 pointer-events-none" />
                         {/* Bottom border */}
-                        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 dark:border-slate-800 pointer-events-none" />
 
                         {/* Hover hint */}
                         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity pointer-events-none z-[1]">
@@ -325,24 +325,24 @@ export default function AgendaGrid({
     const isCurrentWeek = weekDays.some(d => isToday(d));
 
     return (
-      <div className="flex flex-col h-full overflow-hidden bg-gradient-to-b from-slate-50/80 to-white">
+      <div className="flex flex-col h-full overflow-hidden bg-gradient-to-b from-slate-50/80 dark:from-slate-900 to-white dark:to-slate-900">
 
         {/* ── Day Header ── */}
-        <div className="flex border-b sticky top-0 z-20 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-          <div className="flex-shrink-0 border-r border-slate-100" style={{ width: timeColumnWidth }} />
+        <div className="flex border-b border-slate-200 dark:border-slate-800 sticky top-0 z-20 bg-white dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-slate-900/80">
+          <div className="flex-shrink-0 border-r border-slate-100 dark:border-slate-800" style={{ width: timeColumnWidth }} />
           {weekDays.map(d => {
             const today = isToday(d);
             return (
               <div
                 key={d.toISOString()}
-                className={`flex-1 min-w-[110px] py-2.5 px-2 border-r border-slate-100 text-center
+                className={`flex-1 min-w-[110px] py-2.5 px-2 border-r border-slate-100 dark:border-slate-800 text-center
                   ${today ? 'bg-indigo-50/60' : ''}`}
               >
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
                   {d.toLocaleDateString('es-ES', { weekday: 'short' })}
                 </div>
                 <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold
-                  ${today ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700'}`}>
+                  ${today ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300'}`}>
                   {d.getDate()}
                 </div>
               </div>
@@ -369,12 +369,12 @@ export default function AgendaGrid({
               <div key={hour} className="flex" style={{ minHeight: `${hourHeight}px` }}>
                 {/* Time gutter */}
                 <div
-                  className={`flex-shrink-0 border-r border-slate-100 flex flex-col items-center pt-1
-                    ${isEven ? 'bg-white' : 'bg-slate-50/60'}`}
+                  className={`flex-shrink-0 border-r border-slate-100 dark:border-slate-800 flex flex-col items-center pt-1
+                    ${isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-800/40'}`}
                   style={{ width: timeColumnWidth }}
                 >
-                  <span className="text-[13px] font-semibold text-slate-700 leading-none tabular-nums">{display}</span>
-                  <span className="text-[9px] text-slate-400 font-medium leading-none mt-0.5">{suffix}</span>
+                  <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 leading-none tabular-nums">{display}</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-none mt-0.5">{suffix}</span>
                 </div>
 
                 {weekDays.map(d => {
@@ -393,14 +393,14 @@ export default function AgendaGrid({
                   return (
                     <div
                       key={`${d.toISOString()}-${hour}`}
-                      className={`flex-1 min-w-[110px] border-r border-slate-100 relative group/cell transition-colors
-                        ${today ? 'bg-indigo-50/30' : isEven ? 'bg-white' : 'bg-slate-50/40'}
+                      className={`flex-1 min-w-[110px] border-r border-slate-100 dark:border-slate-800 relative group/cell transition-colors
+                        ${today ? 'bg-indigo-50/30' : isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/40 dark:bg-slate-800/20'}
                         hover:bg-indigo-50/40`}
                       onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, selectedTherapists[0], d)}
                     >
                       {/* Half-hour line */}
-                      <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 pointer-events-none" />
+                      <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 dark:border-slate-800 pointer-events-none" />
+                      <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 dark:border-slate-800 pointer-events-none" />
 
                       {/* Content */}
                       <div className="relative p-0.5">

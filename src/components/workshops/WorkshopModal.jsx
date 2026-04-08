@@ -94,8 +94,8 @@ export default function WorkshopModal({ workshop, onClose, onSave, onDelete }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-2xl p-6 relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
           <X size={24} />
         </button>
         <h2 className="text-2xl font-bold text-teal-600 mb-6">{workshop ? 'Editar Taller' : 'Nuevo Taller'}</h2>
@@ -104,79 +104,79 @@ export default function WorkshopModal({ workshop, onClose, onSave, onDelete }) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Título</label>
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Título</label>
             <input
               type="text"
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700">Fecha y Hora</label>
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Fecha y Hora</label>
             <input
               type="datetime-local"
               id="date"
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="duration_minutes" className="block text-sm font-medium text-gray-700">Duración (minutos)</label>
+            <label htmlFor="duration_minutes" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Duración (minutos)</label>
             <input
               type="number"
               id="duration_minutes"
               name="duration_minutes"
               value={formData.duration_minutes}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="max_attendees" className="block text-sm font-medium text-gray-700">Máx. Asistentes</label>
+            <label htmlFor="max_attendees" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Máx. Asistentes</label>
             <input
               type="number"
               id="max_attendees"
               name="max_attendees"
               value={formData.max_attendees}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="price" className="block text-sm font-medium text-gray-700">Precio</label>
+            <label htmlFor="price" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Precio</label>
             <input
               type="number"
               id="price"
               name="price"
               value={formData.price}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700">URL Imagen</label>
+            <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 dark:text-slate-300">URL Imagen</label>
             <input
               type="text"
               id="image_url"
               name="image_url"
               value={formData.image_url}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             />
           </div>
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700">Tipo</label>
+            <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Tipo</label>
             <select
               id="type"
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             >
               <option value="Taller">Taller</option>
               <option value="Conferencia">Conferencia</option>
@@ -184,13 +184,13 @@ export default function WorkshopModal({ workshop, onClose, onSave, onDelete }) {
             </select>
           </div>
           <div>
-            <label htmlFor="modality" className="block text-sm font-medium text-gray-700">Modalidad</label>
+            <label htmlFor="modality" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Modalidad</label>
             <select
               id="modality"
               name="modality"
               value={formData.modality}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
             >
               <option value="Presencial">Presencial</option>
               <option value="En línea">En línea</option>
@@ -199,14 +199,14 @@ export default function WorkshopModal({ workshop, onClose, onSave, onDelete }) {
         </div>
 
         <div className="mb-6">
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">Descripción</label>
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-slate-300">Descripción</label>
           <textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             rows="3"
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            className="mt-1 block w-full border border-gray-300 dark:border-slate-600 rounded-md shadow-sm p-2"
           ></textarea>
         </div>
 

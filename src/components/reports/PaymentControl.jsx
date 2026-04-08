@@ -83,18 +83,18 @@ export default function PaymentControl({ onPaymentChanged }) {
   });
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+    <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-gray-200 dark:border-slate-700">
+      <div className="p-6 border-b border-gray-200 dark:border-slate-700">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-slate-50 flex items-center gap-2">
           <FileText className="text-teal-600" />
           Control de Pagos
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
           Visualiza y gestiona los pagos de las sesiones.
         </p>
       </div>
 
-      <div className="p-4 bg-gray-50 border-b border-gray-200">
+      <div className="p-4 bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700">
         <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-4">
           <div className="relative w-full sm:w-96">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -105,26 +105,26 @@ export default function PaymentControl({ onPaymentChanged }) {
               placeholder="Buscar por nombre del paciente..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
+              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md leading-5 bg-white dark:bg-slate-900 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm"
             />
           </div>
 
           <div className="flex gap-2">
             <button
               onClick={() => setFilterStatus('all')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'all' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'all' ? 'bg-gray-800 text-white' : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600'}`}
             >
               Todos
             </button>
             <button
               onClick={() => setFilterStatus('pending')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'pending' ? 'bg-red-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'pending' ? 'bg-red-600 text-white' : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600'}`}
             >
               Pendientes
             </button>
             <button
               onClick={() => setFilterStatus('paid')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'paid' ? 'bg-teal-600 text-white' : 'bg-white text-gray-700 border border-gray-300'}`}
+              className={`px-3 py-1.5 text-sm font-medium rounded-md ${filterStatus === 'paid' ? 'bg-teal-600 text-white' : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-slate-300 border border-gray-300 dark:border-slate-600'}`}
             >
               Pagados
             </button>
@@ -141,20 +141,20 @@ export default function PaymentControl({ onPaymentChanged }) {
 
       <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50 sticky top-0 z-10">
+          <thead className="bg-gray-50 dark:bg-slate-800/50 sticky top-0 z-10">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paciente</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio / Terapeuta</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Monto</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Pago</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Fecha</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Paciente</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Servicio / Terapeuta</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Monto</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Estado</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Fecha de Pago</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200">
             {loading ? (
               <tr>
-                <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-10 text-center text-gray-500 dark:text-slate-500">
                   <div className="flex flex-col items-center justify-center">
                     <div className="w-8 h-8 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mb-2"></div>
                     <span>Cargando citas...</span>
@@ -163,26 +163,26 @@ export default function PaymentControl({ onPaymentChanged }) {
               </tr>
             ) : filteredAppointments.length === 0 ? (
               <tr>
-                <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                <td colSpan="6" className="px-6 py-10 text-center text-gray-500 dark:text-slate-500">
                   No se encontraron citas con los filtros actuales.
                 </td>
               </tr>
             ) : (
               filteredAppointments.map((app) => (
-                <tr key={app.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <tr key={app.id} className="hover:bg-gray-50 dark:bg-slate-800/50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-500">
                     {new Date(app.date).toLocaleDateString()}
                     <div className="text-xs text-gray-400">{app.time}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{app.patient_name}</div>
-                    <div className="text-xs text-gray-500">{app.patient_phone}</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-slate-50">{app.patient_name}</div>
+                    <div className="text-xs text-gray-500 dark:text-slate-500">{app.patient_phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{app.service}</div>
-                    <div className="text-xs text-gray-500">{app.therapists?.name}</div>
+                    <div className="text-sm text-gray-900 dark:text-slate-50">{app.service}</div>
+                    <div className="text-xs text-gray-500 dark:text-slate-500">{app.therapists?.name}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-slate-50">
                     ${app.price || 0}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -198,7 +198,7 @@ export default function PaymentControl({ onPaymentChanged }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-500">
                     {app.payment_date ? (
                       <span>{new Date(app.payment_date).toLocaleDateString()}</span>
                     ) : (

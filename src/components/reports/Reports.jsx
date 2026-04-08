@@ -297,7 +297,7 @@ export default function Reports({ reportsRefreshKey }) {
   };
 
   const StatCard = ({ title, value, icon: Icon, color = "teal" }) => (
-    <div className={`bg-white p-6 rounded-lg shadow-sm border border-${color}-100 relative group hover:shadow-md transition-shadow`}>
+    <div className={`bg-white dark:bg-slate-900 p-6 rounded-lg shadow-sm border border-${color}-100 relative group hover:shadow-md transition-shadow`}>
       <div className="flex items-center justify-between mb-4">
         <div className={`p-3 rounded-full bg-${color}-50 text-${color}-600`}>
           <Icon className="w-6 h-6" />
@@ -310,8 +310,8 @@ export default function Reports({ reportsRefreshKey }) {
           <Download size={18} />
         </button>
       </div>
-      <h3 className="text-gray-500 text-sm font-medium uppercase tracking-wider">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+      <h3 className="text-gray-500 dark:text-slate-500 text-sm font-medium uppercase tracking-wider">{title}</h3>
+      <p className="text-2xl font-bold text-gray-900 dark:text-slate-50 mt-1">{value}</p>
     </div>
   );
 
@@ -329,15 +329,15 @@ export default function Reports({ reportsRefreshKey }) {
 
       {/* Header & Tabs */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
-        <h1 className="text-2xl font-bold text-gray-800">Reportes y Pagos</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-200">Reportes y Pagos</h1>
         
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+        <div className="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-lg">
           <button
             onClick={() => setActiveTab('financial')}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               activeTab === 'financial' 
-                ? 'bg-white text-teal-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white dark:bg-slate-900 text-teal-700 shadow-sm' 
+                : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'
             }`}
           >
             Reportes Financieros
@@ -346,8 +346,8 @@ export default function Reports({ reportsRefreshKey }) {
             onClick={() => setActiveTab('payments')}
             className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
               activeTab === 'payments' 
-                ? 'bg-white text-teal-700 shadow-sm' 
-                : 'text-gray-500 hover:text-gray-700'
+                ? 'bg-white dark:bg-slate-900 text-teal-700 shadow-sm' 
+                : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'
             }`}
           >
             Control de Pagos
@@ -370,21 +370,21 @@ export default function Reports({ reportsRefreshKey }) {
               <div className="relative">
                 <button
                   onClick={() => setShowPeriodSelector(!showPeriodSelector)}
-                  className="flex items-center gap-2 bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-sm"
+                  className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 px-4 py-2 rounded-md hover:bg-gray-50 dark:bg-slate-800/50 transition-colors text-sm"
                 >
                   <Search size={16} />
                   Buscar Período
                 </button>
 
                 {showPeriodSelector && (
-                  <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-[280px]">
+                  <div className="absolute top-full left-0 mt-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg p-4 z-10 min-w-[280px]">
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Mes</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-slate-300 mb-1">Mes</label>
                         <select
                           value={selectedMonth}
                           onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                         >
                           <option value={0}>Enero</option>
                           <option value={1}>Febrero</option>
@@ -402,11 +402,11 @@ export default function Reports({ reportsRefreshKey }) {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Año</label>
+                        <label className="block text-xs font-medium text-gray-700 dark:text-slate-300 mb-1">Año</label>
                         <select
                           value={selectedYear}
                           onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
                         >
                           {[...Array(5)].map((_, i) => {
                             const year = new Date().getFullYear() - 2 + i;
@@ -463,7 +463,7 @@ export default function Reports({ reportsRefreshKey }) {
 
       {/* Red Numbers Report */}
       {redNumbers.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm border border-red-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-red-100 overflow-hidden">
           <div className="p-4 bg-red-50 border-b border-red-100 flex justify-between items-center">
             <h3 className="font-bold text-red-800 flex items-center gap-2">
               <AlertCircle size={20} />
@@ -531,7 +531,7 @@ export default function Reports({ reportsRefreshKey }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Therapist Performance */}
-        <div className="bg-white rounded-lg shadow-sm border border-teal-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-teal-100 overflow-hidden">
           <div className="p-4 bg-teal-50 border-b border-teal-100 flex justify-between items-center">
             <h3 className="font-bold text-teal-800 flex items-center gap-2">
               <Users size={20} />
@@ -552,7 +552,7 @@ export default function Reports({ reportsRefreshKey }) {
               <tbody className="divide-y divide-teal-100">
                 {therapistStats.map((t, idx) => (
                   <tr key={idx} className="hover:bg-teal-50/50">
-                    <td className="p-3 font-medium text-gray-900">{t.name}</td>
+                    <td className="p-3 font-medium text-gray-900 dark:text-slate-50">{t.name}</td>
                     <td className="p-3 text-center">{t.sessions}</td>
                     <td className="p-3 text-right">${t.income.toLocaleString()}</td>
                     <td className="p-3 text-right font-bold text-teal-600">
@@ -562,7 +562,7 @@ export default function Reports({ reportsRefreshKey }) {
                 ))}
                 {therapistStats.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="p-4 text-center text-gray-500">No hay datos en este periodo</td>
+                    <td colSpan="4" className="p-4 text-center text-gray-500 dark:text-slate-500">No hay datos en este periodo</td>
                   </tr>
                 )}
               </tbody>
@@ -571,7 +571,7 @@ export default function Reports({ reportsRefreshKey }) {
         </div>
 
         {/* Income by Service */}
-        <div className="bg-white rounded-lg shadow-sm border border-teal-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-teal-100 overflow-hidden">
           <div className="p-4 bg-teal-50 border-b border-teal-100 flex justify-between items-center">
             <h3 className="font-bold text-teal-800 flex items-center gap-2">
               <PieChart size={20} />
@@ -592,7 +592,7 @@ export default function Reports({ reportsRefreshKey }) {
               <tbody className="divide-y divide-teal-100">
                 {serviceStats.map((s, idx) => (
                   <tr key={idx} className="hover:bg-teal-50/50">
-                    <td className="p-3 font-medium text-gray-900">{s.name}</td>
+                    <td className="p-3 font-medium text-gray-900 dark:text-slate-50">{s.name}</td>
                     <td className="p-3 text-center">{s.count}</td>
                     <td className="p-3 text-right">${s.income.toLocaleString()}</td>
                     <td className="p-3 text-right">
@@ -604,7 +604,7 @@ export default function Reports({ reportsRefreshKey }) {
                 ))}
                 {serviceStats.length === 0 && (
                   <tr>
-                    <td colSpan="4" className="p-4 text-center text-gray-500">No hay datos en este periodo</td>
+                    <td colSpan="4" className="p-4 text-center text-gray-500 dark:text-slate-500">No hay datos en este periodo</td>
                   </tr>
                 )}
               </tbody>

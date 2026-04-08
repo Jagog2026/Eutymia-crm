@@ -16,7 +16,7 @@ export default function LeadCard({
     <div
       draggable
       onDragStart={(e) => onDragStart(e, lead)}
-      className={`bg-white p-3 rounded-lg shadow-sm border hover:shadow-md cursor-grab active:cursor-grabbing transition-all group relative ${isSelected ? 'ring-2 ring-teal-500 border-teal-500' : ''}`}
+      className={`bg-white dark:bg-slate-900 p-3 rounded-lg shadow-sm border hover:shadow-md cursor-grab active:cursor-grabbing transition-all group relative ${isSelected ? 'ring-2 ring-teal-500 border-teal-500' : ''}`}
     >
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-start gap-2">
@@ -33,7 +33,7 @@ export default function LeadCard({
               <Square size={16} />
             )}
           </button>
-          <h3 className="font-semibold text-gray-900">{lead.full_name || lead.name}</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-slate-50">{lead.full_name || lead.name}</h3>
         </div>
         <div className="relative">
           <button
@@ -41,19 +41,19 @@ export default function LeadCard({
               e.stopPropagation();
               setOpenDropdownId(openDropdownId === lead.id ? null : lead.id);
             }}
-            className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"
             title="Opciones"
           >
             <MoreHorizontal size={16} />
           </button>
           {openDropdownId === lead.id && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10 border">
+            <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-900 rounded-md shadow-lg z-10 border">
               <button
                 onClick={() => {
                   onAddTask(lead);
                   setOpenDropdownId(null);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800"
               >
                 Tareas y Alertas
               </button>
@@ -62,7 +62,7 @@ export default function LeadCard({
                   onEdit(lead);
                   setOpenDropdownId(null);
                 }}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800"
               >
                 Editar
               </button>
@@ -77,7 +77,7 @@ export default function LeadCard({
         </div>
       </div>
       
-      <div className="space-y-2 text-xs text-gray-500">
+      <div className="space-y-2 text-xs text-gray-500 dark:text-slate-500">
         {lead.service && (
           <div className="flex items-center gap-1.5 text-teal-600 font-medium bg-teal-50 p-1.5 rounded">
             <Tag size={12} /> {lead.service}
@@ -91,7 +91,7 @@ export default function LeadCard({
         )}
 
         {lead.source && (
-          <div className="flex items-center gap-1.5 text-gray-600 font-medium bg-gray-50 p-1.5 rounded">
+          <div className="flex items-center gap-1.5 text-gray-600 dark:text-slate-400 font-medium bg-gray-50 dark:bg-slate-800/50 p-1.5 rounded">
             <BookOpen size={12} /> {lead.source}
           </div>
         )}
@@ -110,7 +110,7 @@ export default function LeadCard({
         
         <div className="flex items-center justify-between pt-1">
           {lead.value > 0 && (
-            <div className="flex items-center gap-1 font-semibold text-gray-700">
+            <div className="flex items-center gap-1 font-semibold text-gray-700 dark:text-slate-300">
               <DollarSign size={12} /> {lead.value}
             </div>
           )}

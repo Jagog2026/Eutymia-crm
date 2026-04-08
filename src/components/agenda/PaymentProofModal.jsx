@@ -52,20 +52,20 @@ export default function PaymentProofModal({ isOpen, onClose, appointmentId, onPr
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-slate-400"
         >
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-slate-200 mb-4 flex items-center gap-2">
           <DollarSign className="text-green-600" size={24} />
           Registrar Pago
         </h2>
 
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-gray-600 dark:text-slate-400 mb-6">
           ¿Confirmas que esta cita ha sido <strong>pagada</strong>?
         </p>
 
@@ -80,7 +80,7 @@ export default function PaymentProofModal({ isOpen, onClose, appointmentId, onPr
           <div className="flex justify-end gap-3 mt-6">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md text-sm font-medium"
+              className="px-4 py-2 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:bg-slate-800 rounded-md text-sm font-medium"
               disabled={loading}
             >
               Cancelar

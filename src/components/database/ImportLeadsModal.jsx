@@ -297,13 +297,13 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-gray-100 dark:border-slate-800">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-slate-50 flex items-center gap-2">
             <Upload className="w-6 h-6 text-teal-600" />
             Importar Leads desde Excel
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-slate-400">
             <X size={24} />
           </button>
         </div>
@@ -313,11 +313,11 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
             <div className="space-y-4">
               <div 
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-teal-500 hover:bg-teal-50 transition-colors cursor-pointer"
+                className="border-2 border-dashed border-gray-300 dark:border-slate-600 rounded-xl p-8 text-center hover:border-teal-500 hover:bg-teal-50 transition-colors cursor-pointer"
               >
                 <FileSpreadsheet className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-900">Haz clic para subir tu archivo Excel o CSV</p>
-                <p className="text-sm text-gray-500 mt-1">o arrastra y suelta el archivo aquí</p>
+                <p className="text-lg font-medium text-gray-900 dark:text-slate-50">Haz clic para subir tu archivo Excel o CSV</p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">o arrastra y suelta el archivo aquí</p>
                 <input 
                   type="file" 
                   ref={fileInputRef}
@@ -347,12 +347,12 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+              <div className="flex items-center justify-between bg-gray-50 dark:bg-slate-800/50 p-3 rounded-lg">
                 <div className="flex items-center gap-3">
                   <FileSpreadsheet className="w-8 h-8 text-green-600" />
                   <div>
-                    <p className="font-medium text-gray-900">{file.name}</p>
-                    <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(2)} KB</p>
+                    <p className="font-medium text-gray-900 dark:text-slate-50">{file.name}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-500">{(file.size / 1024).toFixed(2)} KB</p>
                   </div>
                 </div>
                 <button 
@@ -365,10 +365,10 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
 
               {previewData.length > 0 && (
                 <div>
-                  <h3 className="font-medium text-gray-900 mb-2">Vista previa ({previewData.length} registros)</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-slate-50 mb-2">Vista previa ({previewData.length} registros)</h3>
                   <div className="border rounded-lg overflow-hidden overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                      <thead className="bg-gray-50 text-gray-500">
+                      <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-500 dark:text-slate-500">
                         <tr>
                           <th className="px-4 py-2">Nombre</th>
                           <th className="px-4 py-2">Email</th>
@@ -390,7 +390,7 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
                       </tbody>
                     </table>
                     {previewData.length > 5 && (
-                      <div className="px-4 py-2 bg-gray-50 text-xs text-gray-500 text-center border-t">
+                      <div className="px-4 py-2 bg-gray-50 dark:bg-slate-800/50 text-xs text-gray-500 dark:text-slate-500 text-center border-t">
                         ... y {previewData.length - 5} más
                       </div>
                     )}
@@ -415,10 +415,10 @@ export default function ImportLeadsModal({ isOpen, onClose, onSuccess }) {
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+        <div className="p-6 border-t border-gray-100 dark:border-slate-800 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 rounded-lg transition-colors"
             disabled={uploading}
           >
             Cancelar

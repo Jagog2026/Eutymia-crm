@@ -257,7 +257,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   }, [selectedTherapists, therapists]);
 
   return (
-    <div className="flex h-full bg-gradient-to-br from-slate-50 via-white to-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-xl" onClick={() => { setShowMenu(null); setAppointmentMenu(null); }}>
+    <div className="flex h-full bg-gradient-to-br from-slate-50 dark:from-slate-900 via-white dark:via-slate-900 to-slate-100 dark:to-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-xl" onClick={() => { setShowMenu(null); setAppointmentMenu(null); }}>
       {/* Sidebar */}
       <AgendaSidebar 
         currentDate={currentDate}
@@ -274,7 +274,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
+      <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900">
         <AgendaHeader 
           currentDate={currentDate}
           onPrev={handlePrev}
@@ -290,7 +290,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
         <div className="flex-1 overflow-hidden relative">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b border-slate-200 dark:border-slate-800-2 border-teal-600"></div>
             </div>
           ) : (
             <AgendaGrid 
@@ -309,20 +309,20 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
 
       {/* Context Menus */}
       {showMenu && (
-        <div className="fixed bg-white rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: showMenu.y, left: showMenu.x }}>
-          <button onClick={() => handleNewAppointment(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: showMenu.y, left: showMenu.x }}>
+          <button onClick={() => handleNewAppointment(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Plus size={16} /> Nueva Cita
           </button>
-          <button onClick={() => handleBlockSchedule(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2">
+          <button onClick={() => handleBlockSchedule(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Lock size={16} /> Bloquear Horario
           </button>
         </div>
       )}
 
       {appointmentMenu && (
-        <div className="fixed bg-white rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: appointmentMenu.y, left: appointmentMenu.x }}>
-          <div className="px-4 py-2 text-xs font-semibold text-gray-500 border-b mb-1">Acciones</div>
-          <button onClick={handleEdit} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 flex items-center gap-2">
+        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: appointmentMenu.y, left: appointmentMenu.x }}>
+          <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800 mb-1">Acciones</div>
+          <button onClick={handleEdit} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Pencil size={16} /> Editar
           </button>
           

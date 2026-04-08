@@ -361,10 +361,10 @@ export default function WhatsAppInbox() {
 
   // ─── Render ───
   return (
-    <div className="flex h-full bg-gray-100 rounded-2xl overflow-hidden border border-slate-200 shadow-xl">
+    <div className="flex h-full bg-gray-100 dark:bg-slate-800 rounded-2xl overflow-hidden border border-slate-200 shadow-xl">
       {/* ═══ Lista de conversaciones ═══ */}
       <div
-        className={`w-full md:w-96 bg-white border-r flex flex-col ${
+        className={`w-full md:w-96 bg-white dark:bg-slate-900 border-r flex flex-col ${
           isMobileView && selectedLead ? 'hidden md:flex' : 'flex'
         }`}
       >
@@ -401,16 +401,16 @@ export default function WhatsAppInbox() {
               placeholder="Buscar conversación..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-slate-900"
             />
           </div>
 
           {/* Modal nuevo chat */}
           {showNewChat && (
-            <div className="mt-3 p-3 bg-white rounded-xl border border-green-200 shadow-lg">
+            <div className="mt-3 p-3 bg-white dark:bg-slate-900 rounded-xl border border-green-200 shadow-lg">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-slate-700">Nuevo mensaje</span>
-                <button onClick={() => setShowNewChat(false)} className="p-1 hover:bg-gray-100 rounded-full">
+                <button onClick={() => setShowNewChat(false)} className="p-1 hover:bg-gray-100 dark:bg-slate-800 rounded-full">
                   <X size={14} />
                 </button>
               </div>
@@ -419,7 +419,7 @@ export default function WhatsAppInbox() {
                 placeholder="Nombre (opcional)"
                 value={newChatName}
                 onChange={(e) => setNewChatName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <input
                 type="text"
@@ -427,7 +427,7 @@ export default function WhatsAppInbox() {
                 value={newChatPhone}
                 onChange={(e) => setNewChatPhone(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && startNewChat()}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
                 onClick={startNewChat}
@@ -458,7 +458,7 @@ export default function WhatsAppInbox() {
                 className={`flex items-center gap-3 px-4 py-3 cursor-pointer border-b border-gray-50 transition-colors ${
                   selectedLead?.id === lead.id
                     ? 'bg-green-50 border-l-4 border-l-green-500'
-                    : 'hover:bg-gray-50'
+                    : 'hover:bg-gray-50 dark:bg-slate-800/50'
                 }`}
               >
                 {/* Avatar */}
@@ -477,7 +477,7 @@ export default function WhatsAppInbox() {
                     </span>
                   </div>
                   <div className="flex items-center justify-between mt-0.5">
-                    <span className="text-xs text-gray-500 truncate">
+                    <span className="text-xs text-gray-500 dark:text-slate-500 truncate">
                       {lead.phone}
                     </span>
                     {lead.unread_count > 0 && (
@@ -505,7 +505,7 @@ export default function WhatsAppInbox() {
             <div className="px-4 py-3 bg-slate-50 border-b flex items-center gap-3 shadow-sm">
               <button
                 onClick={backToList}
-                className="md:hidden p-1 rounded-full hover:bg-gray-200"
+                className="md:hidden p-1 rounded-full hover:bg-gray-200 dark:bg-slate-700"
               >
                 <ArrowLeft size={20} />
               </button>
@@ -518,17 +518,17 @@ export default function WhatsAppInbox() {
                 <h3 className="font-semibold text-sm text-slate-800 truncate">
                   {selectedLead.full_name || 'Sin nombre'}
                 </h3>
-                <p className="text-xs text-gray-500">{selectedLead.phone}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-500">{selectedLead.phone}</p>
               </div>
 
               <div className="flex items-center gap-1">
                 <a
                   href={`tel:${selectedLead.phone}`}
-                  className="p-2 rounded-full hover:bg-gray-200 text-slate-600"
+                  className="p-2 rounded-full hover:bg-gray-200 dark:bg-slate-700 text-slate-600"
                 >
                   <Phone size={18} />
                 </a>
-                <button className="p-2 rounded-full hover:bg-gray-200 text-slate-600">
+                <button className="p-2 rounded-full hover:bg-gray-200 dark:bg-slate-700 text-slate-600">
                   <MoreVertical size={18} />
                 </button>
               </div>
@@ -554,7 +554,7 @@ export default function WhatsAppInbox() {
                         className={`max-w-[75%] rounded-lg px-3 py-2 shadow-sm ${
                           isOutbound
                             ? 'bg-[#d9fdd3] rounded-tr-none'
-                            : 'bg-white rounded-tl-none'
+                            : 'bg-white dark:bg-slate-900 rounded-tl-none'
                         }`}
                       >
                         {/* Contenido */}
@@ -564,7 +564,7 @@ export default function WhatsAppInbox() {
 
                         {/* Footer: hora + status */}
                         <div className="flex items-center justify-end gap-1 mt-1">
-                          <span className="text-[10px] text-gray-500">
+                          <span className="text-[10px] text-gray-500 dark:text-slate-500">
                             {formatTime(msg.created_at)}
                           </span>
                           {isOutbound && getStatusIcon(msg.status)}
@@ -588,10 +588,10 @@ export default function WhatsAppInbox() {
                 </div>
               )}
               <div className="flex items-center gap-2">
-                <button className="p-2 rounded-full hover:bg-gray-200 text-slate-500" title="Emoji">
+                <button className="p-2 rounded-full hover:bg-gray-200 dark:bg-slate-700 text-slate-500" title="Emoji">
                   <Smile size={22} />
                 </button>
-                <button className="p-2 rounded-full hover:bg-gray-200 text-slate-500" title="Adjuntar">
+                <button className="p-2 rounded-full hover:bg-gray-200 dark:bg-slate-700 text-slate-500" title="Adjuntar">
                   <Paperclip size={22} />
                 </button>
 
@@ -607,7 +607,7 @@ export default function WhatsAppInbox() {
                       sendMessage();
                     }
                   }}
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                  className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-slate-700 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white dark:bg-slate-900"
                 />
 
                 <button
@@ -616,7 +616,7 @@ export default function WhatsAppInbox() {
                   className={`p-2.5 rounded-full transition-colors ${
                     newMessage.trim() && !sending
                       ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
                   }`}
                 >
                   <Send size={20} />
@@ -630,7 +630,7 @@ export default function WhatsAppInbox() {
             <div className="w-64 h-64 mb-6 flex items-center justify-center">
               <MessageCircle size={120} className="text-gray-200" />
             </div>
-            <h3 className="text-xl font-light text-gray-500 mb-2">WhatsApp Business</h3>
+            <h3 className="text-xl font-light text-gray-500 dark:text-slate-500 mb-2">WhatsApp Business</h3>
             <p className="text-sm text-gray-400 text-center max-w-sm">
               Selecciona una conversación para ver los mensajes y responder desde aquí.
             </p>

@@ -270,16 +270,16 @@ export default function Dashboard({ reportsRefreshKey }) {
 
   return (
     <div className="p-6 overflow-y-auto h-full">
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Dashboard General</h1>
+      <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-6">Dashboard General</h1>
       
       {/* Resumen de Gastos */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">Resumen de Gastos</h2>
+        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4">Resumen de Gastos</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-red-100">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-red-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 uppercase font-medium">Total Gastos</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Total Gastos</p>
                 <h3 className="text-2xl font-bold text-red-600 mt-1">${expenses.total.toLocaleString()}</h3>
               </div>
               <div className="p-3 bg-red-50 rounded-full text-red-600">
@@ -288,10 +288,10 @@ export default function Dashboard({ reportsRefreshKey }) {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-orange-100">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-orange-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 uppercase font-medium">Gastos Fijos</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Gastos Fijos</p>
                 <h3 className="text-2xl font-bold text-orange-600 mt-1">${expenses.fixed.toLocaleString()}</h3>
               </div>
               <div className="p-3 bg-orange-50 rounded-full text-orange-600">
@@ -300,10 +300,10 @@ export default function Dashboard({ reportsRefreshKey }) {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-yellow-100">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border border-yellow-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-500 uppercase font-medium">Gastos Variables</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Gastos Variables</p>
                 <h3 className="text-2xl font-bold text-yellow-600 mt-1">${expenses.variable.toLocaleString()}</h3>
               </div>
               <div className="p-3 bg-yellow-50 rounded-full text-yellow-600">
@@ -316,8 +316,8 @@ export default function Dashboard({ reportsRefreshKey }) {
 
       {/* Ocupación por Sucursal */}
       <div className="mb-8">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">Ocupación por Sucursal</h2>
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <h2 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4">Ocupación por Sucursal</h2>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
           {branchStats.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {branchStats.map((stat) => (
@@ -325,32 +325,32 @@ export default function Dashboard({ reportsRefreshKey }) {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <MapPin size={18} className="text-teal-600" />
-                      <span className="font-medium text-gray-700">{stat.branch}</span>
+                      <span className="font-medium text-gray-700 dark:text-slate-300">{stat.branch}</span>
                     </div>
-                    <span className="text-sm font-bold text-gray-900">{stat.percentage}%</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{stat.percentage}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2.5">
                     <div 
                       className="bg-teal-600 h-2.5 rounded-full" 
                       style={{ width: `${stat.percentage}%` }}
                     ></div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1 text-right">{stat.count} citas</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-right">{stat.count} citas</p>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-4">No hay datos de sucursales disponibles aún.</p>
+            <p className="text-slate-500 dark:text-slate-400 text-center py-4">No hay datos de sucursales disponibles aún.</p>
           )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 uppercase font-medium">Citas Hoy</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Citas Hoy</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">
                 {loading ? '...' : todayAppointments}
               </h3>
             </div>
@@ -360,11 +360,11 @@ export default function Dashboard({ reportsRefreshKey }) {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 uppercase font-medium">Pacientes Activos</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Pacientes Activos</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">
                 {loading ? '...' : activePatients}
               </h3>
             </div>
@@ -374,11 +374,11 @@ export default function Dashboard({ reportsRefreshKey }) {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 uppercase font-medium">Ingresos Mes</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Ingresos Mes</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">
                 {loading ? '...' : `$${monthlyIncome.toLocaleString()}`}
               </h3>
             </div>
@@ -388,10 +388,10 @@ export default function Dashboard({ reportsRefreshKey }) {
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 uppercase font-medium">Crecimiento</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 uppercase font-medium">Crecimiento</p>
               <h3 className={`text-2xl font-bold mt-1 ${growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                 {loading ? '...' : `${growth >= 0 ? '+' : ''}${growth}%`}
               </h3>
@@ -404,11 +404,11 @@ export default function Dashboard({ reportsRefreshKey }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Próximas Citas</h3>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4">Próximas Citas</h3>
           <div className="space-y-4">
             {loading ? (
-              <p className="text-gray-500 text-center py-4">Cargando...</p>
+              <p className="text-slate-500 dark:text-slate-400 text-center py-4">Cargando...</p>
             ) : upcomingAppointments.length > 0 ? (
               upcomingAppointments.map(app => {
                 const initials = app.patient_name
@@ -431,35 +431,35 @@ export default function Dashboard({ reportsRefreshKey }) {
                 };
 
                 return (
-                  <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={app.id} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold">
                         {initials}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900">{app.patient_name}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-medium text-slate-900 dark:text-slate-100">{app.patient_name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
                           {app.service} • {app.time.slice(0, 5)}
                         </p>
                       </div>
                     </div>
-                    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[app.status] || 'bg-gray-100 text-gray-700'}`}>
+                    <span className={`px-2 py-1 text-xs rounded-full ${statusColors[app.status] || 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300'}`}>
                       {statusLabels[app.status] || app.status}
                     </span>
                   </div>
                 );
               })
             ) : (
-              <p className="text-gray-500 text-center py-4">No hay citas próximas</p>
+              <p className="text-slate-500 dark:text-slate-400 text-center py-4">No hay citas próximas</p>
             )}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Actividad Reciente</h3>
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm border">
+          <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-4">Actividad Reciente</h3>
           <div className="space-y-4">
             {loading ? (
-              <p className="text-gray-500 text-center py-4">Cargando...</p>
+              <p className="text-slate-500 dark:text-slate-400 text-center py-4">Cargando...</p>
             ) : recentActivity.length > 0 ? (
               recentActivity.map((activity, index) => {
                 const timeAgo = getTimeAgo(activity.date);
@@ -468,21 +468,21 @@ export default function Dashboard({ reportsRefreshKey }) {
                     <div className={`w-2 h-2 mt-2 rounded-full ${activity.type === 'lead' ? 'bg-teal-500' : 'bg-green-500'}`}></div>
                     <div>
                       {activity.type === 'lead' ? (
-                        <p className="text-sm text-gray-800">
+                        <p className="text-sm text-slate-800 dark:text-slate-200">
                           Nuevo lead registrado: <span className="font-medium">{activity.name}</span>
                         </p>
                       ) : (
-                        <p className="text-sm text-gray-800">
+                        <p className="text-sm text-slate-800 dark:text-slate-200">
                           Pago recibido: <span className="font-medium">${parseFloat(activity.amount).toLocaleString()}</span>
                         </p>
                       )}
-                      <p className="text-xs text-gray-500">{timeAgo}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{timeAgo}</p>
                     </div>
                   </div>
                 );
               })
             ) : (
-              <p className="text-gray-500 text-center py-4">No hay actividad reciente</p>
+              <p className="text-slate-500 dark:text-slate-400 text-center py-4">No hay actividad reciente</p>
             )}
           </div>
         </div>

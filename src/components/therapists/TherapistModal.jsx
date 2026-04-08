@@ -145,20 +145,20 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-slate-200">
             {therapist ? 'Editar Terapeuta' : 'Nuevo Terapeuta'}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={24} />
           </button>
         </div>
 
-        <div className="flex border-b bg-gray-50">
+        <div className="flex border-b bg-gray-50 dark:bg-slate-800/50">
           <button
             onClick={() => setActiveTab('general')}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'general' ? 'border-b-2 border-teal-500 text-teal-600 bg-white' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'general' ? 'border-b-2 border-teal-500 text-teal-600 bg-white dark:bg-slate-900' : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'}`}
           >
             <div className="flex items-center justify-center gap-2">
               <User size={16} /> Datos Básicos
@@ -166,7 +166,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           </button>
           <button
             onClick={() => setActiveTab('schedule')}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'schedule' ? 'border-b-2 border-teal-500 text-teal-600 bg-white' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'schedule' ? 'border-b-2 border-teal-500 text-teal-600 bg-white dark:bg-slate-900' : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'}`}
           >
             <div className="flex items-center justify-center gap-2">
               <Clock size={16} /> Horarios
@@ -174,7 +174,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           </button>
           <button
             onClick={() => setActiveTab('services')}
-            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'services' ? 'border-b-2 border-teal-500 text-teal-600 bg-white' : 'text-gray-500 hover:text-gray-700'}`}
+            className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === 'services' ? 'border-b-2 border-teal-500 text-teal-600 bg-white dark:bg-slate-900' : 'text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'}`}
           >
             <div className="flex items-center justify-center gap-2">
               <CheckSquare size={16} /> Servicios
@@ -187,7 +187,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
             <div className="space-y-6">
               <div className="flex justify-center">
                 <div className="relative group">
-                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 border-4 border-white shadow-lg">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-slate-800 border-4 border-white shadow-lg">
                     {formData.photo_url ? (
                       <img src={formData.photo_url} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
@@ -205,7 +205,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nombre Completo</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -215,7 +215,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label>
                   <input
                     type="email"
                     value={formData.email}
@@ -224,7 +224,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Teléfono</label>
                   <input
                     type="tel"
                     value={formData.phone}
@@ -233,7 +233,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Puesto (ej. Tanatólogo/a)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Puesto (ej. Tanatólogo/a)</label>
                   <input
                     type="text"
                     value={formData.specialty}
@@ -242,7 +242,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Rol de Acceso</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Rol de Acceso</label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
@@ -260,7 +260,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           {activeTab === 'schedule' && (
             <div className="space-y-4">
               {DAYS.map((day) => (
-                <div key={day.key} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
+                <div key={day.key} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-slate-800/50 rounded-lg">
                   <div className="w-32 flex items-center gap-2">
                     <input
                       type="checkbox"
@@ -268,7 +268,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                       onChange={(e) => handleScheduleChange(day.key, 'active', e.target.checked)}
                       className="w-4 h-4 text-teal-600 rounded focus:ring-teal-500"
                     />
-                    <span className="font-medium text-gray-700">{day.label}</span>
+                    <span className="font-medium text-gray-700 dark:text-slate-300">{day.label}</span>
                   </div>
                   
                   {formData.schedule[day.key]?.active && (
@@ -298,7 +298,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           {activeTab === 'services' && (
             <div className="space-y-3">
               {SERVICES_LIST.map((service) => (
-                <div key={service} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div key={service} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:bg-slate-800/50 transition-colors">
                   <label className="flex items-center gap-3 cursor-pointer flex-1">
                     <input
                       type="checkbox"
@@ -306,12 +306,12 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                       onChange={() => toggleService(service)}
                       className="w-5 h-5 text-teal-600 rounded focus:ring-teal-500"
                     />
-                    <span className="text-gray-700">{service}</span>
+                    <span className="text-gray-700 dark:text-slate-300">{service}</span>
                   </label>
                   
                   {formData.services.includes(service) && (
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-500">Comisión: $</span>
+                      <span className="text-sm text-gray-500 dark:text-slate-500">Comisión: $</span>
                       <input
                         type="number"
                         value={formData.commissions[service] || ''}
@@ -327,7 +327,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           )}
         </div>
 
-        <div className="p-6 border-t bg-gray-50 flex justify-between items-center">
+        <div className="p-6 border-t bg-gray-50 dark:bg-slate-800/50 flex justify-between items-center">
           {therapist && onDelete ? (
             <button
               onClick={() => {
@@ -344,7 +344,7 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:bg-slate-800 rounded-lg transition-colors"
             >
               Cancelar
             </button>

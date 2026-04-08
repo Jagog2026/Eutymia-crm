@@ -156,14 +156,19 @@ export default function AdminPanel() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const getRoleBadge = (role) => {
+  const getRoleBadge = (user) => {
+    // Si tiene rol de admin pero está asociado a un terapeuta, lo marcamos diferente visualmente
+    if (user.role === 'admin' && user.therapist_id) {
+      return { label: 'Admin (Terapeuta)', color: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800' };
+    }
+    
     const badges = {
-      admin: { label: 'Administrador', color: 'bg-purple-100 text-purple-800' },
-      therapist: { label: 'Terapeuta', color: 'bg-blue-100 text-blue-800' },
-      reception: { label: 'Recepción', color: 'bg-green-100 text-green-800' },
-      user: { label: 'Usuario', color: 'bg-gray-100 text-gray-800' }
+      admin: { label: 'Administrador', color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800' },
+      therapist: { label: 'Terapeuta', color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800' },
+      reception: { label: 'Recepción', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800' },
+      user: { label: 'Usuario', color: 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-300 border border-gray-200 dark:border-slate-700' }
     };
-    return badges[role] || badges.user;
+    return badges[user.role] || badges.user;
   };
 
   if (isLoading) {
@@ -175,17 +180,17 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-slate-800/50">
       {/* Header */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-slate-900 border-b">
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-50 flex items-center gap-2">
                 <Shield className="text-teal-600" size={28} />
                 Panel de Administración
               </h1>
-              <p className="text-gray-600 mt-1">Gestiona usuarios y permisos del sistema</p>
+              <p className="text-gray-600 dark:text-slate-400 mt-1">Gestiona usuarios y permisos del sistema</p>
             </div>
             <button
               onClick={() => handleOpenUserModal()}
@@ -278,45 +283,45 @@ export default function AdminPanel() {
 
       {/* Users Table */}
       <div className="flex-1 overflow-auto p-6">
-        <div className="bg-white rounded-lg border shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-lg border shadow-sm">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-slate-800/50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Usuario
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Rol
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Terapeuta Asociado
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Estado
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Contraseña
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
                   Acciones
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
               {filteredUsers.map((user) => {
-                const roleBadge = getRoleBadge(user.role);
+                const roleBadge = getRoleBadge(user);
                 return (
-                  <tr key={user.id} className="hover:bg-gray-50">
+                  <tr key={user.id} className="hover:bg-gray-50 dark:bg-slate-800/50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold">
                           {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-slate-50">
                             {user.full_name || 'Sin nombre'}
                           </div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="text-sm text-gray-500 dark:text-slate-500">{user.email}</div>
                         </div>
                       </div>
                     </td>
@@ -328,8 +333,8 @@ export default function AdminPanel() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {user.therapist ? (
                         <div className="text-sm">
-                          <div className="font-medium text-gray-900">{user.therapist.name}</div>
-                          <div className="text-gray-500">{user.therapist.email}</div>
+                          <div className="font-medium text-gray-900 dark:text-slate-50">{user.therapist.name}</div>
+                          <div className="text-gray-500 dark:text-slate-500">{user.therapist.email}</div>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">-</span>
@@ -355,7 +360,7 @@ export default function AdminPanel() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-xs font-mono">
+                      <code className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded text-xs font-mono">
                         {user.password}
                       </code>
                     </td>
@@ -404,7 +409,7 @@ export default function AdminPanel() {
           {filteredUsers.length === 0 && (
             <div className="p-12 text-center">
               <Users className="mx-auto text-gray-300 mb-4" size={48} />
-              <p className="text-gray-500 text-lg">No se encontraron usuarios</p>
+              <p className="text-gray-500 dark:text-slate-500 text-lg">No se encontraron usuarios</p>
               <p className="text-gray-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
             </div>
           )}

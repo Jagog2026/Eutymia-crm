@@ -31,7 +31,7 @@ export default function Leads() {
     { id: 'lost', name: 'Perdido', color: 'bg-red-100 text-red-800' },
     { id: 'partners', name: 'Aliados/Proveedores', color: 'bg-blue-100 text-blue-800' },
     { id: 'px_agpro', name: 'Px AgPro', color: 'bg-indigo-100 text-indigo-800' },
-    { id: 'general_base', name: 'Base General', color: 'bg-gray-100 text-gray-800' }
+    { id: 'general_base', name: 'Base General', color: 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200' }
   ]);
 
   useEffect(() => {
@@ -251,7 +251,7 @@ export default function Leads() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Eutymia Ventas</h1>
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-200">Eutymia Ventas</h1>
         {selectedLeads.length > 0 && (
           <div className="flex gap-2">
             <button
@@ -317,7 +317,7 @@ export default function Leads() {
             {stages.map(stage => (
               <div 
                 key={stage.id} 
-                className="flex-1 flex flex-col bg-gray-50 rounded-lg border min-w-[280px]"
+                className="flex-1 flex flex-col bg-gray-50 dark:bg-slate-800/50 rounded-lg border min-w-[280px]"
                 onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, stage.id)}
               >
@@ -332,7 +332,7 @@ export default function Leads() {
                         e.stopPropagation();
                         handleSelectAllInStage(stage.id);
                       }}
-                      className="pointer-events-auto text-gray-500 hover:text-gray-700"
+                      className="pointer-events-auto text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300"
                     >
                       {leads.filter(l => l.status === stage.id).length > 0 && leads.filter(l => l.status === stage.id).every(l => selectedLeads.includes(l.id)) ? (
                         <CheckSquare size={16} className="text-teal-600" />
@@ -341,7 +341,7 @@ export default function Leads() {
                       )}
                     </button>
                     {stage.name}
-                    <span className="bg-white px-2 py-0.5 rounded-full text-xs shadow-sm border">
+                    <span className="bg-white dark:bg-slate-900 px-2 py-0.5 rounded-full text-xs shadow-sm border">
                       {leads.filter(l => l.status === stage.id).length}
                     </span>
                   </div>
@@ -351,7 +351,7 @@ export default function Leads() {
                         e.stopPropagation();
                         setIsModalOpen(true);
                       }}
-                      className="p-1 hover:bg-white rounded-full transition-colors text-gray-600 hover:text-teal-600 pointer-events-auto"
+                      className="p-1 hover:bg-white dark:bg-slate-900 rounded-full transition-colors text-gray-600 dark:text-slate-400 hover:text-teal-600 pointer-events-auto"
                       title="Añadir nuevo lead"
                     >
                       <Plus size={18} />

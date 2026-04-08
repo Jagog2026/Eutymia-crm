@@ -140,17 +140,17 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-        <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-800">{initialData ? 'Editar Lead' : 'Nuevo Lead'}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b bg-gray-50 dark:bg-slate-800/50">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-slate-200">{initialData ? 'Editar Lead' : 'Nuevo Lead'}</h2>
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Paciente</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Nombre del Paciente</label>
             <div className="relative">
               <User className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <input
@@ -166,7 +166,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Teléfono</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -179,7 +179,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <input
@@ -194,7 +194,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Valor Estimado</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Valor Estimado</label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <input
@@ -208,7 +208,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Servicio de Interés</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Servicio de Interés</label>
             <select
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500"
               value={formData.service}
@@ -222,7 +222,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
 
           {formData.service && formData.service.toLowerCase().includes('sesión') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Terapeuta Asignado</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Terapeuta Asignado</label>
               <div className="relative">
                 <User className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <select
@@ -240,7 +240,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Origen (Source)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Origen (Source)</label>
             <div className="relative">
               <Globe className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <select
@@ -257,7 +257,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Línea de WhatsApp</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Línea de WhatsApp</label>
             <div className="relative">
               <Phone className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <select
@@ -274,7 +274,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
 
           {['Facebook', 'Instagram', 'TikTok'].includes(formData.source) && !formData.service.toLowerCase().includes('sesión') && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Cuenta de Facebook</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Cuenta de Facebook</label>
               <div className="relative">
                 <Globe className="absolute left-3 top-2.5 text-gray-400" size={18} />
                 <select
@@ -293,7 +293,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
 
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Notas</label>
             <div className="relative">
               <FileText className="absolute left-3 top-2.5 text-gray-400" size={18} />
               <textarea
@@ -312,7 +312,7 @@ export default function NewLeadModal({ isOpen, onClose, onSave, initialData }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 rounded-lg transition-colors"
               disabled={loading}
             >
               Cancelar

@@ -166,12 +166,12 @@ export default function UserModal({ user, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-6 border-b">
-          <h3 className="text-lg font-medium text-gray-900">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-slate-50">
             {user ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-500 dark:text-slate-500">
             <X size={20} />
           </button>
         </div>
@@ -180,7 +180,7 @@ export default function UserModal({ user, onClose, onSave }) {
           {error && (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded text-sm">
               <p className="font-bold mb-2">📋 Instrucciones para crear el usuario:</p>
-              <pre className="whitespace-pre-wrap text-xs bg-white p-2 rounded border mt-2 overflow-x-auto">
+              <pre className="whitespace-pre-wrap text-xs bg-white dark:bg-slate-900 p-2 rounded border mt-2 overflow-x-auto">
                 {error}
               </pre>
               <button
@@ -197,7 +197,7 @@ export default function UserModal({ user, onClose, onSave }) {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Nombre Completo
             </label>
             <input
@@ -210,7 +210,7 @@ export default function UserModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Correo Electrónico
             </label>
             <input
@@ -219,13 +219,13 @@ export default function UserModal({ user, onClose, onSave }) {
               disabled={!!user}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 disabled:text-gray-500"
+              className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 disabled:bg-gray-100 dark:bg-slate-800 disabled:text-gray-500 dark:text-slate-500"
             />
           </div>
 
           {!user && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Contraseña Inicial
               </label>
               <div className="relative">
@@ -240,17 +240,17 @@ export default function UserModal({ user, onClose, onSave }) {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
+              <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">Mínimo 6 caracteres</p>
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Rol de Acceso
             </label>
             <select
@@ -277,7 +277,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     therapistMode === 'existing'
                       ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                      : 'bg-white dark:bg-slate-900 text-blue-700 border border-blue-300 hover:bg-blue-100'
                   }`}
                 >
                   <Users size={16} /> Existente
@@ -288,7 +288,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     therapistMode === 'new'
                       ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-100'
+                      : 'bg-white dark:bg-slate-900 text-blue-700 border border-blue-300 hover:bg-blue-100'
                   }`}
                 >
                   <UserPlus size={16} /> Crear Nuevo
@@ -318,9 +318,9 @@ export default function UserModal({ user, onClose, onSave }) {
                   )}
                 </>
               ) : (
-                <div className="space-y-3 bg-white rounded-lg p-3 border border-blue-200">
+                <div className="space-y-3 bg-white dark:bg-slate-900 rounded-lg p-3 border border-blue-200">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Nombre del Terapeuta *</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Nombre del Terapeuta *</label>
                     <input
                       type="text"
                       required
@@ -332,7 +332,7 @@ export default function UserModal({ user, onClose, onSave }) {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Email</label>
                       <input
                         type="email"
                         value={newTherapist.email}
@@ -342,7 +342,7 @@ export default function UserModal({ user, onClose, onSave }) {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-600 mb-1">Teléfono</label>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Teléfono</label>
                       <input
                         type="tel"
                         value={newTherapist.phone}
@@ -353,7 +353,7 @@ export default function UserModal({ user, onClose, onSave }) {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">Especialidad / Puesto</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Especialidad / Puesto</label>
                     <input
                       type="text"
                       value={newTherapist.specialty}
@@ -383,9 +383,9 @@ export default function UserModal({ user, onClose, onSave }) {
                 id="active"
                 checked={formData.active}
                 onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 dark:border-slate-600 rounded"
               />
-              <label htmlFor="active" className="ml-2 block text-sm text-gray-900">
+              <label htmlFor="active" className="ml-2 block text-sm text-gray-900 dark:text-slate-50">
                 Usuario Activo
               </label>
             </div>
@@ -395,7 +395,7 @@ export default function UserModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:bg-slate-800/50"
             >
               Cancelar
             </button>

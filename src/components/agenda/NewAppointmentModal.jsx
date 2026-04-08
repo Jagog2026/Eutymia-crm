@@ -407,12 +407,12 @@ export default function NewAppointmentModal({
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-        <div className="flex justify-between items-center border-b pb-3 mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Nueva Cita</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl p-6 w-full max-w-md">
+        <div className="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-50">Nueva Cita</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:text-slate-500"
           >
             <X size={20} />
           </button>
@@ -429,11 +429,11 @@ export default function NewAppointmentModal({
                   setAppointment((prev) => ({ ...prev, patient_name: '' }));
                 }
               }}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-slate-600 rounded"
             />
             <label
               htmlFor="is_new_patient"
-              className="ml-2 block text-sm text-gray-900"
+              className="ml-2 block text-sm text-gray-900 dark:text-slate-50"
             >
               Paciente Nuevo (Registrar en base de datos)
             </label>
@@ -444,7 +444,7 @@ export default function NewAppointmentModal({
               <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300"
                 >
                   Nombre(s)
                 </label>
@@ -458,14 +458,14 @@ export default function NewAppointmentModal({
                       firstName: e.target.value,
                     }))
                   }
-                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                   required
                 />
               </div>
               <div>
                 <label
                   htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300"
                 >
                   Apellidos
                 </label>
@@ -479,7 +479,7 @@ export default function NewAppointmentModal({
                       lastName: e.target.value,
                     }))
                   }
-                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                  className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                   required
                 />
               </div>
@@ -488,7 +488,7 @@ export default function NewAppointmentModal({
             <div>
               <label
                 htmlFor="patient_name"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300"
               >
                 Nombre del Paciente
               </label>
@@ -513,15 +513,15 @@ export default function NewAppointmentModal({
                     // Delay hiding to allow click event on result
                     setTimeout(() => setShowResults(false), 200);
                   }}
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                   placeholder="Buscar por nombre..."
                   required
                   autoComplete="off"
                 />
                 {showResults && (
-                  <div className="absolute z-10 w-full mt-1 bg-white shadow-lg max-h-60 rounded-b-md py-0 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-slate-900 shadow-lg max-h-60 rounded-b-md py-0 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                     <div
-                      className="cursor-pointer select-none relative py-3 pl-3 pr-9 hover:bg-gray-100 border-b border-gray-100 bg-gray-50"
+                      className="cursor-pointer select-none relative py-3 pl-3 pr-9 hover:bg-gray-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-800 border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50"
                       onClick={() => {
                         setIsNewPatient(true);
                         setAppointment((prev) => ({
@@ -531,7 +531,7 @@ export default function NewAppointmentModal({
                         setShowResults(false);
                       }}
                     >
-                      <div className="flex items-center justify-center text-gray-700">
+                      <div className="flex items-center justify-center text-gray-700 dark:text-slate-300">
                         <Plus size={14} className="mr-1" />
                         <span className="text-sm underline">
                           Crear como nuevo paciente
@@ -542,14 +542,14 @@ export default function NewAppointmentModal({
                     {searchResults.map((result, index) => (
                       <div
                         key={`${result.type}-${result.id}-${index}`}
-                        className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50 bg-white border-b border-gray-50 last:border-0"
+                        className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-indigo-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 border-gray-50 last:border-0"
                         onClick={() => selectClient(result)}
                       >
                         <div className="flex flex-col">
-                          <span className="font-medium text-gray-900 text-sm">
+                          <span className="font-medium text-gray-900 dark:text-slate-50 text-sm">
                             {result.name}
                           </span>
-                          <span className="text-xs text-gray-500 mt-0.5">
+                          <span className="text-xs text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 mt-0.5">
                             {result.email || 'Sin email'} |{' '}
                             {result.phone || 'Sin teléfono'}
                           </span>
@@ -572,7 +572,7 @@ export default function NewAppointmentModal({
             <div>
               <label
                 htmlFor="patient_phone"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300"
               >
                 Teléfono
               </label>
@@ -582,14 +582,14 @@ export default function NewAppointmentModal({
                 id="patient_phone"
                 value={appointment.patient_phone}
                 onChange={handleChange}
-                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                 placeholder="55 1234 5678"
               />
             </div>
             <div>
               <label
                 htmlFor="patient_email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300"
               >
                 Email
               </label>
@@ -599,7 +599,7 @@ export default function NewAppointmentModal({
                 id="patient_email"
                 value={appointment.patient_email}
                 onChange={handleChange}
-                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                 placeholder="correo@ejemplo.com"
               />
             </div>
@@ -609,7 +609,7 @@ export default function NewAppointmentModal({
             <div>
               <label
                 htmlFor="date"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300"
               >
                 Fecha
               </label>
@@ -623,7 +623,7 @@ export default function NewAppointmentModal({
                   id="date"
                   value={appointment.date}
                   onChange={handleChange}
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                   required
                 />
               </div>
@@ -631,7 +631,7 @@ export default function NewAppointmentModal({
             <div>
               <label
                 htmlFor="time"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300"
               >
                 Hora
               </label>
@@ -645,7 +645,7 @@ export default function NewAppointmentModal({
                   id="time"
                   value={appointment.time}
                   onChange={handleChange}
-                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                  className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                   required
                 />
               </div>
@@ -655,7 +655,7 @@ export default function NewAppointmentModal({
           <div>
             <label
               htmlFor="therapist_id"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-slate-300"
             >
               Terapeuta
             </label>
@@ -669,7 +669,7 @@ export default function NewAppointmentModal({
                 value={appointment.therapist_id}
                 onChange={handleChange}
                 disabled={userRole === 'therapist'}
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-700"
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md disabled:bg-gray-100 dark:bg-slate-800 disabled:text-gray-700 dark:text-slate-300"
                 required
               >
                 <option value="">
@@ -691,7 +691,7 @@ export default function NewAppointmentModal({
               </p>
             )}
             {userRole === 'therapist' && (
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Las citas se crean automáticamente para tu agenda
               </p>
             )}
@@ -700,7 +700,7 @@ export default function NewAppointmentModal({
           <div>
             <label
               htmlFor="service"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-slate-300"
             >
               Servicio
             </label>
@@ -713,7 +713,7 @@ export default function NewAppointmentModal({
                 id="service"
                 value={appointment.service}
                 onChange={handleChange}
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                 required
               >
                 <option value="">Selecciona un servicio</option>
@@ -729,7 +729,7 @@ export default function NewAppointmentModal({
           <div>
             <label
               htmlFor="branch"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-slate-300"
             >
               Sucursal
             </label>
@@ -743,7 +743,7 @@ export default function NewAppointmentModal({
                 value={isOnlineService(appointment.service) ? 'En linea' : appointment.branch}
                 onChange={handleChange}
                 disabled={isOnlineService(appointment.service)}
-                className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md disabled:bg-gray-100 disabled:text-gray-500"
+                className="focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md disabled:bg-gray-100 dark:bg-slate-800 disabled:text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500"
                 required
               >
                 <option value="">Selecciona una sucursal</option>
@@ -762,7 +762,7 @@ export default function NewAppointmentModal({
           <div>
             <label
               htmlFor="notes"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 dark:text-slate-300"
             >
               Notas
             </label>
@@ -776,7 +776,7 @@ export default function NewAppointmentModal({
                 rows="3"
                 value={appointment.notes}
                 onChange={handleChange}
-                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-slate-600 rounded-md"
                 placeholder="Notas adicionales sobre la cita"
               ></textarea>
             </div>
@@ -793,7 +793,7 @@ export default function NewAppointmentModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 rounded-md hover:bg-gray-200 dark:bg-slate-700"
             >
               Cancelar
             </button>

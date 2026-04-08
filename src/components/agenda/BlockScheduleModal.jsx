@@ -105,13 +105,13 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
-        <div className="flex justify-between items-center p-4 border-b bg-gray-50">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+        <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
             <Lock size={20} className="text-red-500" />
             {isEditing ? 'Modificar Bloqueo' : 'Bloquear Horario'}
           </h3>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={20} />
           </button>
         </div>
@@ -124,7 +124,7 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Motivo del bloqueo
             </label>
             <textarea
@@ -139,7 +139,7 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
 
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Fecha y Hora de Inicio
               </label>
               <div className="relative">
@@ -154,7 +154,7 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
                 Fecha y Hora de Fin
               </label>
               <div className="relative">
@@ -190,7 +190,7 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-md hover:bg-gray-50 dark:bg-slate-800/50"
             >
               Cancelar
             </button>

@@ -98,13 +98,13 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-4xl flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-200 flex items-center gap-2">
             <MessageCircle className="text-green-600" />
             Enviar WhatsApp Masivo
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={24} />
           </button>
         </div>
@@ -115,7 +115,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
             <div className="space-y-4">
               {/* Line Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Enviar desde</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Enviar desde</label>
                 <select
                   value={selectedLine}
                   onChange={(e) => setSelectedLine(e.target.value)}
@@ -125,14 +125,14 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
                   <option value="2">Línea WhatsApp 2</option>
                   <option value="3">Línea WhatsApp 3</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                   Asegúrate de tener abierta la sesión de WhatsApp Web correspondiente.
                 </p>
               </div>
 
               {/* Title */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título (opcional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Título (opcional)</label>
                 <input
                   type="text"
                   value={title}
@@ -144,21 +144,21 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
 
               {/* Message Editor */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mensaje</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">Mensaje</label>
                 <div className="border rounded-lg overflow-hidden">
                   {/* Toolbar */}
-                  <div className="flex items-center gap-1 p-2 bg-gray-50 border-b">
-                    <button onClick={() => handleFormat('bold')} className="p-1.5 hover:bg-gray-200 rounded" title="Negrita">
+                  <div className="flex items-center gap-1 p-2 bg-gray-50 dark:bg-slate-800/50 border-b">
+                    <button onClick={() => handleFormat('bold')} className="p-1.5 hover:bg-gray-200 dark:bg-slate-700 rounded" title="Negrita">
                       <Bold size={16} />
                     </button>
-                    <button onClick={() => handleFormat('italic')} className="p-1.5 hover:bg-gray-200 rounded" title="Cursiva">
+                    <button onClick={() => handleFormat('italic')} className="p-1.5 hover:bg-gray-200 dark:bg-slate-700 rounded" title="Cursiva">
                       <Italic size={16} />
                     </button>
-                    <button onClick={() => handleFormat('strikethrough')} className="p-1.5 hover:bg-gray-200 rounded" title="Tachado">
+                    <button onClick={() => handleFormat('strikethrough')} className="p-1.5 hover:bg-gray-200 dark:bg-slate-700 rounded" title="Tachado">
                       <Strikethrough size={16} />
                     </button>
                     <div className="w-px h-4 bg-gray-300 mx-1" />
-                    <label className="p-1.5 hover:bg-gray-200 rounded cursor-pointer" title="Subir imagen">
+                    <label className="p-1.5 hover:bg-gray-200 dark:bg-slate-700 rounded cursor-pointer" title="Subir imagen">
                       <ImageIcon size={16} />
                       <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
                     </label>
@@ -176,7 +176,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
 
               {/* Image Preview */}
               {uploading && (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
+                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-slate-500">
                   <Loader className="animate-spin" size={16} /> Subiendo imagen...
                 </div>
               )}
@@ -196,7 +196,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
               {/* Preview Box */}
               <div className="bg-green-50 p-4 rounded-lg border border-green-100">
                 <h4 className="text-xs font-semibold text-green-800 uppercase mb-2">Vista previa del mensaje</h4>
-                <div className="text-sm text-gray-800 whitespace-pre-wrap font-sans">
+                <div className="text-sm text-gray-800 dark:text-slate-200 whitespace-pre-wrap font-sans">
                   {title && <div className="font-bold mb-2">{title}</div>}
                   {message || <span className="text-gray-400 italic">Tu mensaje aparecerá aquí...</span>}
                   {imageUrl && (
@@ -217,10 +217,10 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
           </div>
 
           {/* Right Panel: Recipients */}
-          <div className="w-1/2 p-6 bg-gray-50 overflow-y-auto">
-            <h3 className="font-medium text-gray-900 mb-3 flex items-center justify-between">
+          <div className="w-1/2 p-6 bg-gray-50 dark:bg-slate-800/50 overflow-y-auto">
+            <h3 className="font-medium text-gray-900 dark:text-slate-50 mb-3 flex items-center justify-between">
               Destinatarios ({recipientCount})
-              <span className="text-xs font-normal text-gray-500">
+              <span className="text-xs font-normal text-gray-500 dark:text-slate-500">
                 Se abrirá WhatsApp Web
               </span>
             </h3>
@@ -229,10 +229,10 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
               {recipients.map(lead => {
                 const phone = lead.whatsapp_line || lead.phone;
                 return (
-                  <div key={lead.id} className="flex items-center justify-between p-3 bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow">
+                  <div key={lead.id} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border shadow-sm hover:shadow-md transition-shadow">
                     <div>
-                      <p className="font-medium text-gray-900">{lead.full_name || lead.name}</p>
-                      <p className="text-sm text-gray-500 flex items-center gap-1">
+                      <p className="font-medium text-gray-900 dark:text-slate-50">{lead.full_name || lead.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-slate-500 flex items-center gap-1">
                         <MessageCircle size={12} /> {phone}
                       </p>
                     </div>
@@ -243,7 +243,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                         (message.trim() || title.trim() || imageUrl)
                           ? 'bg-green-600 text-white hover:bg-green-700 shadow-sm' 
-                          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-200 dark:bg-slate-700 text-gray-400 cursor-not-allowed'
                       }`}
                       onClick={(e) => !(message.trim() || title.trim() || imageUrl) && e.preventDefault()}
                     >
@@ -254,7 +254,7 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
               })}
               
               {recipients.length === 0 && (
-                <div className="text-center py-8 text-gray-500 bg-white rounded-lg border border-dashed">
+                <div className="text-center py-8 text-gray-500 dark:text-slate-500 bg-white dark:bg-slate-900 rounded-lg border border-dashed">
                   No hay destinatarios seleccionados con número de teléfono válido.
                 </div>
               )}
@@ -262,10 +262,10 @@ export default function BulkWhatsAppModal({ isOpen, onClose, selectedLeads, lead
           </div>
         </div>
 
-        <div className="p-6 border-t bg-white rounded-b-lg flex justify-end">
+        <div className="p-6 border-t bg-white dark:bg-slate-900 rounded-b-lg flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 rounded-lg transition-colors"
           >
             Cerrar
           </button>

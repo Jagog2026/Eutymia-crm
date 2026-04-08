@@ -56,24 +56,24 @@ export default function PasswordModal({ user, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-md">
         <div className="flex justify-between items-center p-6 border-b">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-100 rounded-lg">
               <Key className="text-amber-600" size={24} />
             </div>
             <div>
-              <h3 className="text-xl font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-slate-50">
                 Cambiar Contraseña
               </h3>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-slate-500 mt-1">
                 {user?.email}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-500 p-1 rounded-lg hover:bg-gray-100"
+            className="text-gray-400 hover:text-gray-500 dark:text-slate-500 p-1 rounded-lg hover:bg-gray-100 dark:bg-slate-800"
           >
             <X size={24} />
           </button>
@@ -112,7 +112,7 @@ export default function PasswordModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Nueva Contraseña *
             </label>
             <div className="relative">
@@ -123,13 +123,13 @@ export default function PasswordModal({ user, onClose, onSave }) {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={success}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 pr-10 disabled:bg-gray-100"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 pr-10 disabled:bg-gray-100 dark:bg-slate-800"
                 placeholder="Mínimo 6 caracteres"
               />
               <button
                 type="button"
                 onClick={() => setShowPasswords(!showPasswords)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-slate-400"
               >
                 {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -137,7 +137,7 @@ export default function PasswordModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
               Confirmar Contraseña *
             </label>
             <input
@@ -147,7 +147,7 @@ export default function PasswordModal({ user, onClose, onSave }) {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={success}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 disabled:bg-gray-100"
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 disabled:bg-gray-100 dark:bg-slate-800"
               placeholder="Repite la contraseña"
             />
           </div>
@@ -176,7 +176,7 @@ export default function PasswordModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-2 text-sm font-medium text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:bg-slate-800/50 transition-colors"
             >
               Cancelar
             </button>

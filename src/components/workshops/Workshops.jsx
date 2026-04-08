@@ -163,14 +163,14 @@ export default function Workshops() {
       {/* Main Content - Workshops List */}
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Talleres y Eventos</h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-200">Talleres y Eventos</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {loading ? (
-            <div className="col-span-full text-center py-8 text-gray-500">Cargando talleres...</div>
+            <div className="col-span-full text-center py-8 text-gray-500 dark:text-slate-500">Cargando talleres...</div>
           ) : workshops.length === 0 ? (
-            <div className="col-span-full text-center py-8 text-gray-500">
+            <div className="col-span-full text-center py-8 text-gray-500 dark:text-slate-500">
               No hay talleres disponibles. <button onClick={handleNewWorkshopClick} className="text-teal-600 hover:underline">Crea uno nuevo</button>.
             </div>
           ) : (
@@ -179,7 +179,7 @@ export default function Workshops() {
               return (
                 <div 
                   key={workshop.id} 
-                  className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
+                  className="bg-white dark:bg-slate-900 rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
                 >
                   <div 
                     className="cursor-pointer"
@@ -193,25 +193,25 @@ export default function Workshops() {
                           <Calendar size={48} />
                         </div>
                       )}
-                      <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-xs font-bold text-teal-600 shadow-sm">
+                      <div className="absolute top-4 right-4 bg-white dark:bg-slate-900 px-3 py-1 rounded-full text-xs font-bold text-teal-600 shadow-sm">
                         ${workshop.price}
                       </div>
                     </div>
                     
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">{workshop.title}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{workshop.description}</p>
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-slate-50 mb-2">{workshop.title}</h3>
+                      <p className="text-gray-600 dark:text-slate-400 text-sm mb-4 line-clamp-2">{workshop.description}</p>
                       
                       <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
                           <Calendar size={16} className="text-teal-500" />
                           {new Date(workshop.date).toLocaleDateString()}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
                           <Clock size={16} className="text-teal-500" />
                           {new Date(workshop.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} ({workshop.duration_minutes} min)
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-slate-400">
                           <Users size={16} className="text-teal-500" />
                           {workshop.current_attendees || 0} / {workshop.max_attendees} inscritos
                         </div>
@@ -231,7 +231,7 @@ export default function Workshops() {
                   {/* Registered Leads Section */}
                   {workshopRegistrations.length > 0 && (
                     <div className="px-6 pb-4 border-t pt-4">
-                      <h4 className="text-xs font-semibold text-gray-700 uppercase mb-2">
+                      <h4 className="text-xs font-semibold text-gray-700 dark:text-slate-300 uppercase mb-2">
                         Inscritos ({workshopRegistrations.length})
                       </h4>
                       <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -294,15 +294,15 @@ export default function Workshops() {
         {/* Registration Modal */}
         {showRegisterModal && workshopForRegistration && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
-              <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden">
+              <div className="p-6 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Inscribir Lead Pagado</h2>
-                  <p className="text-sm text-gray-600 mt-1">{workshopForRegistration.title}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-slate-50">Inscribir Lead Pagado</h2>
+                  <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">{workshopForRegistration.title}</p>
                 </div>
                 <button
                   onClick={closeRegisterModal}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 hover:text-gray-600 dark:text-slate-400"
                 >
                   <X size={24} />
                 </button>
@@ -312,7 +312,7 @@ export default function Workshops() {
                 {paidLeads.length === 0 ? (
                   <div className="text-center py-12">
                     <CheckCircle size={48} className="mx-auto text-gray-300 mb-4" />
-                    <p className="text-gray-500 text-lg font-medium">No hay leads pagados disponibles</p>
+                    <p className="text-gray-500 dark:text-slate-500 text-lg font-medium">No hay leads pagados disponibles</p>
                     <p className="text-gray-400 text-sm mt-2">
                       Los leads deben tener el estado "Pagado" para poder inscribirse en talleres.
                     </p>
@@ -329,23 +329,23 @@ export default function Workshops() {
                           key={lead.id}
                           className={`p-4 rounded-lg border-2 transition-all ${
                             alreadyRegistered
-                              ? 'border-gray-200 bg-gray-50 opacity-60'
+                              ? 'border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 opacity-60'
                               : 'border-green-200 bg-green-50 hover:border-green-400 hover:shadow-md cursor-pointer'
                           }`}
                           onClick={() => !alreadyRegistered && registerLead(workshopForRegistration.id, lead)}
                         >
                           <div className="flex items-start justify-between mb-2">
                             <div className="flex-1">
-                              <h3 className="font-bold text-gray-900">{lead.full_name || lead.name || 'Sin nombre'}</h3>
+                              <h3 className="font-bold text-gray-900 dark:text-slate-50">{lead.full_name || lead.name || 'Sin nombre'}</h3>
                               {lead.email && (
-                                <p className="text-xs text-gray-600 mt-1">{lead.email}</p>
+                                <p className="text-xs text-gray-600 dark:text-slate-400 mt-1">{lead.email}</p>
                               )}
                               {lead.phone && (
-                                <p className="text-xs text-gray-600">{lead.phone}</p>
+                                <p className="text-xs text-gray-600 dark:text-slate-400">{lead.phone}</p>
                               )}
                             </div>
                             {alreadyRegistered && (
-                              <span className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded-full">
+                              <span className="px-2 py-1 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300 text-xs rounded-full">
                                 Ya inscrito
                               </span>
                             )}
@@ -370,10 +370,10 @@ export default function Workshops() {
                 )}
               </div>
 
-              <div className="p-4 border-t border-gray-200 bg-gray-50">
+              <div className="p-4 border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50">
                 <button
                   onClick={closeRegisterModal}
-                  className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="w-full px-4 py-2 bg-gray-200 dark:bg-slate-700 text-gray-700 dark:text-slate-300 rounded-lg hover:bg-gray-300 transition-colors"
                 >
                   Cerrar
                 </button>
@@ -384,21 +384,21 @@ export default function Workshops() {
       </div>
 
       {/* Sidebar - Paid Leads */}
-      <div className="w-80 bg-gray-50 border-l p-6 overflow-y-auto hidden xl:block">
-        <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+      <div className="w-80 bg-gray-50 dark:bg-slate-800/50 border-l p-6 overflow-y-auto hidden xl:block">
+        <h2 className="text-lg font-bold text-gray-800 dark:text-slate-200 mb-4 flex items-center gap-2">
           <CheckCircle size={20} className="text-green-600" />
           Leads Pagados
         </h2>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-gray-500 dark:text-slate-500 mb-4">
           Estos prospectos ya han pagado y están listos para ser asignados a un taller.
         </p>
 
         <div className="space-y-3">
           {paidLeads.map(lead => (
-            <div key={lead.id} className="bg-white p-3 rounded border shadow-sm">
-              <div className="font-medium text-gray-900">{lead.name || lead.full_name}</div>
-              {lead.email && <div className="text-xs text-gray-500 mt-1">{lead.email}</div>}
-              {lead.phone && <div className="text-xs text-gray-500">{lead.phone}</div>}
+            <div key={lead.id} className="bg-white dark:bg-slate-900 p-3 rounded border shadow-sm">
+              <div className="font-medium text-gray-900 dark:text-slate-50">{lead.name || lead.full_name}</div>
+              {lead.email && <div className="text-xs text-gray-500 dark:text-slate-500 mt-1">{lead.email}</div>}
+              {lead.phone && <div className="text-xs text-gray-500 dark:text-slate-500">{lead.phone}</div>}
               <div className="mt-2 flex justify-end">
                 <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">
                   Listo para asignar

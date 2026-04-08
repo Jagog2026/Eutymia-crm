@@ -90,13 +90,13 @@ export default function Expenses() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-50 dark:bg-slate-800/50">
       {/* Header */}
-      <div className="bg-white border-b px-8 py-6">
+      <div className="bg-white dark:bg-slate-900 border-b px-8 py-6">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Control de Gastos</h1>
-            <p className="text-gray-500">Gestiona tus gastos fijos y variables</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-50">Control de Gastos</h1>
+            <p className="text-gray-500 dark:text-slate-500">Gestiona tus gastos fijos y variables</p>
           </div>
           <button
             onClick={handleAdd}
@@ -109,38 +109,38 @@ export default function Expenses() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-4 rounded-xl border shadow-sm">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border shadow-sm">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-500 text-sm font-medium">Total Gastos</span>
-              <div className="p-2 bg-gray-100 rounded-lg text-gray-600">
+              <span className="text-gray-500 dark:text-slate-500 text-sm font-medium">Total Gastos</span>
+              <div className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-600 dark:text-slate-400">
                 <DollarSign size={20} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">{formatCurrency(stats.total)}</div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-slate-50">{formatCurrency(stats.total)}</div>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border shadow-sm border-l-4 border-l-blue-500">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border shadow-sm border-l-4 border-l-blue-500">
             <div className="flex items-center justify-between mb-2">
               <span className="text-blue-600 text-sm font-medium">Gastos Fijos</span>
               <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
                 <TrendingUp size={20} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">{formatCurrency(stats.fixed)}</div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-2xl font-bold text-gray-900 dark:text-slate-50">{formatCurrency(stats.fixed)}</div>
+            <div className="text-xs text-gray-500 dark:text-slate-500 mt-1">
               {stats.total > 0 ? Math.round((stats.fixed / stats.total) * 100) : 0}% del total
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-xl border shadow-sm border-l-4 border-l-purple-500">
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border shadow-sm border-l-4 border-l-purple-500">
             <div className="flex items-center justify-between mb-2">
               <span className="text-purple-600 text-sm font-medium">Gastos Variables</span>
               <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
                 <TrendingDown size={20} />
               </div>
             </div>
-            <div className="text-2xl font-bold text-gray-900">{formatCurrency(stats.variable)}</div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-2xl font-bold text-gray-900 dark:text-slate-50">{formatCurrency(stats.variable)}</div>
+            <div className="text-xs text-gray-500 dark:text-slate-500 mt-1">
               {stats.total > 0 ? Math.round((stats.variable / stats.total) * 100) : 0}% del total
             </div>
           </div>
@@ -160,11 +160,11 @@ export default function Expenses() {
               className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
             />
           </div>
-          <div className="flex bg-white rounded-lg border p-1">
+          <div className="flex bg-white dark:bg-slate-900 rounded-lg border p-1">
             <button
               onClick={() => setFilterType('all')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                filterType === 'all' ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900'
+                filterType === 'all' ? 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-slate-50' : 'text-gray-500 dark:text-slate-500 hover:text-gray-900 dark:text-slate-50'
               }`}
             >
               Todos
@@ -172,7 +172,7 @@ export default function Expenses() {
             <button
               onClick={() => setFilterType('fixed')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                filterType === 'fixed' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 hover:text-gray-900'
+                filterType === 'fixed' ? 'bg-blue-50 text-blue-700' : 'text-gray-500 dark:text-slate-500 hover:text-gray-900 dark:text-slate-50'
               }`}
             >
               Fijos
@@ -180,7 +180,7 @@ export default function Expenses() {
             <button
               onClick={() => setFilterType('variable')}
               className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                filterType === 'variable' ? 'bg-purple-50 text-purple-700' : 'text-gray-500 hover:text-gray-900'
+                filterType === 'variable' ? 'bg-purple-50 text-purple-700' : 'text-gray-500 dark:text-slate-500 hover:text-gray-900 dark:text-slate-50'
               }`}
             >
               Variables
@@ -188,41 +188,41 @@ export default function Expenses() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border shadow-sm flex-1 overflow-hidden flex flex-col">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border shadow-sm flex-1 overflow-hidden flex flex-col">
           <div className="overflow-y-auto flex-1">
             <table className="w-full text-left">
-              <thead className="bg-gray-50 sticky top-0 z-10">
+              <thead className="bg-gray-50 dark:bg-slate-800/50 sticky top-0 z-10">
                 <tr>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Categoría</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Monto</th>
-                  <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Acciones</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Descripción</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Categoría</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Tipo</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">Fecha</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider text-right">Monto</th>
+                  <th className="px-6 py-3 text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {loading ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500 dark:text-slate-500">
                       Cargando gastos...
                     </td>
                   </tr>
                 ) : filteredExpenses.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan="6" className="px-6 py-12 text-center text-gray-500 dark:text-slate-500">
                       No se encontraron gastos
                     </td>
                   </tr>
                 ) : (
                   filteredExpenses.map((expense) => (
-                    <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={expense.id} className="hover:bg-gray-50 dark:bg-slate-800/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{expense.description}</div>
+                        <div className="font-medium text-gray-900 dark:text-slate-50">{expense.description}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {expense.category ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200">
                             {expense.category}
                           </span>
                         ) : (
@@ -238,13 +238,13 @@ export default function Expenses() {
                           {expense.type === 'fixed' ? 'Fijo' : 'Variable'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-slate-500">
                         <div className="flex items-center gap-2">
                           <Calendar size={14} />
                           {new Date(expense.due_date).toLocaleDateString('es-MX')}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900 dark:text-slate-50">
                         {formatCurrency(expense.amount)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

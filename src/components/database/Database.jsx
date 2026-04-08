@@ -65,10 +65,10 @@ export default function Database() {
       scheduled: 'bg-purple-100 text-purple-800',
       paid: 'bg-green-100 text-green-800',
       lost: 'bg-red-100 text-red-800',
-      general_base: 'bg-gray-100 text-gray-800',
+      general_base: 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200',
       partners: 'bg-teal-100 text-teal-800'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200';
   };
 
   const getStatusLabel = (status) => {
@@ -152,11 +152,11 @@ export default function Database() {
     <div className="p-6 max-w-7xl mx-auto overflow-y-auto max-h-[calc(100vh-100px)]">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-50 flex items-center gap-2">
             <DatabaseIcon className="w-8 h-8 text-teal-600" />
             Base de Datos
           </h1>
-          <p className="text-gray-500 mt-1">Gestión completa de todos los contactos y leads</p>
+          <p className="text-gray-500 dark:text-slate-500 mt-1">Gestión completa de todos los contactos y leads</p>
         </div>
         
         <div className="flex items-center gap-2">
@@ -169,7 +169,7 @@ export default function Database() {
           </button>
           <button 
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 bg-white border rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border rounded-lg text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:bg-slate-800/50 transition-colors"
           >
             <Download size={20} />
             Exportar Excel
@@ -178,27 +178,27 @@ export default function Database() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500">Total Registros</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">{filteredLeads.length}</p>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-slate-500">Total Registros</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-slate-50 mt-2">{filteredLeads.length}</p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500">Valor Estimado Total</p>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-slate-500">Valor Estimado Total</p>
           <p className="text-3xl font-bold text-teal-600 mt-2">
             ${totalValue.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
           </p>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500">Nuevos Leads</p>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700">
+          <p className="text-sm font-medium text-gray-500 dark:text-slate-500">Nuevos Leads</p>
           <p className="text-3xl font-bold text-blue-600 mt-2">
             {filteredLeads.filter(l => l.status === 'new').length}
           </p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-white flex items-center justify-between">
-          <div className="text-sm text-gray-500">
+      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between">
+          <div className="text-sm text-gray-500 dark:text-slate-500">
             Mostrando {startIndex + 1} a {Math.min(startIndex + itemsPerPage, filteredLeads.length)} de {filteredLeads.length} registros
           </div>
           
@@ -206,23 +206,23 @@ export default function Database() {
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="px-3 py-1 border rounded hover:bg-gray-100 dark:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               Anterior
             </button>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-slate-400">
               Página {currentPage} de {totalPages || 1}
             </span>
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || totalPages === 0}
-              className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+              className="px-3 py-1 border rounded hover:bg-gray-100 dark:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
             >
               Siguiente
             </button>
           </div>
         </div>
-        <div className="p-4 border-b border-gray-200 flex flex-col md:flex-row gap-4">
+        <div className="p-4 border-b border-gray-200 dark:border-slate-700 flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -255,48 +255,48 @@ export default function Database() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-800/50 border-b border-gray-200 dark:border-slate-700">
               <tr>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Nombre</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Contacto</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Servicio</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Origen</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Valor</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado</th>
-                <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Fecha</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Nombre</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Contacto</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Servicio</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Origen</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Valor</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Estado</th>
+                <th className="px-6 py-3 text-xs font-semibold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Fecha</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500 dark:text-slate-500">
                     Cargando datos...
                   </td>
                 </tr>
               ) : filteredLeads.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-8 text-center text-gray-500 dark:text-slate-500">
                     No se encontraron registros
                   </td>
                 </tr>
               ) : (
                 paginatedLeads.map((lead) => (
-                  <tr key={lead.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={lead.id} className="hover:bg-gray-50 dark:bg-slate-800/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{lead.full_name || lead.name}</div>
+                      <div className="font-medium text-gray-900 dark:text-slate-50">{lead.full_name || lead.name}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{lead.email}</div>
-                      <div className="text-sm text-gray-500">{lead.phone}</div>
+                      <div className="text-sm text-gray-900 dark:text-slate-50">{lead.email}</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-500">{lead.phone}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{lead.service || lead.service_interest || '-'}</div>
+                      <div className="text-sm text-gray-900 dark:text-slate-50">{lead.service || lead.service_interest || '-'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-500">{lead.source || '-'}</div>
+                      <div className="text-sm text-gray-500 dark:text-slate-500">{lead.source || '-'}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-slate-50">
                         ${(Number(lead.value) || 0).toLocaleString('es-MX')}
                       </div>
                     </td>
@@ -305,7 +305,7 @@ export default function Database() {
                         {getStatusLabel(lead.status)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-slate-500">
                       {new Date(lead.created_at).toLocaleDateString()}
                     </td>
                   </tr>

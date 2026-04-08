@@ -175,18 +175,18 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-slate-900 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-4 border-b">
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Tareas y Recordatorios</h2>
-            <p className="text-sm text-gray-500">Para: {lead.full_name || lead.name}</p>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-slate-200">Tareas y Recordatorios</h2>
+            <p className="text-sm text-gray-500 dark:text-slate-500">Para: {lead.full_name || lead.name}</p>
           </div>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={24} />
           </button>
         </div>
 
-        <div className="p-4 border-b bg-gray-50">
+        <div className="p-4 border-b bg-gray-50 dark:bg-slate-800/50">
           <div className="flex justify-end mb-4">
             <button
               onClick={() => applyAutomation('follow_up')}
@@ -207,7 +207,7 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
                 required
               />
               <select
-                className="p-2 border rounded-lg bg-white"
+                className="p-2 border rounded-lg bg-white dark:bg-slate-900"
                 value={newTask.type}
                 onChange={e => setNewTask({...newTask, type: e.target.value})}
               >
@@ -227,7 +227,7 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
             <div className="flex gap-3">
               <input
                 type="datetime-local"
-                className="p-2 border rounded-lg bg-white"
+                className="p-2 border rounded-lg bg-white dark:bg-slate-900"
                 value={newTask.due_date}
                 onChange={e => setNewTask({...newTask, due_date: e.target.value})}
               />
@@ -250,14 +250,14 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
           {loading ? (
-            <div className="text-center py-8 text-gray-500">Cargando tareas...</div>
+            <div className="text-center py-8 text-gray-500 dark:text-slate-500">Cargando tareas...</div>
           ) : tasks.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No hay tareas pendientes para este lead.</div>
+            <div className="text-center py-8 text-gray-500 dark:text-slate-500">No hay tareas pendientes para este lead.</div>
           ) : (
             tasks.map(task => (
               <div 
                 key={task.id} 
-                className={`flex items-start gap-3 p-3 rounded-lg border ${task.status === 'completed' ? 'bg-gray-50 opacity-75' : 'bg-white hover:shadow-sm'}`}
+                className={`flex items-start gap-3 p-3 rounded-lg border ${task.status === 'completed' ? 'bg-gray-50 dark:bg-slate-800/50 opacity-75' : 'bg-white dark:bg-slate-900 hover:shadow-sm'}`}
               >
                 <button 
                   onClick={() => toggleTaskStatus(task)}
@@ -276,22 +276,22 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
                       {getTypeIcon(task.type)}
                       {getTypeLabel(task.type)}
                     </span>
-                    <h3 className={`font-medium ${task.status === 'completed' ? 'line-through text-gray-500' : 'text-gray-800'}`}>
+                    <h3 className={`font-medium ${task.status === 'completed' ? 'line-through text-gray-500 dark:text-slate-500' : 'text-gray-800 dark:text-slate-200'}`}>
                       {task.title}
                     </h3>
                   </div>
                   
                   {task.description && (
-                    <p className="text-sm text-gray-600 mb-1">{task.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-slate-400 mb-1">{task.description}</p>
                   )}
 
                   {task.notes && (
-                    <p className="text-sm text-gray-500 italic mb-1">Notas: {task.notes}</p>
+                    <p className="text-sm text-gray-500 dark:text-slate-500 italic mb-1">Notas: {task.notes}</p>
                   )}
 
                   {task.due_date && (
                     <div className={`text-xs flex items-center gap-1 mb-1 ${
-                      new Date(task.due_date) < new Date() && task.status !== 'completed' ? 'text-red-600 font-medium' : 'text-gray-500'
+                      new Date(task.due_date) < new Date() && task.status !== 'completed' ? 'text-red-600 font-medium' : 'text-gray-500 dark:text-slate-500'
                     }`}>
                       <Clock size={12} />
                       {new Date(task.due_date).toLocaleString()}
@@ -301,7 +301,7 @@ export default function LeadTasksModal({ isOpen, onClose, lead }) {
                   {task.tags && task.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {task.tags.map((tag, i) => (
-                        <span key={i} className="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded flex items-center gap-0.5">
+                        <span key={i} className="text-[10px] px-1.5 py-0.5 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 rounded flex items-center gap-0.5">
                           <Tag size={8} /> {tag}
                         </span>
                       ))}

@@ -113,10 +113,10 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className={`bg-white rounded-lg w-full ${activeTab === 'users' ? 'max-w-4xl' : 'max-w-md'} transition-all duration-300`}>
+      <div className={`bg-white dark:bg-slate-900 rounded-lg w-full ${activeTab === 'users' ? 'max-w-4xl' : 'max-w-md'} transition-all duration-300`}>
         <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Configuración</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-slate-200">Configuración</h2>
+          <button onClick={onClose} className="text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300">
             <X size={24} />
           </button>
         </div>
@@ -127,7 +127,7 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'general' 
                 ? 'border-teal-600 text-teal-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'
             }`}
           >
             <Building size={18} />
@@ -138,7 +138,7 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
             className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'users' 
                 ? 'border-teal-600 text-teal-600' 
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-gray-500 dark:text-slate-500 hover:text-gray-700 dark:text-slate-300'
             }`}
           >
             <Users size={18} />
@@ -156,20 +156,20 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
               ) : (
                 <>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                       Logotipo
                     </label>
                     <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200">
+                      <div className="w-20 h-20 bg-gray-100 dark:bg-slate-800 rounded-lg flex items-center justify-center overflow-hidden border border-gray-200 dark:border-slate-700">
                         {logoUrl ? (
                           <img src={logoUrl} alt="Logo" className="w-full h-full object-contain" />
                         ) : (
                           <span className="text-gray-400 text-xs text-center px-2">Sin logo</span>
                         )}
                       </div>
-                      <label className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                        <Upload size={18} className="text-gray-600" />
-                        <span className="text-sm text-gray-700">
+                      <label className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:bg-slate-800/50 transition-colors">
+                        <Upload size={18} className="text-gray-600 dark:text-slate-400" />
+                        <span className="text-sm text-gray-700 dark:text-slate-300">
                           {uploading ? 'Subiendo...' : 'Subir Logo'}
                         </span>
                         <input 
@@ -184,14 +184,14 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2">
                       Nombre de la Empresa
                     </label>
                     <input
                       type="text"
                       value={companyName}
                       onChange={(e) => setCompanyName(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all"
                       placeholder="Nombre de tu empresa"
                     />
                   </div>
@@ -204,10 +204,10 @@ export default function SettingsModal({ isOpen, onClose, onUpdate }) {
         </div>
 
         {activeTab === 'general' && (
-          <div className="p-6 border-t bg-gray-50 flex justify-end gap-3 rounded-b-lg">
+          <div className="p-6 border-t bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3 rounded-b-lg">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 rounded-lg transition-colors"
             >
               Cancelar
             </button>
