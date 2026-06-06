@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { Plus, Lock, Trash2, Pencil, DollarSign } from 'lucide-react';
 import NewAppointmentModal from './NewAppointmentModal';
@@ -143,13 +144,31 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   // Interactions
   const handleTimeClick = (e, time, therapistId, date) => {
     e.stopPropagation();
-    setShowMenu({ x: e.clientX, y: e.clientY, time, therapistId, date });
+    const x = e.clientX;
+    const y = e.clientY;
+    const menuWidth = 192; // w-48
+    const menuHeight = 110; // 2 buttons + padding + spacing
+
+    // Clamp values to stay within viewport with a 10px margin
+    const adjustedX = Math.max(10, Math.min(x, window.innerWidth - menuWidth - 10));
+    const adjustedY = Math.max(10, Math.min(y, window.innerHeight - menuHeight - 10));
+
+    setShowMenu({ x: adjustedX, y: adjustedY, time, therapistId, date });
     setAppointmentMenu(null);
   };
 
   const handleAppointmentClick = (e, appointment) => {
     e.stopPropagation();
-    setAppointmentMenu({ x: e.clientX, y: e.clientY, appointment });
+    const x = e.clientX;
+    const y = e.clientY;
+    const menuWidth = 192; // w-48
+    const menuHeight = 420; // 10+ items + borders + padding
+
+    // Clamp values to stay within viewport with a 10px margin
+    const adjustedX = Math.max(10, Math.min(x, window.innerWidth - menuWidth - 10));
+    const adjustedY = Math.max(10, Math.min(y, window.innerHeight - menuHeight - 10));
+
+    setAppointmentMenu({ x: adjustedX, y: adjustedY, appointment });
     setShowMenu(null);
   };
 
@@ -308,21 +327,22 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
       </div>
 
       {/* Context Menus */}
-      {showMenu && (
-        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: showMenu.y, left: showMenu.x }}>
+      {showMenu && createPortal(
+        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border border-gray-200 dark:border-slate-800 py-1 z-[9999] w-48" style={{ top: showMenu.y, left: showMenu.x }}>
           <button onClick={() => handleNewAppointment(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Plus size={16} /> Nueva Cita
           </button>
           <button onClick={() => handleBlockSchedule(showMenu.time, showMenu.therapistId, showMenu.date)} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Lock size={16} /> Bloquear Horario
           </button>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {appointmentMenu && (
-        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border py-1 z-50 w-48" style={{ top: appointmentMenu.y, left: appointmentMenu.x }}>
-          <div className="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-slate-500 dark:text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800 mb-1">Acciones</div>
-          <button onClick={handleEdit} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
+      {appointmentMenu && createPortal(
+        <div className="fixed bg-white dark:bg-slate-900 rounded-md shadow-xl border border-gray-200 dark:border-slate-800 py-1 z-[9999] w-48" style={{ top: appointmentMenu.y, left: appointmentMenu.x }}>
+          <div className="flex bg-slate-100 dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-gray-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 mb-1">Acciones</div>
+          <button onClick={handleEdit} className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:bg-slate-800 flex items-center gap-2">
             <Pencil size={16} /> Editar
           </button>
           
@@ -335,10 +355,10 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
               <button onClick={() => updateStatus('confirmada')} className="w-full text-left px-4 py-2 text-sm hover:bg-yellow-50 text-yellow-800 flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-yellow-400"></div> Confirmar
               </button>
-              <button onClick={() => updateStatus('asiste')} className="w-full text-left px-4 py-2 text-sm hover:bg-pink-50 text-pink-800 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-pink-400"></div> Asiste
+              <button onClick={() => updateStatus('asiste')} className="w-full text-left px-4 py-2 text-sm hover:bg-cyan-50 dark:hover:bg-cyan-900/30 text-cyan-800 dark:text-cyan-300 flex items-center gap-2 transition-colors">
+                <div className="w-2 h-2 rounded-full bg-cyan-500"></div> Asiste
               </button>
-              <button onClick={() => updateStatus('cancelado')} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-800 flex items-center gap-2">
+              <button onClick={() => updateStatus('cancelado')} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 dark:hover:bg-red-900/30 text-red-800 dark:text-red-300 flex items-center gap-2 transition-colors">
                 <div className="w-2 h-2 rounded-full bg-red-400"></div> Cancelar
               </button>
               <button onClick={() => updateStatus('pendiente')} className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-slate-800 flex items-center gap-2">
@@ -351,11 +371,12 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
             </>
           )}
           
-          <div className="border-t my-1"></div>
+          <div className="border-t border-gray-200 dark:border-slate-700 my-1"></div>
           <button onClick={handleDelete} className="w-full text-left px-4 py-2 text-sm hover:bg-red-50 text-red-800 flex items-center gap-2">
             <Trash2 size={16} /> Eliminar
           </button>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Modals */}

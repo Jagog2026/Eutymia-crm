@@ -44,10 +44,9 @@ export default function Layout({ children, userRole, userEmail }) {
     { path: '/leads', icon: Users, label: 'Leads (CRM)', roles: ['admin', 'reception'] },
     { path: '/database', icon: Database, label: 'Base de Datos', roles: ['admin', 'reception'] },
     { path: '/expenses', icon: Receipt, label: 'Gastos', roles: ['admin'] },
-    { path: '/therapists', icon: Users, label: 'Terapeutas', roles: ['admin', 'reception'] },
     { path: '/workshops', icon: BookOpen, label: 'Talleres', roles: ['admin', 'reception'] },
     { path: '/reports', icon: BarChart2, label: 'Reportes', roles: ['admin'] },
-    { path: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', roles: ['admin', 'reception'] },
+    // { path: '/whatsapp', icon: MessageCircle, label: 'WhatsApp', roles: ['admin', 'reception'] },
     { path: '/admin', icon: Shield, label: 'Administración', roles: ['admin'] },
   ];
 

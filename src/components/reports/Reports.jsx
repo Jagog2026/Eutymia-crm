@@ -106,8 +106,8 @@ export default function Reports({ reportsRefreshKey }) {
         const price = parseFloat(app.price || 0);
         
         // Income & Sessions
-        // Consideramos sesiones completadas o confirmadas
-        const isValidSession = ['completed', 'confirmed', 'asiste', 'confirmada'].includes(app.status);
+        // Consideramos sesiones completadas, confirmadas o reservadas
+        const isValidSession = ['completed', 'confirmed', 'asiste', 'confirmada', 'reservado', 'reservada'].includes(app.status);
         
         if (isValidSession) {
           totalSessions++;
@@ -371,7 +371,7 @@ export default function Reports({ reportsRefreshKey }) {
 
       {activeTab === 'payments' ? (
         <PaymentControl
-          key={reportsRefreshKey}
+          refreshKey={reportsRefreshKey}
           onPaymentChanged={fetchData}
           selectedMonth={selectedMonth}
           selectedYear={selectedYear}

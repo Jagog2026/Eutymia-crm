@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { Search, CheckCircle, AlertCircle, FileText, Calendar } from 'lucide-react';
 
-export default function PaymentControl({ onPaymentChanged, selectedMonth, selectedYear, selectedPeriod }) {
+export default function PaymentControl({ onPaymentChanged, selectedMonth, selectedYear, selectedPeriod, refreshKey }) {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,7 +11,7 @@ export default function PaymentControl({ onPaymentChanged, selectedMonth, select
 
   useEffect(() => {
     fetchAppointments();
-  }, [selectedMonth, selectedYear, selectedPeriod]);
+  }, [selectedMonth, selectedYear, selectedPeriod, refreshKey]);
 
   // Auto-refresh when month/period changes
   useEffect(() => {

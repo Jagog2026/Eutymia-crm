@@ -13,13 +13,16 @@ import {
   Key,
   AlertCircle,
   CheckCircle,
-  Loader
+  Loader,
+  UserCog
 } from 'lucide-react';
 
 import UserModal from './UserModal';
 import PasswordModal from './PasswordModal';
+import Therapists from '../therapists/Therapists';
 
 export default function AdminPanel() {
+  const [activeTab, setActiveTab] = useState('users'); // 'users' or 'therapists'
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -190,231 +193,275 @@ export default function AdminPanel() {
                 <Shield className="text-teal-600" size={28} />
                 Panel de Administración
               </h1>
-              <p className="text-gray-600 dark:text-slate-400 mt-1">Gestiona usuarios y permisos del sistema</p>
+              <p className="text-gray-600 dark:text-slate-400 mt-1">
+                {activeTab === 'users' ? 'Gestiona usuarios y permisos del sistema' : 'Gestiona el equipo de terapeutas y sus perfiles'}
+              </p>
             </div>
+            {activeTab === 'users' && (
+              <button
+                onClick={() => handleOpenUserModal()}
+                className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium transition-colors"
+              >
+                <UserPlus size={20} />
+                Nuevo Usuario
+              </button>
+            )}
+          </div>
+
+          {/* Tabs */}
+          <div className="flex border-b border-gray-200 dark:border-slate-800 mb-6">
             <button
-              onClick={() => handleOpenUserModal()}
-              className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 font-medium transition-colors"
+              onClick={() => setActiveTab('users')}
+              className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+                activeTab === 'users'
+                  ? 'border-teal-600 dark:border-teal-400 text-teal-600 dark:text-teal-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+              }`}
             >
-              <UserPlus size={20} />
-              Nuevo Usuario
+              <div className="flex items-center gap-2">
+                <Users size={18} />
+                Gestión de Usuarios
+              </div>
+            </button>
+            <button
+              onClick={() => setActiveTab('therapists')}
+              className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+                activeTab === 'therapists'
+                  ? 'border-teal-600 dark:border-teal-400 text-teal-600 dark:text-teal-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <UserCog size={18} />
+                Terapeutas
+              </div>
             </button>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">Total Usuarios</p>
-                  <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
+          {activeTab === 'users' ? (
+            <>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-blue-600 font-medium">Total Usuarios</p>
+                      <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
+                    </div>
+                    <Users className="text-blue-500" size={32} />
+                  </div>
                 </div>
-                <Users className="text-blue-500" size={32} />
-              </div>
-            </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-green-600 font-medium">Usuarios Activos</p>
-                  <p className="text-2xl font-bold text-green-900">{stats.active}</p>
+                <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-green-600 font-medium">Usuarios Activos</p>
+                      <p className="text-2xl font-bold text-green-900">{stats.active}</p>
+                    </div>
+                    <CheckCircle className="text-green-500" size={32} />
+                  </div>
                 </div>
-                <CheckCircle className="text-green-500" size={32} />
-              </div>
-            </div>
 
-            <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-red-600 font-medium">Usuarios Inactivos</p>
-                  <p className="text-2xl font-bold text-red-900">{stats.inactive}</p>
+                <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-red-600 font-medium">Usuarios Inactivos</p>
+                      <p className="text-2xl font-bold text-red-900">{stats.inactive}</p>
+                    </div>
+                    <AlertCircle className="text-red-500" size={32} />
+                  </div>
                 </div>
-                <AlertCircle className="text-red-500" size={32} />
-              </div>
-            </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-purple-600 font-medium">Administradores</p>
-                  <p className="text-2xl font-bold text-purple-900">{stats.admins}</p>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-purple-600 font-medium">Administradores</p>
+                      <p className="text-2xl font-bold text-purple-900">{stats.admins}</p>
+                    </div>
+                    <Shield className="text-purple-500" size={32} />
+                  </div>
                 </div>
-                <Shield className="text-purple-500" size={32} />
               </div>
-            </div>
-          </div>
 
-          {/* Filters */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Buscar por nombre o email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-              />
-            </div>
+              {/* Filters */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Buscar por nombre o email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  />
+                </div>
 
-            <select
-              value={filterRole}
-              onChange={(e) => setFilterRole(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            >
-              <option value="all">Todos los roles</option>
-              <option value="admin">Administrador</option>
-              <option value="therapist">Terapeuta</option>
-              <option value="reception">Recepción</option>
-            </select>
+                <select
+                  value={filterRole}
+                  onChange={(e) => setFilterRole(e.target.value)}
+                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                >
+                  <option value="all">Todos los roles</option>
+                  <option value="admin">Administrador</option>
+                  <option value="therapist">Terapeuta</option>
+                  <option value="reception">Recepción</option>
+                </select>
 
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-            >
-              <option value="all">Todos los estados</option>
-              <option value="active">Activos</option>
-              <option value="inactive">Inactivos</option>
-            </select>
-          </div>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                >
+                  <option value="all">Todos los estados</option>
+                  <option value="active">Activos</option>
+                  <option value="inactive">Inactivos</option>
+                </select>
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
 
-      {/* Users Table */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="bg-white dark:bg-slate-900 rounded-lg border shadow-sm">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50 dark:bg-slate-800/50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Usuario
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Rol
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Terapeuta Asociado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Estado
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Contraseña
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
-              {filteredUsers.map((user) => {
-                const roleBadge = getRoleBadge(user);
-                return (
-                  <tr key={user.id} className="hover:bg-gray-50 dark:bg-slate-800/50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold">
-                          {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 dark:text-slate-50">
-                            {user.full_name || 'Sin nombre'}
+      {activeTab === 'users' ? (
+        /* Users Table */
+        <div className="flex-1 overflow-auto p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-lg border shadow-sm">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50 dark:bg-slate-800/50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Usuario
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Rol
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Terapeuta Asociado
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Contraseña
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-slate-500 uppercase tracking-wider">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-900 divide-y divide-gray-200 dark:divide-slate-800">
+                {filteredUsers.map((user) => {
+                  const roleBadge = getRoleBadge(user);
+                  return (
+                    <tr key={user.id} className="hover:bg-gray-50 dark:bg-slate-800/50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white font-bold">
+                            {user.full_name ? user.full_name.charAt(0).toUpperCase() : user.email.charAt(0).toUpperCase()}
                           </div>
-                          <div className="text-sm text-gray-500 dark:text-slate-500">{user.email}</div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900 dark:text-slate-50">
+                              {user.full_name || 'Sin nombre'}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-slate-500">{user.email}</div>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadge.color}`}>
-                        {roleBadge.label}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {user.therapist ? (
-                        <div className="text-sm">
-                          <div className="font-medium text-gray-900 dark:text-slate-50">{user.therapist.name}</div>
-                          <div className="text-gray-500 dark:text-slate-500">{user.therapist.email}</div>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-gray-400">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        user.active !== false
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {user.active !== false ? (
-                          <span className="flex items-center gap-1">
-                            <Activity size={12} />
-                            Activo
-                          </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleBadge.color}`}>
+                          {roleBadge.label}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.therapist ? (
+                          <div className="text-sm">
+                            <div className="font-medium text-gray-900 dark:text-slate-50">{user.therapist.name}</div>
+                            <div className="text-gray-500 dark:text-slate-500">{user.therapist.email}</div>
+                          </div>
                         ) : (
-                          <span className="flex items-center gap-1">
-                            <UserX size={12} />
-                            Suspendido
-                          </span>
+                          <span className="text-sm text-gray-400">-</span>
                         )}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded text-xs font-mono">
-                        {user.password}
-                      </code>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenUserModal(user)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Editar usuario"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleOpenPasswordModal(user)}
-                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                          title="Cambiar contraseña"
-                        >
-                          <Key size={18} />
-                        </button>
-                        <button
-                          onClick={() => toggleUserStatus(user.id, user.active !== false)}
-                          className={`p-2 rounded-lg transition-colors ${
-                            user.active !== false
-                              ? 'text-orange-600 hover:bg-orange-50'
-                              : 'text-green-600 hover:bg-green-50'
-                          }`}
-                          title={user.active !== false ? "Suspender usuario" : "Activar usuario"}
-                        >
-                          {user.active !== false ? <UserX size={18} /> : <UserCheck size={18} />}
-                        </button>
-                        <button
-                          onClick={() => deleteUser(user.id, user.email)}
-                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Eliminar usuario"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          user.active !== false
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {user.active !== false ? (
+                            <span className="flex items-center gap-1">
+                              <Activity size={12} />
+                              Activo
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1">
+                              <UserX size={12} />
+                              Suspendido
+                            </span>
+                          )}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <code className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-slate-200 rounded text-xs font-mono">
+                          {user.password}
+                        </code>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleOpenUserModal(user)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Editar usuario"
+                          >
+                            <Edit2 size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleOpenPasswordModal(user)}
+                            className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Cambiar contraseña"
+                          >
+                            <Key size={18} />
+                          </button>
+                          <button
+                            onClick={() => toggleUserStatus(user.id, user.active !== false)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              user.active !== false
+                                ? 'text-orange-600 hover:bg-orange-50'
+                                : 'text-green-600 hover:bg-green-50'
+                            }`}
+                            title={user.active !== false ? "Suspender usuario" : "Activar usuario"}
+                          >
+                            {user.active !== false ? <UserX size={18} /> : <UserCheck size={18} />}
+                          </button>
+                          <button
+                            onClick={() => deleteUser(user.id, user.email)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Eliminar usuario"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
 
-          {filteredUsers.length === 0 && (
-            <div className="p-12 text-center">
-              <Users className="mx-auto text-gray-300 mb-4" size={48} />
-              <p className="text-gray-500 dark:text-slate-500 text-lg">No se encontraron usuarios</p>
-              <p className="text-gray-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
-            </div>
-          )}
+            {filteredUsers.length === 0 && (
+              <div className="p-12 text-center">
+                <Users className="mx-auto text-gray-300 mb-4" size={48} />
+                <p className="text-gray-500 dark:text-slate-500 text-lg">No se encontraron usuarios</p>
+                <p className="text-gray-400 text-sm mt-2">Intenta ajustar los filtros de búsqueda</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex-1 overflow-auto">
+          <Therapists isEmbedded={true} />
+        </div>
+      )}
 
       {/* Modals */}
       {isUserModalOpen && (

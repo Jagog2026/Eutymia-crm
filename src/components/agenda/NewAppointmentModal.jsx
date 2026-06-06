@@ -197,30 +197,58 @@ export default function NewAppointmentModal({
     }
 
     if (isOpen && initialDetails) {
+      const isEdit = !!initialDetails.id;
       const initialDate = initialDetails.date
         ? new Date(initialDetails.date)
         : new Date();
       const formattedDate = initialDate.toISOString().split('T')[0];
       const formattedTime = initialDetails.time || '09:00';
 
-      // Si es terapeuta, usar su therapistId, sino usar el que viene en initialDetails
       const defaultTherapistId =
         userRole === 'therapist' && therapistId
           ? therapistId
           : initialDetails.therapistId ||
             (therapists.length > 0 ? therapists[0].id : '');
 
-      setAppointment((prev) => ({
-        ...prev,
-        date: formattedDate,
-        time: formattedTime,
-        therapist_id: defaultTherapistId,
-      }));
+      if (isEdit) {
+        // Modo Edición: Cargar todos los datos
+        setAppointment({
+          id: initialDetails.id,
+          patient_name: initialDetails.patient_name || '',
+          patient_phone: initialDetails.patient_phone || '',
+          patient_email: initialDetails.patient_email || '',
+          date: formattedDate,
+          time: formattedTime,
+          therapist_id: defaultTherapistId,
+          service: initialDetails.service || '',
+          branch: initialDetails.branch || '',
+          notes: initialDetails.notes || '',
+          status: initialDetails.status || 'pendiente',
+          estimated_value: initialDetails.estimated_value || 0,
+        });
+        setIsNewPatient(false);
+      } else {
+        // Modo Nueva Cita (desde slot): Resetear pero mantener info del slot
+        setAppointment({
+          patient_name: '',
+          patient_phone: '',
+          patient_email: '',
+          date: formattedDate,
+          time: formattedTime,
+          therapist_id: defaultTherapistId,
+          service: '',
+          branch: '',
+          notes: '',
+          status: 'pendiente',
+        });
+        setIsNewPatient(true);
+        setNewPatientDetails({ firstName: '', lastName: '' });
+      }
     } else if (isOpen) {
+      // Modo Nueva Cita (desde botón general): Reset completo
       const today = new Date();
       const formattedDate = today.toISOString().split('T')[0];
 
-      // Si es terapeuta, usar su therapistId automáticamente
       const defaultTherapistId =
         userRole === 'therapist' && therapistId
           ? therapistId
@@ -238,8 +266,8 @@ export default function NewAppointmentModal({
         service: '',
         branch: '',
         notes: '',
+        status: 'pendiente',
       });
-      // Asegurarnos de que el panel regrese a "Paciente Nuevo" por default al abrir el modal.
       setIsNewPatient(true);
       setNewPatientDetails({ firstName: '', lastName: '' });
     }

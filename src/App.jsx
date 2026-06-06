@@ -149,10 +149,10 @@ export default function App() {
     }
   }
 
-  const triggerReportsRefresh = () => {
+  const triggerReportsRefresh = React.useCallback(() => {
     console.log('[App] Triggering reports refresh, current key:', reportsRefreshKey);
     setReportsRefreshKey(prev => prev + 1);
-  };
+  }, [reportsRefreshKey]);
 
   // Componente de ruta protegida
   const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -237,14 +237,6 @@ export default function App() {
                     }
                   />
                   <Route
-                    path="/therapists"
-                    element={
-                      <ProtectedRoute allowedRoles={['admin', 'reception']}>
-                        <Therapists />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route
                     path="/workshops"
                     element={
                       <ProtectedRoute allowedRoles={['admin', 'reception']}>
@@ -268,6 +260,7 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  {/* Whatsapp module manually disabled temporarily
                   <Route
                     path="/whatsapp"
                     element={
@@ -276,6 +269,7 @@ export default function App() {
                       </ProtectedRoute>
                     }
                   />
+                  */}
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               </Layout>

@@ -42,7 +42,8 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
     photo_url: '',
     schedule: {},
     services: [],
-    commissions: {}
+    commissions: {},
+    color: '#6366f1'
   });
   const [uploading, setUploading] = useState(false);
 
@@ -57,9 +58,16 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
         photo_url: therapist.photo_url || '',
         schedule: therapist.schedule || {},
         services: Array.isArray(therapist.services) ? therapist.services : [],
-        commissions: therapist.commissions || {}
+        commissions: therapist.commissions || {},
+        color: therapist.color || '#6366f1'
       });
     } else {
+      // Create a random color with good contrast in both light/dark modes
+      const generateRandomAccessibleColor = () => {
+        const hue = Math.floor(Math.random() * 360);
+        return `hsl(${hue}, 70%, 50%)`;
+      };
+      
       // Default schedule
       const defaultSchedule = {};
       DAYS.forEach(day => {
@@ -69,11 +77,13 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
         name: '',
         email: '',
         phone: '',
+        specialty: '',
         role: 'therapist',
         photo_url: '',
         schedule: defaultSchedule,
         services: [],
-        commissions: {}
+        commissions: {},
+        color: generateRandomAccessibleColor()
       });
     }
   }, [therapist, isOpen]);
@@ -239,6 +249,18 @@ export default function TherapistModal({ isOpen, onClose, therapist, onSave, onD
                     value={formData.specialty}
                     onChange={(e) => setFormData({ ...formData, specialty: e.target.value })}
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1 flex items-center justify-between">
+                    Color de Identificación
+                    <span className="w-5 h-5 rounded-full inline-block border border-slate-200 shadow-sm" style={{ backgroundColor: formData.color || '#6366f1' }}></span>
+                  </label>
+                  <input
+                    type="color"
+                    value={formData.color || '#6366f1'}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    className="w-full h-10 p-1 border rounded-lg cursor-pointer outline-none"
                   />
                 </div>
                 <div>

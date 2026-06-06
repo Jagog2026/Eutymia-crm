@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase';
 import { User, Phone, Mail, Edit2, Plus, Percent, Calendar, CheckSquare } from 'lucide-react';
 import TherapistModal from './TherapistModal';
 
-export default function Therapists() {
+export default function Therapists({ isEmbedded = false }) {
   const [therapists, setTherapists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +15,11 @@ export default function Therapists() {
 
   const fetchTherapists = async () => {
     setLoading(true);
-    const { data } = await supabase.from('therapists').select('*').order('name');
+    const { data } = await supabase
+      .from('therapists')
+      .select('*')
+      .eq('active', true)
+      .order('name');
     if (data) setTherapists(data);
     setLoading(false);
   };
@@ -41,7 +45,7 @@ export default function Therapists() {
       } else {
         const { error } = await supabase
           .from('therapists')
-          .insert([formData]);
+          .insert([{ ...formData, active: true }]);
         if (error) throw error;
       }
       fetchTherapists();
@@ -54,9 +58,10 @@ export default function Therapists() {
 
   const handleDelete = async (id) => {
     try {
+      // Cambio a borrado lógico para evitar errores de integridad referencial
       const { error } = await supabase
         .from('therapists')
-        .delete()
+        .update({ active: false })
         .eq('id', id);
       
       if (error) throw error;
@@ -65,23 +70,36 @@ export default function Therapists() {
       setIsModalOpen(false);
     } catch (error) {
       console.error('Error deleting therapist:', error);
-      alert('Error al eliminar el terapeuta');
+      alert('Error al desactivar el terapeuta');
     }
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-200">Equipo de Terapeutas</h1>
-        <button
-          onClick={handleAdd}
-          className="flex items-center gap-2 bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors shadow-sm"
-        >
-          <Plus size={20} /> Nuevo Terapeuta
-        </button>
-      </div>
+    <div className={isEmbedded ? "p-0" : "p-6"}>
+      {!isEmbedded && (
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-slate-200">Equipo de Terapeutas</h1>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600 transition-colors shadow-sm"
+          >
+            <Plus size={20} /> Nuevo Terapeuta
+          </button>
+        </div>
+      )}
+
+      {isEmbedded && (
+        <div className="flex justify-end mb-6 p-6 pb-0">
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-medium"
+          >
+            <Plus size={20} /> Nuevo Terapeuta
+          </button>
+        </div>
+      )}
       
-      <div className="overflow-y-auto max-h-[calc(100vh-200px)] pr-4">
+      <div className={`overflow-y-auto ${isEmbedded ? 'max-h-[calc(100vh-350px)]' : 'max-h-[calc(100vh-200px)]'} px-6 pb-6`}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {therapists.map(therapist => (
           <div key={therapist.id} className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow group">

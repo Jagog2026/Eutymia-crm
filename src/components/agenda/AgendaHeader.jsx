@@ -17,33 +17,24 @@ export default function AgendaHeader({
   };
 
   return (
-    <div className="px-4 sm:px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-slate-900/70 sticky top-0 z-30 shadow-sm">
-      <div className="flex flex-col lg:flex-row gap-3 md:gap-4 lg:items-center lg:justify-between w-full">
+    <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-slate-900/70 sticky top-0 z-30 shadow-sm">
+      <div className="flex flex-col lg:flex-row gap-2 md:gap-3 lg:items-center lg:justify-between w-full">
         <div className="flex items-start gap-3 min-w-0">
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] uppercase tracking-[0.08em] text-slate-500 dark:text-slate-400">Agenda</span>
-            <h2 className="text-2xl font-semibold text-slate-900 dark:text-slate-100 capitalize leading-tight">{formatDate(currentDate)}</h2>
+          <div className="flex flex-col gap-0.5">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 capitalize leading-tight">{formatDate(currentDate)}</h2>
 
-            <div className="flex flex-wrap items-center gap-2 mt-1">
+            <div className="flex flex-wrap items-center gap-2 mt-0.5">
               {selectedTherapistName && (
-                <span className="inline-flex items-center gap-2 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 px-3 py-1 text-sm font-medium border border-teal-100 dark:border-teal-800">
-                  <span className="w-2 h-2 rounded-full bg-teal-500 dark:bg-teal-400"></span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-800 dark:text-teal-300 px-2 py-0.5 text-xs font-semibold border border-teal-100 dark:border-teal-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-500 dark:bg-teal-400"></span>
                   {selectedTherapistName}
                 </span>
               )}
-              <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-3 py-1 text-xs font-semibold">
-                {view === 'day' ? 'Vista por profesional' : 'Vista semanal'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 text-slate-500 dark:text-slate-400 text-xs mt-1">
-              <Home size={12} />
-              <span>Eutymia</span>
             </div>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-center sm:justify-start lg:justify-end w-full">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:items-center sm:justify-start lg:justify-end w-full">
           <div className="flex items-center gap-2 justify-start lg:justify-end w-full sm:w-auto">
             <div className="flex items-center rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
               <button onClick={onPrev} className="px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" title="Día anterior">
