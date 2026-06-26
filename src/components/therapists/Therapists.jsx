@@ -15,11 +15,12 @@ export default function Therapists({ isEmbedded = false }) {
 
   const fetchTherapists = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('therapists')
       .select('*')
       .eq('active', true)
       .order('name');
+    if (error) console.error('[Therapists] Error al cargar terapeutas:', error);
     if (data) setTherapists(data);
     setLoading(false);
   };
@@ -58,19 +59,23 @@ export default function Therapists({ isEmbedded = false }) {
 
   const handleDelete = async (id) => {
     try {
-      // Cambio a borrado lógico para evitar errores de integridad referencial
       const { error } = await supabase
         .from('therapists')
         .update({ active: false })
         .eq('id', id);
-      
+
       if (error) throw error;
-      
-      fetchTherapists();
+
       setIsModalOpen(false);
+      fetchTherapists();
     } catch (error) {
-      console.error('Error deleting therapist:', error);
-      alert('Error al desactivar el terapeuta');
+      console.error('[Therapists] Error al eliminar terapeuta:', error);
+      const detail = error?.message || error?.details || JSON.stringify(error);
+      alert(
+        'Error al desactivar el terapeuta.\n\n' +
+        'Causa: ' + detail + '\n\n' +
+        'Si dice "violates row-level security", contacta al administrador de Supabase para ajustar la política RLS de la tabla therapists.'
+      );
     }
   };
 

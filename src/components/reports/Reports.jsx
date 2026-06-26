@@ -369,7 +369,7 @@ export default function Reports({ reportsRefreshKey }) {
         </div>
       </div>
 
-      {activeTab === 'payments' ? (
+      <div style={{ display: activeTab === 'payments' ? 'block' : 'none' }}>
         <PaymentControl
           refreshKey={reportsRefreshKey}
           onPaymentChanged={fetchData}
@@ -377,7 +377,9 @@ export default function Reports({ reportsRefreshKey }) {
           selectedYear={selectedYear}
           selectedPeriod={selectedPeriod}
         />
-      ) : (
+      </div>
+
+      {activeTab === 'financial' && (
         <>
           <div className="flex justify-between items-center print:hidden">
             <div className="flex items-center gap-3">

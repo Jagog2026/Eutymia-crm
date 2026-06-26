@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { DollarSign, Clock, User } from 'lucide-react';
+import { DollarSign, Clock, User, Lock } from 'lucide-react';
 
 export default function AgendaGrid({ 
   date, 
@@ -15,7 +15,7 @@ export default function AgendaGrid({
   const hourHeight = 84;
   const timeColumnWidth = 64;
   const columnMinWidth = 240;
-  const weekColumnMinWidth = 200;
+  const weekColumnMinWidth = 240;
 
   const statusConfig = {
     blocked:    { label: 'Bloqueado',  dot: 'bg-slate-400',   card: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 ring-slate-200/50 dark:ring-slate-700/50',  badge: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600' },
@@ -24,7 +24,7 @@ export default function AgendaGrid({
     confirmada: { label: 'Confirmada', dot: 'bg-amber-500',   card: 'bg-amber-50 dark:bg-amber-900/30 border-amber-200 dark:border-amber-800 ring-amber-200/50 dark:ring-amber-900/50',  badge: 'bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800' },
     asiste:     { label: 'Asiste',     dot: 'bg-cyan-500',    card: 'bg-cyan-50 dark:bg-cyan-900/30 border-cyan-200 dark:border-cyan-800 ring-cyan-200/50 dark:ring-cyan-900/50',   badge: 'bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800' },
     no_asistio: { label: 'No asistió', dot: 'bg-orange-500',  card: 'bg-orange-50 dark:bg-orange-900/30 border-orange-200 dark:border-orange-800 ring-orange-200/50 dark:ring-orange-900/50', badge: 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800' },
-    cancelado:  { label: 'Cancelado',  dot: 'bg-violet-600',  card: 'bg-violet-50 dark:bg-violet-900/30 border-violet-200 dark:border-violet-800 ring-violet-200/50 dark:ring-violet-900/50', badge: 'bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-800' },
+    cancelado:  { label: 'Cancelado',  dot: 'bg-purple-600',  card: 'bg-purple-50 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800 ring-purple-200/50 dark:ring-purple-900/50', badge: 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800' },
     pagado:     { label: 'Pagado',     dot: 'bg-emerald-500', card: 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 ring-emerald-200/50 dark:ring-emerald-900/50', badge: 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800' },
     default:    { label: 'Pendiente',  dot: 'bg-slate-400',   card: 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 ring-slate-200/50 dark:ring-slate-700/50', badge: 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700' },
   };
@@ -81,34 +81,66 @@ export default function AgendaGrid({
         style={{ borderLeftColor: accent, borderLeftWidth: '4px', minHeight: '30px', ...style }}
       >
         <div className="px-2.5 py-1.5 h-full flex flex-col justify-center gap-0.5">
-          {/* Row 1: name + badge */}
-          <div className="flex items-center justify-between gap-1.5 min-w-0">
-            <span className="text-[12px] font-semibold leading-tight truncate text-slate-800 dark:text-slate-200">
-              {isBlocked ? 'No disponible' : app.patient_name}
-            </span>
-            <span className={`shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border font-semibold ${config.badge}`}>
-              {config.label}
-            </span>
-          </div>
+          {isBlocked ? (
+            <>
+              {/* Blocked Row 1: lock icon + reason + badge */}
+              <div className="flex items-center justify-between gap-1.5 min-w-0">
+                <div className="flex items-center gap-1 min-w-0">
+                  <Lock size={10} className="shrink-0 text-slate-500 dark:text-slate-400" />
+                  <span className="text-[12px] font-semibold leading-tight truncate text-slate-700 dark:text-slate-300">
+                    {app.block_reason || app.notes || 'Sin motivo'}
+                  </span>
+                </div>
+                <span className={`shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border font-semibold ${config.badge}`}>
+                  {config.label}
+                </span>
+              </div>
 
-          {/* Row 2: time + service + paid */}
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="shrink-0 text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">{app.time}</span>
-            {!compact && <span className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{app.service || 'Consulta'}</span>}
-            {showPaid && (
-              <span className="shrink-0 inline-flex items-center gap-0.5 text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-px rounded-full">
-                <DollarSign size={10} />
-                <span className="text-[10px] font-semibold">Pago</span>
-              </span>
-            )}
-          </div>
+              {/* Blocked Row 2: time range */}
+              {!compact && (
+                <div className="flex items-center gap-1 min-w-0">
+                  <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">{app.time}</span>
+                  {app.end_time && (
+                    <>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500">–</span>
+                      <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">{app.end_time}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Row 1: name + badge */}
+              <div className="flex items-center justify-between gap-1.5 min-w-0">
+                <span className="text-[12px] font-semibold leading-tight truncate text-slate-800 dark:text-slate-200">
+                  {app.patient_name}
+                </span>
+                <span className={`shrink-0 text-[9px] leading-none px-1.5 py-0.5 rounded-full border font-semibold ${config.badge}`}>
+                  {config.label}
+                </span>
+              </div>
 
-          {/* Row 3: therapist (only when not compact) */}
-          {!compact && app?.therapists?.name && (
-            <div className="flex items-center gap-1.5 min-w-0 mt-px">
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: accent }} />
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{app.therapists.name}</span>
-            </div>
+              {/* Row 2: time + service + paid */}
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="shrink-0 text-[11px] font-medium text-slate-500 dark:text-slate-400 tabular-nums">{app.time}</span>
+                {!compact && <span className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{app.service || 'Consulta'}</span>}
+                {showPaid && (
+                  <span className="shrink-0 inline-flex items-center gap-0.5 text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-px rounded-full">
+                    <DollarSign size={10} />
+                    <span className="text-[10px] font-semibold">Pago</span>
+                  </span>
+                )}
+              </div>
+
+              {/* Row 3: therapist (only when not compact) */}
+              {!compact && app?.therapists?.name && (
+                <div className="flex items-center gap-1.5 min-w-0 mt-px">
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: accent }} />
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{app.therapists.name}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -307,8 +339,9 @@ export default function AgendaGrid({
               return (
                 <div
                   key={d.toISOString()}
-                  className={`flex-1 min-w-[200px] py-2.5 px-2 border-r border-slate-100 dark:border-slate-800 text-center
+                  className={`flex-1 py-2.5 px-2 border-r border-slate-100 dark:border-slate-800 text-center
                     ${today ? 'bg-indigo-50/60' : ''}`}
+                  style={{ minWidth: `${weekColumnMinWidth}px` }}
                 >
                   <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
                     {d.toLocaleDateString('es-ES', { weekday: 'short' })}
@@ -372,9 +405,10 @@ export default function AgendaGrid({
                   return (
                     <div
                       key={`${d.toISOString()}-${hour}`}
-                      className={`flex-1 min-w-[200px] border-r border-slate-100 dark:border-slate-800 relative group/cell transition-colors
+                      className={`flex-1 border-r border-slate-100 dark:border-slate-800 relative group/cell transition-colors
                         ${today ? 'bg-indigo-50/30' : isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/40 dark:bg-slate-800/20'}
                         hover:bg-indigo-50/40`}
+                      style={{ minWidth: `${weekColumnMinWidth}px` }}
                       onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, selectedTherapists[0], d)}
                     >
                       {/* Half-hour line */}

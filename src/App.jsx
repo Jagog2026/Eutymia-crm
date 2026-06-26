@@ -7,7 +7,6 @@ import Dashboard from './components/dashboard/Dashboard';
 import Agenda from './components/agenda/Agenda';
 import Leads from './components/leads/Leads';
 import Database from './components/database/Database';
-import Therapists from './components/therapists/Therapists';
 import Workshops from './components/workshops/Workshops';
 import Reports from './components/reports/Reports';
 import Expenses from './components/expenses/Expenses';

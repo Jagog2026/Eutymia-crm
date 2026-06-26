@@ -190,6 +190,27 @@ export default function NewAppointmentModal({
     return () => clearTimeout(timeoutId);
   }, [appointment.patient_name]);
 
+  // Clear all fields whenever the modal closes so no stale data leaks into the next session
+  useEffect(() => {
+    if (!isOpen) {
+      setAppointment({
+        patient_name: '',
+        patient_phone: '',
+        patient_email: '',
+        date: '',
+        time: '',
+        therapist_id: '',
+        service: '',
+        branch: '',
+        notes: '',
+      });
+      setIsNewPatient(true);
+      setNewPatientDetails({ firstName: '', lastName: '' });
+      setSearchResults([]);
+      setShowResults(false);
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (isOpen) {
       console.log('🔍 Terapeutas disponibles:', therapists.length, therapists);
@@ -239,7 +260,7 @@ export default function NewAppointmentModal({
           service: '',
           branch: '',
           notes: '',
-          status: 'pendiente',
+          status: 'reservado',
         });
         setIsNewPatient(true);
         setNewPatientDetails({ firstName: '', lastName: '' });
@@ -305,66 +326,71 @@ export default function NewAppointmentModal({
     }
 
     try {
-      // Verificar conflictos de espacio físico (solo para citas presenciales)
+      // ── Calcular rango horario de la nueva cita (siempre 1 hora) ────────────
+      const [hh, mm] = appointment.time.split(':');
+      const slotStartMin = parseInt(hh) * 60 + parseInt(mm);
+      const slotEndMin   = slotStartMin + 60;
+      const slotStart = `${String(Math.floor(slotStartMin / 60)).padStart(2, '0')}:${String(slotStartMin % 60).padStart(2, '0')}`;
+      const slotEnd   = `${String(Math.floor(slotEndMin   / 60)).padStart(2, '0')}:${String(slotEndMin   % 60).padStart(2, '0')}`;
+
+      // Condición de solapamiento que maneja end_time NULL:
+      //   · Si end_time existe: (time < slotEnd) AND (end_time > slotStart)   ← rango completo
+      //   · Si end_time es NULL: (time >= slotStart) AND (time < slotEnd)     ← supone 1 h
+      const overlapOr = `end_time.gt.${slotStart},and(end_time.is.null,time.gte.${slotStart})`;
+
+      // ── Verificar conflictos de espacio físico (sucursales presenciales) ───
       const selectedBranch = appointment.branch || (isOnlineService(appointment.service) ? 'En linea' : '');
       if (selectedBranch && selectedBranch !== 'En linea') {
-        const [h, m] = appointment.time.split(':');
-        const startMin = parseInt(h) * 60 + parseInt(m);
-        const endMin = startMin + 60;
-        const startTime = `${String(Math.floor(startMin / 60)).padStart(2, '0')}:${String(startMin % 60).padStart(2, '0')}`;
-        const endTime = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
-
-        // Buscar citas en la misma sucursal, misma fecha, que se empalmen en horario
-        const { data: conflicts, error: conflictError } = await supabase
+        let branchQuery = supabase
           .from('appointments')
           .select('id, time, end_time, therapist_id, patient_name, branch')
           .eq('date', appointment.date)
           .eq('branch', selectedBranch)
           .neq('status', 'cancelado')
-          .lt('time', endTime)
-          .gt('end_time', startTime);
+          .lt('time', slotEnd)
+          .or(overlapOr);
+
+        if (appointment.id) branchQuery = branchQuery.neq('id', appointment.id);
+
+        const { data: conflicts, error: conflictError } = await branchQuery;
 
         if (!conflictError && conflicts && conflicts.length > 0) {
-          // Filtrar conflictos que no sean del mismo terapeuta (diferente terapeuta = conflicto de espacio)
           const spaceConflicts = conflicts.filter(c => c.therapist_id !== appointment.therapist_id);
           if (spaceConflicts.length > 0) {
-            const conflictNames = spaceConflicts.map(c => {
+            const names = spaceConflicts.map(c => {
               const t = therapists.find(th => th.id === c.therapist_id);
               return t ? t.name : 'Otro terapeuta';
             });
             throw new Error(
-              `Conflicto de espacio: La sucursal "${selectedBranch}" ya tiene cita(s) en ese horario con: ${conflictNames.join(', ')}. Elige otro horario o sucursal.`
+              `Conflicto de espacio: La sucursal "${selectedBranch}" ya tiene cita(s) en ese horario con: ${names.join(', ')}. Elige otro horario o sucursal.`
             );
           }
 
-          // Verificar si el mismo terapeuta ya tiene cita en ese horario
-          const selfConflicts = conflicts.filter(c => c.therapist_id === appointment.therapist_id);
-          if (selfConflicts.length > 0) {
+          const sameTherapist = conflicts.filter(c => c.therapist_id === appointment.therapist_id);
+          if (sameTherapist.length > 0) {
             throw new Error(
-              `El terapeuta ya tiene una cita programada en ese horario (${selfConflicts[0].time} - Paciente: ${selfConflicts[0].patient_name}).`
+              `El terapeuta ya tiene una cita en ese horario (${sameTherapist[0].time} — Paciente: ${sameTherapist[0].patient_name}).`
             );
           }
         }
       } else if (selectedBranch === 'En linea') {
-        // Para citas en línea, solo verificar que el terapeuta no tenga otra cita
-        const [h, m] = appointment.time.split(':');
-        const startMin = parseInt(h) * 60 + parseInt(m);
-        const endMin = startMin + 60;
-        const startTime = `${String(Math.floor(startMin / 60)).padStart(2, '0')}:${String(startMin % 60).padStart(2, '0')}`;
-        const endTime = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
-
-        const { data: selfConflicts } = await supabase
+        // Para sesiones en línea solo verificar disponibilidad del terapeuta
+        let therapistQuery = supabase
           .from('appointments')
           .select('id, time, patient_name')
           .eq('date', appointment.date)
           .eq('therapist_id', appointment.therapist_id)
           .neq('status', 'cancelado')
-          .lt('time', endTime)
-          .gt('end_time', startTime);
+          .lt('time', slotEnd)
+          .or(overlapOr);
+
+        if (appointment.id) therapistQuery = therapistQuery.neq('id', appointment.id);
+
+        const { data: selfConflicts } = await therapistQuery;
 
         if (selfConflicts && selfConflicts.length > 0) {
           throw new Error(
-            `El terapeuta ya tiene una cita en ese horario (${selfConflicts[0].time} - Paciente: ${selfConflicts[0].patient_name}).`
+            `El terapeuta ya tiene una cita en ese horario (${selfConflicts[0].time} — Paciente: ${selfConflicts[0].patient_name}).`
           );
         }
       }
@@ -400,28 +426,29 @@ export default function NewAppointmentModal({
         }
       }
 
-      // Calcular end_time (1 hora después por defecto)
-      const [hours, minutes] = appointment.time.split(':');
-      const startDateTime = new Date(appointment.date);
-      startDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
-      const endTime = `${String(endDateTime.getHours()).padStart(
-        2,
-        '0'
-      )}:${String(endDateTime.getMinutes()).padStart(2, '0')}`;
-
-      const appointmentData = {
+      const { id: existingId, ...appointmentFields } = {
         ...appointment,
         branch: isOnlineService(appointment.service) ? 'En linea' : appointment.branch,
-        end_time: endTime,
-        status: appointment.status || 'pendiente',
+        end_time: slotEnd,
+        status: appointment.status || 'reservado',
       };
 
-      const { data, error } = await supabase
-        .from('appointments')
-        .insert([appointmentData])
-        .select();
-      if (error) throw error;
+      let saveError;
+      if (existingId) {
+        // Edit mode: update the existing appointment
+        const { error } = await supabase
+          .from('appointments')
+          .update(appointmentFields)
+          .eq('id', existingId);
+        saveError = error;
+      } else {
+        // New mode: insert
+        const { error } = await supabase
+          .from('appointments')
+          .insert([appointmentFields]);
+        saveError = error;
+      }
+      if (saveError) throw saveError;
       onSave();
       onClose();
     } catch (err) {
