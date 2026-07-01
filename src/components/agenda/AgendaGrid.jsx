@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { DollarSign, Clock, User, Lock } from 'lucide-react';
+import { DollarSign, User, Lock } from 'lucide-react';
 
 export default function AgendaGrid({ 
   date, 
@@ -64,7 +64,7 @@ export default function AgendaGrid({
   }, [date, view]);
 
   // ── Appointment Card (day view) ──────────────────────────────
-  const renderAppointmentCard = (app, { compact = false, hour, style } = {}) => {
+  const renderAppointmentCard = (app, { compact = false, style } = {}) => {
     const config = statusConfig[app.status] || statusConfig.default;
     const accent = app?.therapists?.color || '#6366f1';
     const showPaid = app.payment_status === 'paid' || app.payment_status === 'pagado';
@@ -282,20 +282,28 @@ export default function AgendaGrid({
                         </div>
 
                         {cellApps.map(app => {
-                          let top = 0;
-                          let height = '100%';
-                          if (app.start_time && app.end_time) {
+                          // Derive top offset and height in pixels from HH:MM strings.
+                          // This works for all appointment types (blocked, regular, etc.)
+                          // and allows cards to visually span multiple hour rows.
+                          const [startH, startM] = app.time.split(':').map(Number);
+                          const topPx = (startM / 60) * hourHeight;
+
+                          let heightPx = hourHeight; // default: 1 hour
+                          if (app.end_time) {
+                            const [endH, endM] = app.end_time.split(':').map(Number);
+                            const durationMin = (endH * 60 + endM) - (startH * 60 + startM);
+                            heightPx = Math.max(durationMin / 60, 0.5) * hourHeight;
+                          } else if (app.start_time) {
+                            // Fallback: ISO datetime pair
                             const start = new Date(app.start_time);
                             const end = new Date(app.end_time);
-                            const startMin = start.getMinutes();
                             const durationMin = (end - start) / (1000 * 60);
-                            top = `${(startMin / 60) * 100}%`;
-                            height = `${(durationMin / 60) * 100}%`;
+                            heightPx = Math.max(durationMin / 60, 0.5) * hourHeight;
                           }
+
                           return renderAppointmentCard(app, {
                             compact: false,
-                            hour: `${String(hour).padStart(2, '0')}:00`,
-                            style: { top, height },
+                            style: { top: topPx, height: heightPx, zIndex: 3 },
                           });
                         })}
                       </div>
@@ -428,7 +436,6 @@ export default function AgendaGrid({
                         }
                         return renderAppointmentCard(app, {
                           compact: false,
-                          hour: `${String(hour).padStart(2, '0')}:00`,
                           style: { top, height },
                         });
                       })}
