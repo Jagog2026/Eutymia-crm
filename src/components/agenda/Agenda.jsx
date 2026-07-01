@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '../../lib/supabase';
 import { Plus, Lock, Trash2, Pencil, DollarSign } from 'lucide-react';
@@ -9,7 +9,7 @@ import AgendaSidebar from './AgendaSidebar';
 import AgendaHeader from './AgendaHeader';
 import AgendaGrid from './AgendaGrid';
 
-export default function Agenda({ onReportsRefresh, userRole, userEmail, therapistId }) {
+export default function Agenda({ onReportsRefresh, userRole, therapistId }) {
   // State
   const [view, setView] = useState('day'); // 'day' | 'week'
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -27,6 +27,18 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   const [currentAppointmentForProof, setCurrentAppointmentForProof] = useState(null);
   const [appointmentMenu, setAppointmentMenu] = useState(null);
   const [showMenu, setShowMenu] = useState(null); // Context menu for empty slots
+
+  // Close menus on Escape
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setShowMenu(null);
+        setAppointmentMenu(null);
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   // Initial Load
   useEffect(() => {
@@ -54,12 +66,11 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
         setTherapists(therapistsData);
         
         // 2. Determine User Role & Selection based on props
-        const isAdmin = userRole === 'admin';
-        setCanViewAllTherapists(isAdmin);
+        const canSeeAll = userRole === 'admin' || userRole === 'reception';
+        setCanViewAllTherapists(canSeeAll);
 
         // 3. Set selected therapists based on role
-        if (isAdmin) {
-          // Admin sees all therapists by default
+        if (canSeeAll) {
           setSelectedTherapists(therapistsData.map(t => t.id));
         } else if (therapistId) {
           // Therapist sees only themselves (no puede cambiar)
@@ -194,17 +205,28 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
 
   const handleDrop = async (appointmentId, newDate, newTherapistId) => {
     try {
+      const newH = newDate.getHours();
+      const newM = newDate.getMinutes();
+      const timeStr = `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`;
       const dateStr = newDate.toISOString().split('T')[0];
-      const timeStr = newDate.toTimeString().substring(0, 5);
-      
+
       const updates = { date: dateStr, time: timeStr };
+
+      // Preserve duration when moving
+      const app = appointments.find(a => a.id === appointmentId);
+      if (app?.time && app?.end_time) {
+        const [sh, sm] = app.time.split(':').map(Number);
+        const [eh, em] = app.end_time.split(':').map(Number);
+        const durationMin = (eh * 60 + em) - (sh * 60 + sm);
+        if (durationMin > 0) {
+          const endMin = newH * 60 + newM + durationMin;
+          updates.end_time = `${String(Math.floor(endMin / 60)).padStart(2, '0')}:${String(endMin % 60).padStart(2, '0')}`;
+        }
+      }
+
       if (newTherapistId) updates.therapist_id = newTherapistId;
 
-      const { error } = await supabase
-        .from('appointments')
-        .update(updates)
-        .eq('id', appointmentId);
-
+      const { error } = await supabase.from('appointments').update(updates).eq('id', appointmentId);
       if (error) throw error;
       fetchAppointments();
     } catch (error) {
@@ -244,22 +266,33 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
   const handleEdit = () => {
     if (!appointmentMenu?.appointment) return;
     const app = appointmentMenu.appointment;
-    setNewAppointmentDetails({
-      id: app.id,
-      patient_name: app.patient_name,
-      service: app.service,
-      date: new Date(app.date + 'T00:00:00'), // Fix timezone
-      time: app.time,
-      therapistId: app.therapist_id,
-      notes: app.notes,
-      status: app.status,
-      payment_status: app.payment_status,
-      estimated_value: app.estimated_value,
-    });
-    
+
     if (app.status === 'blocked') {
+      setNewAppointmentDetails({
+        id: app.id,
+        block_reason: app.block_reason || app.notes || '',
+        startDate: `${app.date}T${app.time}`,
+        endDate: `${app.date}T${app.end_time || '23:59'}`,
+        therapistId: app.therapist_id,
+      });
       setShowBlockModal(true);
     } else {
+      setNewAppointmentDetails({
+        id: app.id,
+        patient_name: app.patient_name,
+        patient_phone: app.patient_phone || '',
+        patient_email: app.patient_email || '',
+        service: app.service,
+        branch: app.branch || '',
+        date: new Date(app.date + 'T00:00:00'),
+        time: app.time,
+        end_time: app.end_time,
+        therapistId: app.therapist_id,
+        notes: app.notes,
+        status: app.status,
+        payment_status: app.payment_status,
+        estimated_value: app.estimated_value,
+      });
       setShowNewAppointmentModal(true);
     }
     setAppointmentMenu(null);
@@ -294,7 +327,7 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900">
-        <AgendaHeader 
+        <AgendaHeader
           currentDate={currentDate}
           onPrev={handlePrev}
           onNext={handleNext}
@@ -302,14 +335,14 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
           onRefresh={fetchAppointments}
           onNewAppointment={() => handleNewAppointment()}
           view={view}
-          setView={setView}
+          setView={(v) => { setView(v); setShowMenu(null); setAppointmentMenu(null); }}
           selectedTherapistName={selectedTherapistName}
         />
 
         <div className="flex-1 overflow-hidden relative">
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <div className="animate-spin rounded-full h-8 w-8 border-b border-slate-200 dark:border-slate-800-2 border-teal-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-slate-200 dark:border-slate-700 border-t-teal-600"></div>
             </div>
           ) : (
             <AgendaGrid 
@@ -401,14 +434,10 @@ export default function Agenda({ onReportsRefresh, userRole, userEmail, therapis
       <PaymentProofModal
         isOpen={showPaymentProofModal}
         onClose={() => setShowPaymentProofModal(false)}
-        appointmentId={currentAppointmentForProof?.id}
+        appointment={currentAppointmentForProof}
         onProofUploaded={() => {
-          console.log('[Agenda] Payment proof uploaded, refreshing appointments and reports');
           fetchAppointments();
-          if (onReportsRefresh) {
-            console.log('[Agenda] Calling onReportsRefresh to trigger reports update');
-            onReportsRefresh();
-          }
+          if (onReportsRefresh) onReportsRefresh();
         }}
       />
     </div>

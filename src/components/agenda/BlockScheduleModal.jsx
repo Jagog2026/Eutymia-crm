@@ -12,9 +12,13 @@ export default function BlockScheduleModal({ isOpen, onClose, onSave, initialDet
   useEffect(() => {
     if (isOpen) {
       if (initialDetails?.id) { // Editing an existing block
-        setReason(initialDetails.reason || '');
-        setStartDate(formatDateTimeLocal(new Date(initialDetails.startDate)));
-        setEndDate(formatDateTimeLocal(new Date(initialDetails.endDate)));
+        setReason(initialDetails.block_reason || initialDetails.reason || initialDetails.notes || '');
+        setStartDate(initialDetails.startDate
+          ? formatDateTimeLocal(new Date(initialDetails.startDate))
+          : formatDateTimeLocal(new Date()));
+        setEndDate(initialDetails.endDate
+          ? formatDateTimeLocal(new Date(initialDetails.endDate))
+          : formatDateTimeLocal(new Date()));
       } else { // Creating a new block
         const now = new Date();
         

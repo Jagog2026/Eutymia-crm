@@ -319,13 +319,12 @@ export default function AgendaGrid({
   }
 
   // ══════════════════════════════════════════════════════════════
-  //  WEEK VIEW
+  //  WEEK VIEW  — full-height columns with overlap detection
   // ══════════════════════════════════════════════════════════════
   if (view === 'week') {
     const startOfWeek = new Date(date);
-    const day = startOfWeek.getDay();
-    const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-    startOfWeek.setDate(diff);
+    const dow = startOfWeek.getDay();
+    startOfWeek.setDate(startOfWeek.getDate() - dow + (dow === 0 ? -6 : 1));
 
     const weekDays = Array.from({ length: 7 }, (_, i) => {
       const d = new Date(startOfWeek);
@@ -334,28 +333,82 @@ export default function AgendaGrid({
     });
 
     const isCurrentWeek = weekDays.some(d => isToday(d));
+    const totalHeight = hours.length * hourHeight;
+    const dayStart = hours[0] * 60; // minutes from midnight to first displayed hour
+
+    // Convert "HH:MM" to total minutes from midnight
+    const toMin = (t) => {
+      if (!t) return 0;
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    };
+
+    // Get all appointments for a given day
+    const getAppsForDay = (d) =>
+      appointments.filter(a => {
+        if (!a.date || !a.time) return false;
+        const ad = new Date(a.date + 'T00:00:00');
+        return (
+          ad.getDate() === d.getDate() &&
+          ad.getMonth() === d.getMonth() &&
+          ad.getFullYear() === d.getFullYear() &&
+          selectedTherapists.includes(a.therapist_id)
+        );
+      });
+
+    // Assign side-by-side columns to overlapping appointments
+    const layoutApps = (apps) => {
+      if (!apps.length) return [];
+
+      const items = apps
+        .map(app => ({
+          app,
+          start: toMin(app.time),
+          end: app.end_time ? toMin(app.end_time) : toMin(app.time) + 60,
+          col: 0,
+          totalCols: 1,
+        }))
+        .sort((a, b) => a.start - b.start || a.end - b.end);
+
+      // Greedy column assignment
+      const colEnds = [];
+      items.forEach(item => {
+        const col = colEnds.findIndex(end => end <= item.start);
+        if (col === -1) { item.col = colEnds.length; colEnds.push(item.end); }
+        else { item.col = col; colEnds[col] = Math.max(colEnds[col], item.end); }
+      });
+
+      // Propagate totalCols within each overlap group
+      items.forEach(item => {
+        const overlaps = items.filter(o => o !== item && o.start < item.end && o.end > item.start);
+        if (overlaps.length) {
+          const groupCols = Math.max(item.col, ...overlaps.map(o => o.col)) + 1;
+          item.totalCols = groupCols;
+          overlaps.forEach(o => { o.totalCols = Math.max(o.totalCols, groupCols); });
+        }
+      });
+
+      return items;
+    };
 
     return (
       <div className="flex flex-col h-full overflow-hidden bg-gradient-to-b from-slate-50/80 dark:from-slate-900 to-white dark:to-slate-900">
         <div ref={scrollContainerRef} className="flex-1 overflow-auto relative">
 
           {/* ── Day Header ── */}
-          <div className="flex border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 bg-white dark:bg-slate-900/95 backdrop-blur supports-[backdrop-filter]:bg-white dark:bg-slate-900/80 min-w-max">
+          <div className="flex border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 bg-white dark:bg-slate-900/95 backdrop-blur min-w-max">
             <div className="flex-shrink-0 border-r border-slate-100 dark:border-slate-800 sticky left-0 z-30 bg-white dark:bg-slate-900/95" style={{ width: timeColumnWidth }} />
             {weekDays.map(d => {
               const today = isToday(d);
               return (
-                <div
-                  key={d.toISOString()}
-                  className={`flex-1 py-2.5 px-2 border-r border-slate-100 dark:border-slate-800 text-center
-                    ${today ? 'bg-indigo-50/60' : ''}`}
-                  style={{ minWidth: `${weekColumnMinWidth}px` }}
+                <div key={d.toISOString()}
+                  className={`flex-1 py-2.5 px-2 border-r border-slate-100 dark:border-slate-800 text-center ${today ? 'bg-indigo-50/60 dark:bg-indigo-900/20' : ''}`}
+                  style={{ minWidth: weekColumnMinWidth }}
                 >
                   <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-1">
                     {d.toLocaleDateString('es-ES', { weekday: 'short' })}
                   </div>
-                  <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold
-                    ${today ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300'}`}>
+                  <div className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${today ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300'}`}>
                     {d.getDate()}
                   </div>
                 </div>
@@ -363,88 +416,95 @@ export default function AgendaGrid({
             })}
           </div>
 
-          {/* ── Grid Body ── */}
-          <div className="relative min-w-max">
+          {/* ── Grid body: single full-height layout ── */}
+          <div className="flex min-w-max relative" style={{ height: totalHeight }}>
 
-            {/* Current-time line (week view) */}
-            {isCurrentWeek && currentMinuteOffset >= 0 && currentMinuteOffset <= hours.length * hourHeight && (
-              <div className="absolute pointer-events-none z-20" style={{ top: currentMinuteOffset, left: 0, right: 0 }}>
-                {/* Time label in the gutter */}
-                <span
-                  className="absolute text-[10px] font-bold text-rose-500 bg-rose-50 rounded px-1 py-px tabular-nums"
-                  style={{ left: 4, top: -8 }}
-                >
-                  {String(now.getHours()).padStart(2, '0')}:{String(now.getMinutes()).padStart(2, '0')}
-                </span>
-                <div className="absolute h-[2px] bg-rose-400/80 rounded-full" style={{ left: timeColumnWidth, right: 0 }} />
-                <div className="absolute w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm ring-2 ring-rose-200" style={{ left: timeColumnWidth - 5, top: -4 }} />
-              </div>
-            )}
+            {/* Time gutter */}
+            <div className="flex-shrink-0 sticky left-0 z-10" style={{ width: timeColumnWidth }}>
+              {hours.map((hour, idx) => {
+                const { display, suffix } = formatAmPm(hour);
+                const isEven = idx % 2 === 0;
+                return (
+                  <div key={hour}
+                    className={`flex flex-col items-center pt-1 border-r border-b border-slate-100 dark:border-slate-800 ${isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-800/40'}`}
+                    style={{ height: hourHeight }}
+                  >
+                    <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 leading-none tabular-nums">{display}</span>
+                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-none mt-0.5">{suffix}</span>
+                  </div>
+                );
+              })}
+            </div>
 
-            {hours.map((hour, idx) => {
-              const { display, suffix } = formatAmPm(hour);
-              const isEven = idx % 2 === 0;
+            {/* Day columns — relative wrapper for the now-line */}
+            <div className="relative flex flex-1">
 
-              return (
-                <div key={hour} className="flex min-w-max" style={{ minHeight: `${hourHeight}px` }}>
-                {/* Time gutter */}
-                <div
-                  className={`flex-shrink-0 border-r border-slate-100 dark:border-slate-800 flex flex-col items-center pt-1 sticky left-0 z-10
-                    ${isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/60 dark:bg-slate-800/40'}`}
-                  style={{ width: timeColumnWidth }}
-                >
-                  <span className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 leading-none tabular-nums">{display}</span>
-                  <span className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-none mt-0.5">{suffix}</span>
+              {/* Current-time indicator */}
+              {isCurrentWeek && currentMinuteOffset >= 0 && currentMinuteOffset <= totalHeight && (
+                <div className="absolute pointer-events-none z-20 left-0 right-0" style={{ top: currentMinuteOffset }}>
+                  <div className="absolute h-[2px] bg-rose-400/80 rounded-full left-0 right-0" />
+                  <div className="absolute w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm ring-2 ring-rose-200" style={{ left: -5, top: -4 }} />
                 </div>
+              )}
 
-                {weekDays.map(d => {
-                  const today = isToday(d);
-                  const cellApps = appointments.filter(a => {
-                    if (!a.date || !a.time) return false;
-                    const appDate = new Date(a.date + 'T00:00:00');
-                    const isSameDate =
-                      appDate.getDate() === d.getDate() &&
-                      appDate.getMonth() === d.getMonth() &&
-                      appDate.getFullYear() === d.getFullYear();
-                    const appHour = parseInt(a.time.split(':')[0], 10);
-                    return isSameDate && appHour === hour && selectedTherapists.includes(a.therapist_id);
-                  });
+              {weekDays.map(d => {
+                const today = isToday(d);
+                const laid = layoutApps(getAppsForDay(d));
 
-                  return (
-                    <div
-                      key={`${d.toISOString()}-${hour}`}
-                      className={`flex-1 border-r border-slate-100 dark:border-slate-800 relative group/cell transition-colors
-                        ${today ? 'bg-indigo-50/30' : isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/40 dark:bg-slate-800/20'}
-                        hover:bg-indigo-50/40`}
-                      style={{ minWidth: `${weekColumnMinWidth}px` }}
-                      onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, selectedTherapists[0], d)}
-                    >
-                      {/* Half-hour line */}
-                      <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 dark:border-slate-800 pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 right-0 border-t border-slate-100 dark:border-slate-800 pointer-events-none" />
+                return (
+                  <div key={d.toISOString()} className="flex-1 relative border-r border-slate-100 dark:border-slate-800" style={{ minWidth: weekColumnMinWidth }}>
 
-                      {cellApps.map(app => {
-                        let top = 0;
-                        let height = '100%';
-                        if (app.start_time && app.end_time) {
-                          const start = new Date(app.start_time);
-                          const end = new Date(app.end_time);
-                          const startMin = start.getMinutes();
-                          const durationMin = (end - start) / (1000 * 60);
-                          top = `${(startMin / 60) * 100}%`;
-                          height = `${(durationMin / 60) * 100}%`;
-                        }
-                        return renderAppointmentCard(app, {
-                          compact: false,
-                          style: { top, height },
-                        });
-                      })}
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+                    {/* Hour rows (background + click areas) */}
+                    {hours.map((hour, idx) => {
+                      const isEven = idx % 2 === 0;
+                      return (
+                        <div key={hour}
+                          className={`absolute left-0 right-0 border-b border-slate-100 dark:border-slate-800 group/cell cursor-pointer transition-colors
+                            ${today ? 'bg-indigo-50/20 dark:bg-indigo-900/10' : isEven ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/40 dark:bg-slate-800/20'}
+                            hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20`}
+                          style={{ top: idx * hourHeight, height: hourHeight }}
+                          onClick={(e) => onTimeClick(e, `${String(hour).padStart(2, '0')}:00`, selectedTherapists[0], d)}
+                          onDragOver={(e) => e.preventDefault()}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            const appId = e.dataTransfer.getData('appointmentId');
+                            if (appId) {
+                              const td = new Date(d);
+                              td.setHours(hour, 0, 0, 0);
+                              onDrop(appId, td, selectedTherapists[0]);
+                            }
+                          }}
+                        >
+                          <div className="absolute top-1/2 left-0 right-0 border-t border-dashed border-slate-100 dark:border-slate-800 pointer-events-none" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity pointer-events-none">
+                            <span className="text-[10px] text-indigo-300 font-medium">+ Nuevo</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Appointments — positioned by actual time, side-by-side when overlapping */}
+                    {laid.map(({ app, start, end, col, totalCols }) => {
+                      const topPx    = (start - dayStart) / 60 * hourHeight;
+                      const heightPx = Math.max((end - start) / 60 * hourHeight, hourHeight * 0.4);
+                      const leftPct  = (col / totalCols) * 100;
+                      const widthPct = (1 / totalCols) * 100;
+                      return renderAppointmentCard(app, {
+                        compact: true,
+                        style: {
+                          top: topPx,
+                          height: heightPx,
+                          left: `calc(${leftPct}% + 2px)`,
+                          width: `calc(${widthPct}% - 4px)`,
+                          right: 'auto',
+                          zIndex: 4,
+                        },
+                      });
+                    })}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
